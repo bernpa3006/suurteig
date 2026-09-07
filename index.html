@@ -1404,4 +1404,9 @@ initTabs();
 try {
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Space+Gro
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@400;500;600;700;800&display=swap';
+  document.head.appendChild(fontLink);
+} catch(e){ /* Fonts sind optional, App läuft ohne sie weiter */ }
+</script>
+</body>
+</html>
