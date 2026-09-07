@@ -815,7 +815,7 @@ function buildPanel(key){
           <div class="chip-row"><div class="chip">altes Anstellgut <b class="ag2-starter">–</b></div><div class="chip">Mehl <b class="ag2-mehl">–</b></div><div class="chip">Wasser <b class="ag2-wasser">–</b></div></div>
         </div>
       </div>
-      <div class="note">Ca. 10 Std. an einem warmen Ort (Wasser dafür 32°C).</div>
+      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge gut verzweieinhalbfacht — meist 6&ndash;10 Std., je nach Temperatur und Aktivität.</div>
       <div class="min-note"><span class="inline-icon">${icon('bulb')}</span>Kommt insgesamt weniger als 100 g raus? Dann einfach fix nehmen: 20 g Anstellgut, 50 g Mehl, 40 g Wasser.</div>
     </div>
 
@@ -832,7 +832,7 @@ function buildPanel(key){
           <div class="chip-row"><div class="chip">Anstellgut <b class="st2-starter">–</b></div><div class="chip">Mehl <b class="st2-mehl">–</b></div><div class="chip">Wasser <b class="st2-wasser">–</b></div></div>
         </div>
       </div>
-      <div class="note">Ca. 12 Std. an einem warmen Ort (Wasser dafür 32°C).</div>
+      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge mindestens verdoppelt hat — meist 6&ndash;12 Std., je nach Temperatur.</div>
     </div>
 
     <div class="card">
@@ -1346,7 +1346,7 @@ async function generatePdf(key, btn){
       row('Wasser', fmt(c.ag2Wasser) + ' g', true);
       doc.setFontSize(9.5);
       doc.setTextColor(120,120,120);
-      doc.text('Ca. 10 Std. warmer Ort, Wasser dafür 32°C.', 15, y);
+      doc.text('Warmer Ort (32C Wasser), bis Menge verzweieinhalbfacht - meist 6-10 Std.', 15, y);
       doc.setTextColor(30,20,40);
       doc.setFontSize(11);
       y += 8;
@@ -1359,7 +1359,7 @@ async function generatePdf(key, btn){
       row('Wasser', fmt(c.st2Wasser) + ' g', true);
       doc.setFontSize(9.5);
       doc.setTextColor(120,120,120);
-      doc.text('Ca. 12 Std. warmer Ort, Wasser dafür 32°C.', 15, y);
+      doc.text('Warmer Ort (32C Wasser), bis Menge sich verdoppelt - meist 6-12 Std.', 15, y);
       doc.setTextColor(30,20,40);
       doc.setFontSize(11);
       y += 8;
@@ -1404,9 +1404,4 @@ initTabs();
 try {
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@400;500;600;700;800&display=swap';
-  document.head.appendChild(fontLink);
-} catch(e){ /* Fonts sind optional, App läuft ohne sie weiter */ }
-</script>
-</body>
-</html>
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Space+Gro
