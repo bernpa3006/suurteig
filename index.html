@@ -803,23 +803,7 @@ function buildPanel(key){
     </div>
 
     <div class="card">
-      <h2><span class="icon">${icon('jar')}</span>Sauerteig ansetzen</h2>
-      <p class="sub">Sollte sich mindestens verdoppeln</p>
-      <div class="starter-flow">
-        <div class="starter-step">
-          <div class="step-title"><span>Insgesamt ansetzen</span><span class="st-ansetzen-big">–</span></div>
-          <div class="chip-row"><div class="chip">gebraucht <b class="st-benoetigt">–</b></div><div class="chip">Puffer <b class="st-reserve">–</b></div></div>
-        </div>
-        <div class="starter-step">
-          <div class="step-title"><span>Daraus mischen</span><span class="st2-total">–</span></div>
-          <div class="chip-row"><div class="chip">Anstellgut <b class="st2-starter">–</b></div><div class="chip">Mehl <b class="st2-mehl">–</b></div><div class="chip">Wasser <b class="st2-wasser">–</b></div></div>
-        </div>
-      </div>
-      <div class="note">Ca. 12 Std. an einem warmen Ort (Wasser dafür 32°C).</div>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('sprout')}</span>Anstellgut auffrischen</h2>
+      <h2><span class="icon">${icon('sprout')}</span>1. Anstellgut auffrischen</h2>
       <p class="sub">Sollte sich gut verzweieinhalbfachen</p>
       <div class="starter-flow">
         <div class="starter-step">
@@ -833,6 +817,22 @@ function buildPanel(key){
       </div>
       <div class="note">Ca. 10 Std. an einem warmen Ort (Wasser dafür 32°C).</div>
       <div class="min-note"><span class="inline-icon">${icon('bulb')}</span>Kommt insgesamt weniger als 100 g raus? Dann einfach fix nehmen: 20 g Anstellgut, 50 g Mehl, 40 g Wasser.</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">${icon('jar')}</span>2. Sauerteig ansetzen</h2>
+      <p class="sub">Sollte sich mindestens verdoppeln</p>
+      <div class="starter-flow">
+        <div class="starter-step">
+          <div class="step-title"><span>Insgesamt ansetzen</span><span class="st-ansetzen-big">–</span></div>
+          <div class="chip-row"><div class="chip">gebraucht <b class="st-benoetigt">–</b></div><div class="chip">Puffer <b class="st-reserve">–</b></div></div>
+        </div>
+        <div class="starter-step">
+          <div class="step-title"><span>Daraus mischen</span><span class="st2-total">–</span></div>
+          <div class="chip-row"><div class="chip">Anstellgut <b class="st2-starter">–</b></div><div class="chip">Mehl <b class="st2-mehl">–</b></div><div class="chip">Wasser <b class="st2-wasser">–</b></div></div>
+        </div>
+      </div>
+      <div class="note">Ca. 12 Std. an einem warmen Ort (Wasser dafür 32°C).</div>
     </div>
 
     <div class="card">
@@ -1336,23 +1336,10 @@ async function generatePdf(key, btn){
     row('Mit Maschine', round1(c.kneterTemp) + ' °C');
     y += 2;
 
-    // Sauerteig
+    // Anstellgut & Sauerteig (Anstellgut zuerst ansetzen)
     if(c.stBenoetigt > 0){
       hr();
-      sectionTitle('Sauerteig ansetzen');
-      row('Insgesamt ansetzen', fmt(c.stAnsetzen) + ' g');
-      row('Anstellgut', fmt(c.st2Starter) + ' g', true);
-      row('Mehl', fmt(c.st2Mehl) + ' g', true);
-      row('Wasser', fmt(c.st2Wasser) + ' g', true);
-      doc.setFontSize(9.5);
-      doc.setTextColor(120,120,120);
-      doc.text('Ca. 12 Std. warmer Ort, Wasser dafür 32°C.', 15, y);
-      doc.setTextColor(30,20,40);
-      doc.setFontSize(11);
-      y += 8;
-
-      hr();
-      sectionTitle('Anstellgut auffrischen');
+      sectionTitle('1. Anstellgut auffrischen');
       row('Insgesamt ansetzen', fmt(c.agAnsetzen) + ' g');
       row('altes Anstellgut', fmt(c.ag2Starter) + ' g', true);
       row('Mehl', fmt(c.ag2Mehl) + ' g', true);
@@ -1360,6 +1347,19 @@ async function generatePdf(key, btn){
       doc.setFontSize(9.5);
       doc.setTextColor(120,120,120);
       doc.text('Ca. 10 Std. warmer Ort, Wasser dafür 32°C.', 15, y);
+      doc.setTextColor(30,20,40);
+      doc.setFontSize(11);
+      y += 8;
+
+      hr();
+      sectionTitle('2. Sauerteig ansetzen');
+      row('Insgesamt ansetzen', fmt(c.stAnsetzen) + ' g');
+      row('Anstellgut', fmt(c.st2Starter) + ' g', true);
+      row('Mehl', fmt(c.st2Mehl) + ' g', true);
+      row('Wasser', fmt(c.st2Wasser) + ' g', true);
+      doc.setFontSize(9.5);
+      doc.setTextColor(120,120,120);
+      doc.text('Ca. 12 Std. warmer Ort, Wasser dafür 32°C.', 15, y);
       doc.setTextColor(30,20,40);
       doc.setFontSize(11);
       y += 8;
