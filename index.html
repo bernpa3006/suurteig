@@ -708,9 +708,9 @@ const RECIPES = {
     gtt: 26,
     phases: [
       { title: 'Teig machen', steps: [
-        'Autolyse: Mehl und Wasser (ohne Bassinage) grob vermischen, 30–60 Min. ruhen lassen.',
-        'Sauerteig und Salz einarbeiten, gut durchkneten.',
-        'Bassinage nach und nach unterarbeiten, bis sie komplett aufgenommen ist.'
+        'Autolyse: {{mehl}} Mehl und {{wasser}} Wasser (ohne Bassinage) grob vermischen, 30–60 Min. ruhen lassen.',
+        '{{sauerteig}} Sauerteig und {{salz}} Salz einarbeiten, gut durchkneten.',
+        'Die {{bassinage}} Bassinage nach und nach unterarbeiten, bis sie komplett aufgenommen ist.'
       ]},
       { title: 'Formen & Gare', steps: [
         'Stockgare bei Zieltemperatur, dabei 2–3× dehnen und falten.',
@@ -749,9 +749,9 @@ const RECIPES = {
     gtt: 26,
     phases: [
       { title: 'Teig machen', steps: [
-        'Wasser, Sauerteig und Mehl vermischen, kurz ruhen lassen.',
-        'Salz einarbeiten.',
-        'Öl nach und nach einkneten oder einfalten.'
+        '{{wasser}} Wasser, {{sauerteig}} Sauerteig und {{mehl}} Mehl vermischen, kurz ruhen lassen.',
+        '{{salz}} Salz einarbeiten.',
+        '{{oel}} Öl nach und nach einkneten oder einfalten.'
       ]},
       { title: 'Formen & Gare', steps: [
         'Stockgare bei Zieltemperatur, dabei 2–3× im Gefäss falten.',
@@ -788,8 +788,8 @@ const RECIPES = {
     gtt: 24,
     phases: [
       { title: 'Teig machen', steps: [
-        'Autolyse: Mehl und Wasser grob vermischen, 30–45 Min. ruhen lassen.',
-        'Sauerteig, Salz und Öl einarbeiten, glatt kneten.'
+        'Autolyse: {{mehl}} Mehl und {{wasser}} Wasser grob vermischen, 30–45 Min. ruhen lassen.',
+        '{{sauerteig}} Sauerteig, {{salz}} Salz und {{oel}} Öl einarbeiten, glatt kneten.'
       ]},
       { title: 'Formen & Gare', steps: [
         'Stockgare bei Zieltemperatur, dabei 1–2× dehnen und falten.',
@@ -823,8 +823,8 @@ const RECIPES = {
     gtt: 26,
     phases: [
       { title: 'Teig machen', steps: [
-        'Autolyse (optional): Mehl und Wasser grob vermischen, 30–45 Min. ruhen lassen.',
-        'Sauerteig und Salz einarbeiten, gut durchkneten.'
+        'Autolyse (optional): {{mehl}} Mehl und {{wasser}} Wasser grob vermischen, 30–45 Min. ruhen lassen.',
+        '{{sauerteig}} Sauerteig und {{salz}} Salz einarbeiten, gut durchkneten.'
       ]},
       { title: 'Formen & Gare', steps: [
         'Stockgare bei Zieltemperatur, dabei 2–3× dehnen und falten.',
@@ -978,7 +978,7 @@ function buildPanel(key){
           <div class="phase">
             <div class="phase-title">${phase.title}</div>
             <div class="step-list">
-              ${phase.steps.map((step, i) => `<div class="step-item"><span class="step-num">${i+1}</span><span class="step-text">${step}</span></div>`).join('')}
+              ${phase.steps.map((step, i) => `<div class="step-item"><span class="step-num">${i+1}</span><span class="step-text" data-template="${step.replace(/"/g,'&quot;')}">${fillStepPlaceholders(step, key)}</span></div>`).join('')}
             </div>
           </div>
         `).join('')}
@@ -1199,6 +1199,30 @@ function calc(key){
   };
 }
 
+/* -------------------------- Mengen in Zubereitungstext einsetzen -------------------------- */
+
+function fillStepPlaceholders(text, key){
+  const r = RECIPES[key];
+  const c = calc(key);
+  const findFixed = (regex) => r.fixed.find(f => regex.test(f.name));
+
+  const salzDef = findFixed(/salz/i);
+  const oelDef = findFixed(/öl|oel/i);
+  const sauerteigDef = findFixed(/sauerteig/i);
+  const wasserDef = findFixed(/wasser/i);
+
+  const values = {
+    mehl: fmt(c.totalMehl) + ' g',
+    wasser: wasserDef ? fmt(wasserDef.hasBassinage ? c.wasserTeig : c.fixedGrams[wasserDef.key]) + ' g' : '',
+    bassinage: (wasserDef && wasserDef.hasBassinage) ? fmt(c.bassinage) + ' g' : '',
+    salz: salzDef ? fmt(c.fixedGrams[salzDef.key]) + ' g' : '',
+    oel: oelDef ? fmt(c.fixedGrams[oelDef.key]) + ' g' : '',
+    sauerteig: sauerteigDef ? fmt(c.fixedGrams[sauerteigDef.key]) + ' g' : ''
+  };
+
+  return text.replace(/\{\{(\w+)\}\}/g, (match, name) => values[name] !== undefined ? values[name] : match);
+}
+
 function render(key){
   const r = RECIPES[key];
   const s = state[key];
@@ -1260,6 +1284,10 @@ function render(key){
   setTxt('.ag2-mehl', fmt(c.ag2Mehl) + ' g');
   setTxt('.ag2-wasser', fmt(c.ag2Wasser) + ' g');
   setTxt('.ag2-total', fmt(c.ag2Total) + ' g total');
+
+  el.querySelectorAll('.step-text[data-template]').forEach(span=>{
+    span.textContent = fillStepPlaceholders(span.dataset.template, key);
+  });
 }
 
 /* -------------------------- Events -------------------------- */
@@ -1529,7 +1557,8 @@ async function generatePdf(key, btn){
       doc.setFontSize(10.5);
       phase.steps.forEach((step, i) => {
         if(y > 278){ doc.addPage(); y = 20; }
-        const lines = doc.splitTextToSize((i+1) + '. ' + step, pageW - 32);
+        const filledStep = fillStepPlaceholders(step, key);
+        const lines = doc.splitTextToSize((i+1) + '. ' + filledStep, pageW - 32);
         doc.text(lines, 18, y);
         y += lines.length * 5.2 + 1.5;
       });
