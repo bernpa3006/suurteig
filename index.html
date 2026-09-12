@@ -84,23 +84,45 @@
     position:absolute;
     top: 1px;
     bottom: 1px;
-    width: 36px;
+    width: 46px;
     pointer-events: none;
-    border-radius: 16px;
     opacity: 0;
     transition: opacity .15s ease;
+    display:flex;
+    align-items:center;
   }
   .tabs-fade-left{
     left: 1px;
-    background: linear-gradient(90deg, var(--surface), transparent);
+    background: linear-gradient(90deg, var(--surface) 30%, transparent);
     border-radius: 16px 0 0 16px;
+    justify-content: flex-start;
+    padding-left: 2px;
   }
   .tabs-fade-right{
     right: 1px;
-    background: linear-gradient(270deg, var(--surface), transparent);
+    background: linear-gradient(270deg, var(--surface) 30%, transparent);
     border-radius: 0 16px 16px 0;
     opacity: 1;
+    justify-content: flex-end;
+    padding-right: 2px;
   }
+  .tabs-fade-arrow{
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    animation: tabsFadeNudge 1.6s ease-in-out infinite;
+  }
+  .tabs-fade-arrow svg{ width: 13px; height:13px; }
+  @keyframes tabsFadeNudge{
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(3px); }
+  }
+  .tabs-fade-left .tabs-fade-arrow{ animation-direction: reverse; }
   .tabs-wrap.at-start .tabs-fade-left{ opacity: 0; }
   .tabs-wrap.at-end .tabs-fade-right{ opacity: 0; }
   .tabs-wrap:not(.at-start) .tabs-fade-left{ opacity: 1; }
@@ -754,8 +776,8 @@
       <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
       <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
     </nav>
-    <div class="tabs-fade tabs-fade-left"></div>
-    <div class="tabs-fade tabs-fade-right"></div>
+    <div class="tabs-fade tabs-fade-left"><span class="tabs-fade-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span></div>
+    <div class="tabs-fade tabs-fade-right"><span class="tabs-fade-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
   </div>
 
   <div class="panel active accent-copain" id="panel-copain"></div>
