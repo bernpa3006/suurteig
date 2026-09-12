@@ -65,18 +65,45 @@
   }
 
   /* ---------- Tabs ---------- */
+  .tabs-wrap{
+    position: relative;
+    margin-bottom: 20px;
+  }
   nav.tabs{
     display:flex;
     gap: 4px;
     background: var(--surface);
     padding: 5px;
     border-radius: 16px;
-    margin-bottom: 20px;
     border: 1px solid var(--line);
     overflow-x: auto;
     scrollbar-width: none;
   }
   nav.tabs::-webkit-scrollbar{ display:none; }
+  .tabs-fade{
+    position:absolute;
+    top: 1px;
+    bottom: 1px;
+    width: 36px;
+    pointer-events: none;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+  .tabs-fade-left{
+    left: 1px;
+    background: linear-gradient(90deg, var(--surface), transparent);
+    border-radius: 16px 0 0 16px;
+  }
+  .tabs-fade-right{
+    right: 1px;
+    background: linear-gradient(270deg, var(--surface), transparent);
+    border-radius: 0 16px 16px 0;
+    opacity: 1;
+  }
+  .tabs-wrap.at-start .tabs-fade-left{ opacity: 0; }
+  .tabs-wrap.at-end .tabs-fade-right{ opacity: 0; }
+  .tabs-wrap:not(.at-start) .tabs-fade-left{ opacity: 1; }
   nav.tabs button{
     flex: 1 1 0;
     min-width: max-content;
@@ -718,14 +745,18 @@
     <h1>Sourdough Calculator</h1>
   </header>
 
-  <nav class="tabs">
-    <button class="active" data-tab="copain"><span class="tab-icon" data-icon="bread"></span>Copain</button>
-    <button data-tab="focaccia"><span class="tab-icon" data-icon="focaccia"></span>Focaccia</button>
-    <button data-tab="pizza"><span class="tab-icon" data-icon="pizza"></span>Pizza</button>
-    <button data-tab="buns"><span class="tab-icon" data-icon="buns"></span>Buns</button>
-    <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
-    <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
-  </nav>
+  <div class="tabs-wrap">
+    <nav class="tabs">
+      <button class="active" data-tab="copain"><span class="tab-icon" data-icon="bread"></span>Copain</button>
+      <button data-tab="focaccia"><span class="tab-icon" data-icon="focaccia"></span>Focaccia</button>
+      <button data-tab="pizza"><span class="tab-icon" data-icon="pizza"></span>Pizza</button>
+      <button data-tab="buns"><span class="tab-icon" data-icon="buns"></span>Buns</button>
+      <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
+      <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
+    </nav>
+    <div class="tabs-fade tabs-fade-left"></div>
+    <div class="tabs-fade tabs-fade-right"></div>
+  </div>
 
   <div class="panel active accent-copain" id="panel-copain"></div>
   <div class="panel accent-focaccia" id="panel-focaccia"></div>
@@ -1665,8 +1696,25 @@ function initTabs(){
       document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      if(typeof btn.scrollIntoView === 'function'){
+        btn.scrollIntoView({ behavior:'smooth', inline:'nearest', block:'nearest' });
+      }
     });
   });
+
+  const nav = document.querySelector('nav.tabs');
+  const wrap = document.querySelector('.tabs-wrap');
+  if(nav && wrap){
+    const updateFades = () => {
+      const atStart = nav.scrollLeft <= 2;
+      const atEnd = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 2;
+      wrap.classList.toggle('at-start', atStart);
+      wrap.classList.toggle('at-end', atEnd);
+    };
+    nav.addEventListener('scroll', updateFades);
+    window.addEventListener('resize', updateFades);
+    updateFades();
+  }
 }
 
 /* -------------------------- PDF Export -------------------------- */
