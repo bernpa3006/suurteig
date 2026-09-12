@@ -205,6 +205,31 @@
     margin-bottom: 16px;
   }
 
+  .size-chip-row{
+    display:flex;
+    gap: 8px;
+    margin: 10px 0 18px;
+  }
+  .size-chip{
+    flex: 1;
+    font-family: inherit;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 6px;
+    background: rgba(0,0,0,0.2);
+    color: inherit;
+    cursor: pointer;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    gap: 2px;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .size-chip:active{ transform: scale(0.96); }
+  .size-chip.active{ background: rgba(0,0,0,0.4); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
+  .size-chip-label{ font-size: 0.95rem; font-weight: 800; }
+  .size-chip-desc{ font-size: 0.72rem; opacity: 0.8; }
+
   .portion-row{
     display:flex;
     gap: 8px;
@@ -726,6 +751,16 @@ window.onerror = function(msg, url, line, col, err){
    ========================================================================= */
 
 function roundUp10(n){ return Math.ceil(n/10)*10; }
+
+function getUnitWeight(key){
+  const r = RECIPES[key];
+  if(r.sizes){
+    const sizeKey = state[key] && state[key].size;
+    const found = r.sizes.find(s => s.key === sizeKey);
+    return found ? found.weight : r.unitWeight;
+  }
+  return r.unitWeight;
+}
 function round1(n){ return Math.round(n*10)/10; }
 function fmt(n){
   if(n > 0 && n < 1) return n.toLocaleString('de-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -846,6 +881,11 @@ const RECIPES = {
     label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 1100,
     unitLabel: 'Pizza', unitWeight: 275,
+    sizes: [
+      { key:'klein',  label:'Klein',  desc:'ca. 25 cm', weight:220 },
+      { key:'mittel', label:'Mittel', desc:'ca. 30 cm', weight:275 },
+      { key:'gross',  label:'Gross',  desc:'ca. 35 cm', weight:350 }
+    ],
     portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ], maxUnits: 16,
     hydration: { min:60, max:75, basic:70, presets:[
       {v:62, label:'Fest'}, {v:70, label:'Basic'}, {v:73, label:'Offen'}
@@ -1039,7 +1079,8 @@ Object.keys(RECIPES).forEach(key=>{
     teigmenge: r.defaultTeigmenge,
     flours: Object.fromEntries(r.flours.map(f=>[f.key, f.pct])),
     hydration: r.hydration.basic,
-    lt: 20, mt: 18, gtt: r.gtt, korrektur: 0
+    lt: 20, mt: 18, gtt: r.gtt, korrektur: 0,
+    size: r.sizes ? (r.sizes.find(s => s.weight === r.unitWeight) || r.sizes[Math.floor(r.sizes.length/2)]).key : null
   };
 });
 
@@ -1059,12 +1100,22 @@ function buildPanel(key){
     </div>
   `).join('');
 
-  const initialUnits = Math.max(1, Math.round(state[key].teigmenge / r.unitWeight));
+  const initialUnits = Math.max(1, Math.round(state[key].teigmenge / getUnitWeight(key)));
+
+  const sizeChips = r.sizes ? r.sizes.map(sz => `
+    <button class="size-chip${state[key].size === sz.key ? ' active' : ''}" data-recipe="${key}" data-size="${sz.key}">
+      <span class="size-chip-label">${sz.label}</span>
+      <span class="size-chip-desc">${sz.desc}</span>
+    </button>
+  `).join('') : '';
 
   el.innerHTML = `
     <div class="hero hero-${key}">
       <div class="hero-emoji">${icon(r.icon)}</div>
       <div class="hero-label">Wie viel willst du machen?</div>
+      ${r.sizes ? `
+      <div class="size-chip-row">${sizeChips}</div>
+      ` : ''}
       <div class="unit-slider-row">
         <span class="unit-slider-value"><span class="unit-count">${initialUnits}</span><span class="unit-label-text">× ${r.unitLabel}</span></span>
       </div>
@@ -1446,7 +1497,7 @@ function render(key){
   const c = calc(key);
   const el = document.getElementById('panel-'+key);
 
-  const pieceCount = Math.max(1, Math.round(s.teigmenge / r.unitWeight));
+  const pieceCount = Math.max(1, Math.round(s.teigmenge / getUnitWeight(key)));
   const perPiece = Math.round(s.teigmenge / pieceCount);
   const perPieceEl = el.querySelector('.per-piece-sub');
   if(perPieceEl){
@@ -1533,11 +1584,24 @@ function attachEvents(key){
     render(key);
   });
 
+  el.querySelectorAll('.size-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const currentUnits = Math.max(1, Math.round(state[key].teigmenge / getUnitWeight(key)));
+      state[key].size = chip.dataset.size;
+      const grams = roundUp10(currentUnits * getUnitWeight(key));
+      state[key].teigmenge = grams;
+      el.querySelector('[data-role="teigmenge"]').value = grams;
+      el.querySelectorAll('.size-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      render(key);
+    });
+  });
+
   const unitSlider = el.querySelector('.unit-slider');
   if(unitSlider){
     unitSlider.addEventListener('input', e=>{
       const n = parseInt(e.target.value);
-      const grams = roundUp10(n * r.unitWeight);
+      const grams = roundUp10(n * getUnitWeight(key));
       state[key].teigmenge = grams;
       el.querySelector('[data-role="teigmenge"]').value = grams;
       render(key);
