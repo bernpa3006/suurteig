@@ -164,6 +164,38 @@
   }
   .hero-emoji svg{ width:100%; height:100%; display:block; }
 
+  .unit-slider-row{
+    display:flex;
+    justify-content:center;
+    margin: 10px 0 10px;
+  }
+  .unit-slider-value{
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .hero input[type=range].unit-slider{
+    height: 10px;
+    background: rgba(0,0,0,0.18);
+  }
+  .hero input[type=range].unit-slider::-webkit-slider-thumb{
+    background: var(--text);
+    border: 3px solid rgba(0,0,0,0.3);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.25);
+  }
+  .hero input[type=range].unit-slider::-moz-range-thumb{
+    background: var(--text);
+    border: 3px solid rgba(0,0,0,0.3);
+  }
+  .unit-slider-scale{
+    display:flex;
+    justify-content:space-between;
+    font-size: 0.72rem;
+    opacity: 0.7;
+    margin-top: 6px;
+    margin-bottom: 16px;
+  }
+
   .portion-row{
     display:flex;
     gap: 8px;
@@ -724,7 +756,7 @@ const RECIPES = {
     label: 'Copain', icon: 'bread', isCustom:false,
     defaultTeigmenge: 650,
     unitLabel: 'Brot', unitWeight: 650,
-    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'}, {n:3,label:'3 Brote'}, {n:4,label:'4 Brote'} ],
+    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'}, {n:3,label:'3 Brote'}, {n:4,label:'4 Brote'} ], maxUnits: 12,
     hydration: { min:65, max:80, basic:69, presets:[
       {v:65, label:'Fest'}, {v:69, label:'Basic'}, {v:75, label:'Offen'}, {v:80, label:'Sehr offen'}
     ]},
@@ -765,7 +797,7 @@ const RECIPES = {
     label: 'Focaccia', icon: 'focaccia', isCustom:false,
     defaultTeigmenge: 710,
     unitLabel: 'Blech', unitWeight: 710, sizeInfo: 'Standard-Backblech, 34.5 × 24.4 cm',
-    portions: [ {n:1,label:'1 Blech'}, {n:2,label:'2 Bleche'}, {n:3,label:'3 Bleche'}, {n:4,label:'4 Bleche'} ],
+    portions: [ {n:1,label:'1 Blech'}, {n:2,label:'2 Bleche'}, {n:3,label:'3 Bleche'}, {n:4,label:'4 Bleche'} ], maxUnits: 8,
     hydration: { min:75, max:90, basic:80, presets:[
       {v:75, label:'Fest'}, {v:80, label:'Basic'}, {v:85, label:'Offen'}, {v:90, label:'Sehr offen'}
     ]},
@@ -805,7 +837,7 @@ const RECIPES = {
     label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 1100,
     unitLabel: 'Pizza', unitWeight: 275, sizeInfo: 'Teigkugeln ruhen auf einem Standard-Backofenblech',
-    portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ],
+    portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ], maxUnits: 16,
     hydration: { min:60, max:75, basic:70, presets:[
       {v:62, label:'Fest'}, {v:70, label:'Basic'}, {v:73, label:'Offen'}
     ]},
@@ -850,7 +882,7 @@ const RECIPES = {
     label: 'Eigenes Rezept', icon: 'custom', isCustom:true,
     defaultTeigmenge: 700,
     unitLabel: 'Stück', unitWeight: 350,
-    portions: [ {n:1,label:'1x'}, {n:2,label:'2x'}, {n:4,label:'4x'}, {n:6,label:'6x'} ],
+    portions: [ {n:1,label:'1x'}, {n:2,label:'2x'}, {n:4,label:'4x'}, {n:6,label:'6x'} ], maxUnits: 12,
     hydration: { min:50, max:95, basic:70, presets:[
       {v:60, label:'Fest'}, {v:70, label:'Basic'}, {v:80, label:'Offen'}, {v:90, label:'Sehr offen'}
     ]},
@@ -884,7 +916,7 @@ const RECIPES = {
     label: 'Burger Buns', icon: 'buns', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 690,
     unitLabel: 'Bun', unitWeight: 115, sizeInfo: 'Ergibt klassische Hamburger-Buns mit Sesam',
-    portions: [ {n:6,label:'6 Buns'}, {n:8,label:'8 Buns'}, {n:12,label:'12 Buns'}, {n:16,label:'16 Buns'} ],
+    portions: [ {n:6,label:'6 Buns'}, {n:8,label:'8 Buns'}, {n:12,label:'12 Buns'}, {n:16,label:'16 Buns'} ], maxUnits: 24,
     hydration: { min:60, max:75, basic:67, presets:[
       {v:62, label:'Fest'}, {v:67, label:'Basic'}, {v:72, label:'Weich'}
     ]},
@@ -936,7 +968,7 @@ const RECIPES = {
     label: 'Cuchaule', icon: 'cuchaule', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 500,
     unitLabel: 'Brot', unitWeight: 500,
-    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'}, {n:3,label:'3 Brote'}, {n:4,label:'4 Brote'} ],
+    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'}, {n:3,label:'3 Brote'}, {n:4,label:'4 Brote'} ], maxUnits: 8,
     hydration: { min:50, max:70, basic:60, presets:[
       {v:52, label:'Fest'}, {v:60, label:'Basic'}, {v:66, label:'Weich'}
     ]},
@@ -1018,13 +1050,17 @@ function buildPanel(key){
     </div>
   `).join('');
 
-  const portionChips = r.portions.map(p => `<button class="portion-chip" data-recipe="${key}" data-n="${p.n}">${p.label}</button>`).join('');
+  const initialUnits = Math.max(1, Math.round(state[key].teigmenge / r.unitWeight));
 
   el.innerHTML = `
     <div class="hero hero-${key}">
       <div class="hero-emoji">${icon(r.icon)}</div>
       <div class="hero-label">Wie viel willst du machen?</div>
-      <div class="portion-row">${portionChips}</div>
+      <div class="unit-slider-row">
+        <span class="unit-slider-value"><span class="unit-count">${initialUnits}</span>× ${r.unitLabel}</span>
+      </div>
+      <input type="range" class="unit-slider" min="1" max="${r.maxUnits || 12}" step="1" value="${initialUnits}" data-recipe="${key}" data-role="unitcount">
+      <div class="unit-slider-scale"><span>1</span><span>${r.maxUnits || 12}</span></div>
       <div class="hero-input-row">
         <input type="number" min="100" step="10" value="${state[key].teigmenge}" data-recipe="${key}" data-role="teigmenge">
         <span class="hero-unit">g Teig</span>
@@ -1408,6 +1444,14 @@ function render(key){
     perPieceEl.textContent = `≈ ${fmt(perPiece)} g pro ${r.unitLabel} (${pieceCount}×)`;
   }
 
+  const unitSliderEl = el.querySelector('.unit-slider');
+  if(unitSliderEl){
+    const clampedCount = Math.min(parseInt(unitSliderEl.max), pieceCount);
+    unitSliderEl.value = clampedCount;
+    const unitCountEl = el.querySelector('.unit-count');
+    if(unitCountEl) unitCountEl.textContent = clampedCount;
+  }
+
   const flourSum = r.flours.reduce((acc,f)=> acc + (s.flours[f.key]||0), 0);
   const totalEl = el.querySelector('.flour-total-val');
   if(totalEl) totalEl.textContent = flourSum + '%';
@@ -1473,25 +1517,23 @@ function render(key){
 
 function attachEvents(key){
   const el = document.getElementById('panel-'+key);
+  const r = RECIPES[key];
 
   el.querySelector('[data-role="teigmenge"]').addEventListener('input', e=>{
     state[key].teigmenge = Math.max(50, parseFloat(e.target.value) || 0);
-    el.querySelectorAll('.portion-row:not(.hydration-presets) .portion-chip').forEach(c=>c.classList.remove('active'));
     render(key);
   });
 
-  el.querySelectorAll('.portion-row:not(.hydration-presets) .portion-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      const n = parseInt(chip.dataset.n);
-      const r = RECIPES[key];
+  const unitSlider = el.querySelector('.unit-slider');
+  if(unitSlider){
+    unitSlider.addEventListener('input', e=>{
+      const n = parseInt(e.target.value);
       const grams = roundUp10(n * r.unitWeight);
       state[key].teigmenge = grams;
       el.querySelector('[data-role="teigmenge"]').value = grams;
-      el.querySelectorAll('.portion-row:not(.hydration-presets) .portion-chip').forEach(c=>c.classList.remove('active'));
-      chip.classList.add('active');
       render(key);
     });
-  });
+  }
 
   const hydSlider = el.querySelector('.hydration-slider');
   if(hydSlider){
