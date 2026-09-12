@@ -167,12 +167,19 @@
   .unit-slider-row{
     display:flex;
     justify-content:center;
-    margin: 10px 0 10px;
+    margin: 4px 0 10px;
   }
   .unit-slider-value{
-    font-size: 1.5rem;
+    font-size: 2.4rem;
     font-weight: 700;
     font-family: 'Space Grotesk', sans-serif;
+    line-height: 1;
+  }
+  .unit-slider-value .unit-label-text{
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.85;
+    margin-left: 4px;
   }
   .hero input[type=range].unit-slider{
     height: 10px;
@@ -190,9 +197,11 @@
   .unit-slider-scale{
     display:flex;
     justify-content:space-between;
-    font-size: 0.72rem;
-    opacity: 0.7;
-    margin-top: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    opacity: 0.85;
+    margin-top: 8px;
     margin-bottom: 16px;
   }
 
@@ -836,7 +845,7 @@ const RECIPES = {
   pizza: {
     label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 1100,
-    unitLabel: 'Pizza', unitWeight: 275, sizeInfo: 'Teigkugeln ruhen auf einem Standard-Backofenblech',
+    unitLabel: 'Pizza', unitWeight: 275,
     portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ], maxUnits: 16,
     hydration: { min:60, max:75, basic:70, presets:[
       {v:62, label:'Fest'}, {v:70, label:'Basic'}, {v:73, label:'Offen'}
@@ -1057,7 +1066,7 @@ function buildPanel(key){
       <div class="hero-emoji">${icon(r.icon)}</div>
       <div class="hero-label">Wie viel willst du machen?</div>
       <div class="unit-slider-row">
-        <span class="unit-slider-value"><span class="unit-count">${initialUnits}</span>× ${r.unitLabel}</span>
+        <span class="unit-slider-value"><span class="unit-count">${initialUnits}</span><span class="unit-label-text">× ${r.unitLabel}</span></span>
       </div>
       <input type="range" class="unit-slider" min="1" max="${r.maxUnits || 12}" step="1" value="${initialUnits}" data-recipe="${key}" data-role="unitcount">
       <div class="unit-slider-scale"><span>1</span><span>${r.maxUnits || 12}</span></div>
