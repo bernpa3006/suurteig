@@ -748,7 +748,7 @@ const RECIPES = {
   focaccia: {
     label: 'Focaccia', icon: 'focaccia', isCustom:false,
     defaultTeigmenge: 710,
-    unitLabel: 'Blech', unitWeight: 710,
+    unitLabel: 'Blech', unitWeight: 710, sizeInfo: 'Standard-Backblech, 34.5 × 24.4 cm',
     portions: [ {n:1,label:'1 Blech'}, {n:2,label:'2 Bleche'}, {n:3,label:'3 Bleche'}, {n:4,label:'4 Bleche'} ],
     hydration: { min:75, max:90, basic:80, presets:[
       {v:75, label:'Fest'}, {v:80, label:'Basic'}, {v:85, label:'Offen'}, {v:90, label:'Sehr offen'}
@@ -788,7 +788,7 @@ const RECIPES = {
   pizza: {
     label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
     defaultTeigmenge: 1100,
-    unitLabel: 'Pizza', unitWeight: 275,
+    unitLabel: 'Pizza', unitWeight: 275, sizeInfo: 'Teigkugeln ruhen auf einem Standard-Backofenblech',
     portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ],
     hydration: { min:60, max:75, basic:70, presets:[
       {v:62, label:'Fest'}, {v:70, label:'Basic'}, {v:73, label:'Offen'}
@@ -962,6 +962,7 @@ function buildPanel(key){
         <span class="hero-unit">g Teig</span>
       </div>
       <div class="hero-sub per-piece-sub">oder Menge frei eingeben</div>
+      ${r.sizeInfo ? `<div class="hero-sub size-info">${r.sizeInfo}</div>` : ''}
     </div>
 
     <div class="card">
