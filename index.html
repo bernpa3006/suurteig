@@ -786,40 +786,47 @@ const RECIPES = {
     ]
   },
   pizza: {
-    label: 'Pizza', icon: 'pizza', isCustom:false,
-    defaultTeigmenge: 900,
-    unitLabel: 'Pizza', unitWeight: 250,
+    label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
+    defaultTeigmenge: 1100,
+    unitLabel: 'Pizza', unitWeight: 275,
     portions: [ {n:2,label:'2 Pizzas'}, {n:4,label:'4 Pizzas'}, {n:6,label:'6 Pizzas'}, {n:8,label:'8 Pizzas'} ],
-    hydration: { min:58, max:75, basic:65, presets:[
-      {v:60, label:'Neapel'}, {v:65, label:'Basic'}, {v:68, label:'NY-Style'}, {v:72, label:'Blech'}
+    hydration: { min:60, max:75, basic:70, presets:[
+      {v:62, label:'Fest'}, {v:70, label:'Basic'}, {v:73, label:'Offen'}
     ]},
     flours: [
-      { key:'weiss',      name:'Weizen Weiss (00)', pct:100 },
+      { key:'weiss',      name:'Weizen Tipo 00', pct:100 },
       { key:'halbweiss',  name:'Weizen Halbweiss',  pct:0 },
       { key:'vollkorn',   name:'Weizen Vollkorn',   pct:0 }
     ],
     fixed: [
-      { key:'wasser',    name:'Wasser',    pct:65, hasBassinage:false },
-      { key:'oel',       name:'Olivenöl',  pct:3 },
-      { key:'salz',      name:'Salz',      pct:2.5 },
-      { key:'sauerteig', name:'Sauerteig', pct:18 }
+      { key:'wasser',     name:'Wasser',    pct:70, hasBassinage:false },
+      { key:'salz',       name:'Salz',      pct:3.1 },
+      { key:'oel',        name:'Olivenöl',  pct:9.3 },
+      { key:'anstellgut', name:'Anstellgut (Weizensauerteig, aufgefrischt und aktiv)', pct:6.9 }
     ],
-    stockgare: [ {temp:'24°C',dauer:'6–8 h'}, {temp:'26°C',dauer:'5–6 h'}, {temp:'4°C',dauer:'24–48 h'} ],
+    stockgare: [ {temp:'Vorteig, 21°C',dauer:'ca. 3 h'}, {temp:'Stückgare 24°C',dauer:'3 h'}, {temp:'4°C Kühlschrank',dauer:'über Nacht – 72 h'} ],
     gtt: 24,
     phases: [
-      { title: 'Teig machen', steps: [
-        'Autolyse: {{mehl}} Mehl und {{wasser}} Wasser grob vermischen, 30–45 Min. ruhen lassen.',
-        '{{sauerteig}} Sauerteig, {{salz}} Salz und {{oel}} Öl einarbeiten, glatt kneten.'
+      { title: 'Vorteig', steps: [
+        'Ca. 14% des Mehls und Wassers mit dem {{anstellgut}} Anstellgut in einem hohen Gefäss verrühren.',
+        'Bei Zimmertemperatur ca. 3 Std. gehen lassen, bis sich das Volumen verdoppelt hat.'
+      ]},
+      { title: 'Hauptteig', steps: [
+        'Vorteig mit dem restlichen {{mehl}} Mehl und {{wasser}} Wasser vermischen.',
+        'Zuletzt {{salz}} Salz zugeben und alles verkneten. 30 Min. abgedeckt ruhen lassen.',
+        'Auf einer leicht bemehlten Fläche ca. 20 Min. zu einem glatten, elastischen Teig kneten (Küchenmaschine: 3 Min. langsam, dann 4 Min. schnell). 10 Min. abgedeckt ruhen lassen.'
       ]},
       { title: 'Formen & Gare', steps: [
-        'Stockgare bei Zieltemperatur, dabei 1–2× dehnen und falten.',
-        'In Portionen teilen, rundwirken.',
-        'Stückgare: 2–4 Std. bei Raumtemperatur, oder 24–48 Std. im Kühlschrank für mehr Aroma.'
+        'Arbeitsfläche leicht befeuchten. Teig mit nassen Händen lösen und nach allen Seiten dünn ausziehen, dann von allen Seiten zur Mitte einschlagen, umdrehen und mit der Naht nach unten zurück in die Schüssel geben.',
+        'Abgedeckt 3 Std. bei Zimmertemperatur gehen lassen, dabei alle 60 Min. (2×) dehnen und falten: pro Seite hochziehen, zur Mitte falten, andrücken; Schüssel um 90° drehen und wiederholen, bis alle Seiten 2× gefaltet wurden.',
+        'Teig in gleich grosse Portionen teilen, zu Kugeln formen und rund schleifen.',
+        'Geöltes Blech mit den Teigkugeln belegen, mit Öl bepinseln, mit Klarsichtfolie abdecken.',
+        'Über Nacht oder bis zu 72 Std. im Kühlschrank ruhen lassen.'
       ]},
       { title: 'Backen', steps: [
-        'Ofen mit Stein oder Stahl auf höchstmögliche Temperatur (idealerweise 400–450°C) vorheizen.',
-        'Von Hand zu Fladen formen, belegen.',
-        'Wenige Minuten backen, bis Rand und Boden gebräunt sind.'
+        'Eine Stunde vor Verarbeitung aus dem Kühlschrank nehmen.',
+        'Teigkugeln auf bemehlter Fläche von der Mitte nach aussen zu runden Fladen formen, ca. 3 cm Rand lassen.',
+        'Belegen und bei höchstmöglicher Ofentemperatur (idealerweise 400–450°C, Stein oder Stahl) wenige Minuten backen.'
       ]}
     ]
   },
@@ -1287,6 +1294,7 @@ function fillStepPlaceholders(text, key){
   const salzDef = findFixed(/salz/i);
   const oelDef = findFixed(/öl|oel/i);
   const sauerteigDef = findFixed(/sauerteig/i);
+  const anstellgutDef = findFixed(/anstellgut/i);
   const hefeDef = findFixed(/hefe/i);
   const zuckerDef = findFixed(/zucker|sweety/i);
   const butterDef = findFixed(/butter/i);
@@ -1303,6 +1311,7 @@ function fillStepPlaceholders(text, key){
     salz: salzDef ? fmt(c.fixedGrams[salzDef.key]) + ' g' : '',
     oel: oelDef ? fmt(c.fixedGrams[oelDef.key]) + ' g' : '',
     sauerteig: sauerteigDef ? fmt(c.fixedGrams[sauerteigDef.key]) + ' g' : '',
+    anstellgut: anstellgutDef ? fmt(c.fixedGrams[anstellgutDef.key]) + ' g' : '',
     hefe: hefeDef ? fmt(c.fixedGrams[hefeDef.key]) + ' g' : '',
     zucker: zuckerDef ? fmt(c.fixedGrams[zuckerDef.key]) + ' g' : '',
     butter: butterDef ? fmt(c.fixedGrams[butterDef.key]) + ' g' : '',
