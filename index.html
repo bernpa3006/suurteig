@@ -23,6 +23,8 @@
     --custom-b:  #00e5ff;
     --cuchaule-a:#ffd23f;
     --cuchaule-b:#f2a900;
+    --buns-a:#e8a94c;
+    --buns-b:#b5651d;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
   html,body{ margin:0; padding:0; }
@@ -102,6 +104,7 @@
   nav.tabs button.active[data-tab="pizza"]{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
   nav.tabs button.active[data-tab="custom"]{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#0a0518; }
   nav.tabs button.active[data-tab="cuchaule"]{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
+  nav.tabs button.active[data-tab="buns"]{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
 
   .panel{ display:none; animation: fade .25s ease; }
   .panel.active{ display:block; }
@@ -148,6 +151,7 @@
   .hero-pizza{ background: linear-gradient(135deg, var(--pizza-a), var(--pizza-b)); color: #2b0503; --glow: rgba(255,61,90,0.45); }
   .hero-custom{ background: linear-gradient(135deg, var(--custom-a), var(--custom-b)); color: #f5f0ff; --glow: rgba(123,47,247,0.5); }
   .hero-cuchaule{ background: linear-gradient(135deg, var(--cuchaule-a), var(--cuchaule-b)); color: #2b1200; --glow: rgba(255,210,63,0.5); }
+  .hero-buns{ background: linear-gradient(135deg, var(--buns-a), var(--buns-b)); color: #2b1200; --glow: rgba(232,169,76,0.5); }
 
   .hero-emoji{
     position:absolute;
@@ -253,6 +257,7 @@
   .accent-pizza input[type=range]{ --track-color: var(--pizza-a); }
   .accent-custom input[type=range]{ --track-color: var(--custom-b); }
   .accent-cuchaule input[type=range]{ --track-color: var(--cuchaule-a); }
+  .accent-buns input[type=range]{ --track-color: var(--buns-a); }
 
   .flour-total{
     margin-top: 14px;
@@ -279,6 +284,7 @@
   .accent-pizza .hydration-num{ color: var(--pizza-a); }
   .accent-custom .hydration-num{ color: var(--custom-b); }
   .accent-cuchaule .hydration-num{ color: var(--cuchaule-a); }
+  .accent-buns .hydration-num{ color: var(--buns-a); }
   .hydration-scale{
     display:flex;
     justify-content:space-between;
@@ -303,6 +309,7 @@
   .accent-pizza .hydration-chip.active{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
   .accent-custom .hydration-chip.active{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; }
   .accent-cuchaule .hydration-chip.active{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
+  .accent-buns .hydration-chip.active{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
 
   /* ---------- Steps (Backanleitung) ---------- */
   .step-list{ display:flex; flex-direction:column; gap: 10px; }
@@ -327,6 +334,7 @@
   .accent-pizza .step-num{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
   .accent-custom .step-num{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; }
   .accent-cuchaule .step-num{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
+  .accent-buns .step-num{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
   .step-text{ font-size: 0.88rem; padding-top: 2px; }
 
   /* ---------- Aufklappbares Rezept ---------- */
@@ -417,6 +425,7 @@
   .accent-pizza .ing-row.total .ing-amt{ color: var(--pizza-a); }
   .accent-custom .ing-row.total .ing-amt{ color: var(--custom-b); }
   .accent-cuchaule .ing-row.total .ing-amt{ color: var(--cuchaule-a); }
+  .accent-buns .ing-row.total .ing-amt{ color: var(--buns-a); }
 
   /* ---------- Pills ---------- */
   .pill-row{
@@ -497,6 +506,7 @@
   .accent-pizza .temp-box{ background: rgba(255,61,90,0.1); }
   .accent-custom .temp-box{ background: rgba(123,47,247,0.14); }
   .accent-cuchaule .temp-box{ background: rgba(255,210,63,0.14); }
+  .accent-buns .temp-box{ background: rgba(232,169,76,0.14); }
   .temp-box .t-label{ font-size: 0.75rem; color: var(--text-dim); font-weight: 700; margin-bottom: 4px; }
   .temp-box .t-value{ font-size: 1.6rem; font-weight: 700; }
   .accent-copain .t-value{ color: var(--copain-a); }
@@ -504,6 +514,7 @@
   .accent-pizza .t-value{ color: var(--pizza-a); }
   .accent-custom .t-value{ color: var(--custom-b); }
   .accent-cuchaule .t-value{ color: var(--cuchaule-a); }
+  .accent-buns .t-value{ color: var(--buns-a); }
   .temp-box .t-unit{ font-size: 1rem; font-weight: 700; }
 
   .note{
@@ -543,6 +554,7 @@
   .accent-pizza .chip b{ color: var(--pizza-a); }
   .accent-custom .chip b{ color: var(--custom-b); }
   .accent-cuchaule .chip b{ color: var(--cuchaule-a); }
+  .accent-buns .chip b{ color: var(--buns-a); }
 
   .min-note{
     margin-top: 10px;
@@ -621,6 +633,7 @@
   .accent-pizza .pdf-btn{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); box-shadow: 0 0 24px -4px rgba(255,61,90,0.5); }
   .accent-custom .pdf-btn{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; box-shadow: 0 0 24px -4px rgba(123,47,247,0.6); }
   .accent-cuchaule .pdf-btn{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(255,210,63,0.55); }
+  .accent-buns .pdf-btn{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(232,169,76,0.55); }
   .pdf-btn .pdf-status{ font-size: 0.85rem; font-weight: 700; opacity: 0.85; }
 
   footer.credit{
@@ -643,6 +656,7 @@
     <button class="active" data-tab="copain"><span class="tab-icon" data-icon="bread"></span>Copain</button>
     <button data-tab="focaccia"><span class="tab-icon" data-icon="focaccia"></span>Focaccia</button>
     <button data-tab="pizza"><span class="tab-icon" data-icon="pizza"></span>Pizza</button>
+    <button data-tab="buns"><span class="tab-icon" data-icon="buns"></span>Buns</button>
     <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
     <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
   </nav>
@@ -650,6 +664,7 @@
   <div class="panel active accent-copain" id="panel-copain"></div>
   <div class="panel accent-focaccia" id="panel-focaccia"></div>
   <div class="panel accent-pizza" id="panel-pizza"></div>
+  <div class="panel accent-buns" id="panel-buns"></div>
   <div class="panel accent-cuchaule" id="panel-cuchaule"></div>
   <div class="panel accent-custom" id="panel-custom"></div>
 
@@ -685,6 +700,7 @@ const ICONS = {
   pizza: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 12 21 20 6a18 18 0 0 0-16 0Z"/><circle cx="12" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>',
   custom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v4M12 16v4M4 12h4M16 12h4"/><circle cx="12" cy="12" r="2.5"/></svg>',
   cuchaule: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="14" rx="8" ry="6"/><path d="M12 8V5"/><path d="M9.5 5.5c0-1 1-1.5 2.5-1.5s2.5.5 2.5 1.5"/></svg>',
+  buns: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12c0-4 3.8-7 8.5-7s8.5 3 8.5 7"/><path d="M3.5 12h17v2a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-2Z"/><path d="M8 8.5h.01M12 7.5h.01M16 8.5h.01"/></svg>',
   flour: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.3 15.5A2 2 0 0 1 13.7 20h-3.4a2 2 0 0 1-2-1.5L7 3Z"/><path d="M5 3h14"/></svg>',
   scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v3"/><path d="M6 7h12"/><path d="M6 7 4 11.5a2 2 0 0 0 4 0L6 7Z"/><path d="M18 7l-2 4.5a2 2 0 0 0 4 0L18 7Z"/><rect x="8" y="17" width="8" height="3.5" rx="1"/></svg>',
   thermometer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V5.5a2 2 0 1 0-4 0V14a4 4 0 1 0 4 0Z"/></svg>',
@@ -861,6 +877,58 @@ const RECIPES = {
       { title: 'Backen', steps: [
         'Ofen möglichst heiss vorheizen.',
         'Backen, bis die Oberfläche goldbraun ist.'
+      ]}
+    ]
+  },
+  buns: {
+    label: 'Burger Buns', icon: 'buns', isCustom:false, hasStarterCards:false,
+    defaultTeigmenge: 690,
+    unitLabel: 'Bun', unitWeight: 115, sizeInfo: 'Ergibt klassische Hamburger-Buns mit Sesam',
+    portions: [ {n:6,label:'6 Buns'}, {n:8,label:'8 Buns'}, {n:12,label:'12 Buns'}, {n:16,label:'16 Buns'} ],
+    hydration: { min:60, max:75, basic:67, presets:[
+      {v:62, label:'Fest'}, {v:67, label:'Basic'}, {v:72, label:'Weich'}
+    ]},
+    flours: [
+      { key:'weiss', name:'Weizenmehl (Type 550)', pct:100 }
+    ],
+    fixed: [
+      { key:'wasser',     name:'Wasser',      pct:67,   hasBassinage:false },
+      { key:'honig',      name:'Honig',       pct:8.3 },
+      { key:'salz',       name:'Salz',        pct:2.8 },
+      { key:'anstellgut', name:'Anstellgut (aktiv)', pct:13.9 },
+      { key:'ei',         name:'Ei zum Bestreichen', pct:5 },
+      { key:'sesam',      name:'Sesam zum Bestreuen', pct:1 }
+    ],
+    stockgare: [ {temp:'22°C',dauer:'ca. 6 h'}, {temp:'24°C',dauer:'ca. 4–5 h'}, {temp:'4°C Kühlschrank',dauer:'bis zu 2 Tage'} ],
+    gtt: 24,
+    phases: [
+      { title: 'Anstellgut auffrischen', steps: [
+        '12 Std. vor dem Teigmachen etwas Anstellgut, Mehl und Wasser in einem sauberen Glas verrühren.',
+        'Locker abdecken und bei Raumtemperatur reifen lassen, bis sich die Menge verdoppelt hat und die Oberfläche voller Blasen ist.'
+      ]},
+      { title: 'Teig machen', steps: [
+        'Das {{anstellgut}} Anstellgut, {{mehl}} Mehl, {{wasser}} Wasser, {{honig}} Honig und {{salz}} Salz in einer grossen Schüssel mit Spatel oder Hand vermischen, bis keine trockenen Stellen mehr da sind.',
+        'Abgedeckt 30 Min. auf der Arbeitsfläche ruhen lassen.'
+      ]},
+      { title: 'Dehnen & Falten', steps: [
+        'Hände leicht anfeuchten. Eine Seite des Teigs hochziehen und über sich selbst falten, die Schüssel eine Vierteldrehung weiterdrehen und wiederholen, bis einmal ganz herum gegangen wurde.',
+        'Abgedeckt 30 Min. ruhen lassen, dann den Vorgang zwei weitere Male wiederholen (alternativ: 8–10 Min. in der Küchenmaschine bei mittlerer Geschwindigkeit kneten).'
+      ]},
+      { title: 'Stockgare', steps: [
+        'Abgedeckt bei Raumtemperatur gehen lassen, bis sich der Teig verdoppelt hat.',
+        'Danach kann der Teig bis zu 2 Tage im Kühlschrank zwischengelagert werden, oder direkt weiterverarbeitet werden.'
+      ]},
+      { title: 'Formen & Stückgare', steps: [
+        'Teig auf eine bemehlte Fläche geben und in gleich grosse Portionen teilen.',
+        'Jede Portion zu einer Kugel formen, obenauf leicht bemehlen und auf ein mit Backpapier ausgelegtes Blech setzen.',
+        'Mit einem sauberen Tuch abdecken und bei Raumtemperatur 1–2 Std. gehen lassen, bis die Buns sichtbar aufgegangen sind.'
+      ]},
+      { title: 'Backen', steps: [
+        'Ofen auf 190°C vorheizen.',
+        '{{eibestreichen}} verquirltes Ei mit einem Schuss Wasser verrühren, die Oberseite jeder Teigkugel damit bestreichen.',
+        'Nach Wunsch mit {{sesam}} Sesam bestreuen.',
+        'Ca. 25 Min. backen, bis die Buns goldbraun sind.',
+        'Vor dem Aufschneiden vollständig auskühlen lassen.'
       ]}
     ]
   },
@@ -1299,6 +1367,8 @@ function fillStepPlaceholders(text, key){
   const hefeDef = findFixed(/hefe/i);
   const zuckerDef = findFixed(/zucker|sweety/i);
   const butterDef = findFixed(/butter/i);
+  const honigDef = findFixed(/honig/i);
+  const sesamDef = findFixed(/sesam/i);
   const eiDef = r.fixed.find(f => /^ei$/i.test(f.name.trim()));
   const eiBestreichenDef = findFixed(/bestreichen/i);
   const bassinageDef = r.fixed.find(f => f.hasBassinage);
@@ -1316,6 +1386,8 @@ function fillStepPlaceholders(text, key){
     hefe: hefeDef ? fmt(c.fixedGrams[hefeDef.key]) + ' g' : '',
     zucker: zuckerDef ? fmt(c.fixedGrams[zuckerDef.key]) + ' g' : '',
     butter: butterDef ? fmt(c.fixedGrams[butterDef.key]) + ' g' : '',
+    honig: honigDef ? fmt(c.fixedGrams[honigDef.key]) + ' g' : '',
+    sesam: sesamDef ? fmt(c.fixedGrams[sesamDef.key]) + ' g' : '',
     ei: eiDef ? fmt(c.fixedGrams[eiDef.key]) + ' g' : '',
     eibestreichen: eiBestreichenDef ? fmt(c.fixedGrams[eiBestreichenDef.key]) + ' g' : ''
   };
