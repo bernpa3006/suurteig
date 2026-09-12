@@ -961,7 +961,7 @@ function buildPanel(key){
         <input type="number" min="100" step="10" value="${state[key].teigmenge}" data-recipe="${key}" data-role="teigmenge">
         <span class="hero-unit">g Teig</span>
       </div>
-      <div class="hero-sub">oder Menge frei eingeben</div>
+      <div class="hero-sub per-piece-sub">oder Menge frei eingeben</div>
     </div>
 
     <div class="card">
@@ -1327,6 +1327,13 @@ function render(key){
   const s = state[key];
   const c = calc(key);
   const el = document.getElementById('panel-'+key);
+
+  const pieceCount = Math.max(1, Math.round(s.teigmenge / r.unitWeight));
+  const perPiece = Math.round(s.teigmenge / pieceCount);
+  const perPieceEl = el.querySelector('.per-piece-sub');
+  if(perPieceEl){
+    perPieceEl.textContent = `≈ ${fmt(perPiece)} g pro ${r.unitLabel} (${pieceCount}×)`;
+  }
 
   const flourSum = r.flours.reduce((acc,f)=> acc + (s.flours[f.key]||0), 0);
   const totalEl = el.querySelector('.flour-total-val');
