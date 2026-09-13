@@ -821,6 +821,21 @@ function fmt(n){
 }
 function uid(){ return 'x' + Math.random().toString(36).slice(2,9); }
 
+// Rundet eine Liste von Werten auf ganze Zahlen, deren Summe exakt targetSum ergibt
+// (Largest-Remainder-Methode) — verhindert, dass Einzelsummen und Gesamtsumme auseinanderlaufen.
+function roundToSum(values, targetSum){
+  const target = Math.round(targetSum);
+  const floors = values.map(v => Math.floor(v));
+  let remainder = target - floors.reduce((a,b)=>a+b, 0);
+  const withFrac = values.map((v,i) => ({ i, frac: v - floors[i] }));
+  withFrac.sort((a,b) => b.frac - a.frac);
+  const result = floors.slice();
+  for(let k = 0; k < remainder && k < withFrac.length; k++){
+    result[withFrac[k].i] += 1;
+  }
+  return result;
+}
+
 /* -------------------------- Icons (clean line SVGs) -------------------------- */
 
 const ICONS = {
@@ -1573,17 +1588,21 @@ function render(key){
 
   let rows = '';
   rows += `<div class="ing-row total"><span class="ing-name">Mehl gesamt</span><span class="ing-amt">${fmt(c.totalMehl)} g</span></div>`;
-  r.flours.forEach(f=>{
-    if((s.flours[f.key]||0) > 0){
-      rows += `<div class="ing-row sub"><span class="ing-name">${f.name}</span><span class="ing-amt">${fmt(c.flourGrams[f.key])} g</span></div>`;
-    }
+  const activeFlours = r.flours.filter(f => (s.flours[f.key]||0) > 0);
+  const flourRounded = roundToSum(activeFlours.map(f => c.flourGrams[f.key]), c.totalMehl);
+  activeFlours.forEach((f, i) => {
+    rows += `<div class="ing-row sub"><span class="ing-name">${f.name}</span><span class="ing-amt">${flourRounded[i].toLocaleString('de-CH')} g</span></div>`;
   });
   const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
   r.fixed.forEach(f=>{
     const displayPct = (wasserDef && f.key === wasserDef.key) ? Math.round(s.hydration) : f.pct;
     if(f.hasBassinage){
-      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${fmt(c.fixedGrams[f.key])} g</span></div>`;
-      rows += `<div class="ing-row sub"><span class="ing-name">davon Bassinage</span><span class="ing-amt">${fmt(c.bassinage)} g</span></div>`;
+      const totalWasser = Math.round(c.fixedGrams[f.key]);
+      const bassinageRounded = Math.round(c.bassinage);
+      const wasserImTeigRounded = totalWasser - bassinageRounded;
+      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${totalWasser.toLocaleString('de-CH')} g</span></div>`;
+      rows += `<div class="ing-row sub"><span class="ing-name">davon im Teig (ohne Bassinage)</span><span class="ing-amt">${wasserImTeigRounded.toLocaleString('de-CH')} g</span></div>`;
+      rows += `<div class="ing-row sub"><span class="ing-name">davon Bassinage</span><span class="ing-amt">${bassinageRounded.toLocaleString('de-CH')} g</span></div>`;
     } else {
       rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${fmt(c.fixedGrams[f.key])} g</span></div>`;
     }
