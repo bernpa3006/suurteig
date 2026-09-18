@@ -1550,6 +1550,16 @@ function calc(key){
   const totalTeig = Object.values(flourGrams).reduce((a,b)=>a+b,0)
                    + Object.values(fixedGrams).reduce((a,b)=>a+b,0);
 
+  // Konsistent gerundete Anzeige-Werte: Mehl gesamt + alle Fixzutaten zusammen so runden,
+  // dass ihre Summe garantiert exakt "Teig gesamt" (gerundet) ergibt. Wird von render(),
+  // den Zubereitungstexten und dem PDF-Export gleichermassen verwendet, damit überall
+  // dieselben Zahlen erscheinen.
+  const topLevelKeys = r.fixed.map(f => f.key);
+  const topLevelValues = [totalMehl, ...topLevelKeys.map(k => fixedGrams[k])];
+  const topLevelRounded = roundToSum(topLevelValues, totalTeig);
+  const fixedGramsRounded = {};
+  topLevelKeys.forEach((k, i) => { fixedGramsRounded[k] = topLevelRounded[i + 1]; });
+
   const H13 = s.gtt * 2;
   const H14 = (s.lt + s.mt) / 2;
   const H16 = H13 - H14;
@@ -1579,7 +1589,7 @@ function calc(key){
   const agReserve = Math.max(0, AG_FIXED_TOTAL - agBenoetigt);
 
   return {
-    totalMehl, flourGrams, fixedGrams, bassinage, wasserTeig, totalTeig,
+    totalMehl, flourGrams, fixedGrams, fixedGramsRounded, bassinage, wasserTeig, totalTeig,
     handTemp, kneterTemp,
     stBenoetigt, stReserve, stAnsetzen, st2Starter, st2Mehl, st2Wasser, st2Total,
     agBenoetigt, agReserve, agAnsetzen, ag2Starter, ag2Mehl, ag2Wasser, ag2Total,
@@ -1610,20 +1620,20 @@ function fillStepPlaceholders(text, key){
 
   const values = {
     mehl: fmt(c.totalMehl) + ' g',
-    wasser: flüssigkeitDef ? fmt(flüssigkeitDef.hasBassinage ? c.wasserTeig : c.fixedGrams[flüssigkeitDef.key]) + ' g' : '',
-    milch: flüssigkeitDef ? fmt(flüssigkeitDef.hasBassinage ? c.wasserTeig : c.fixedGrams[flüssigkeitDef.key]) + ' g' : '',
+    wasser: flüssigkeitDef ? (flüssigkeitDef.hasBassinage ? fmt(c.fixedGramsRounded[flüssigkeitDef.key] - Math.round(c.bassinage)) : fmt(c.fixedGramsRounded[flüssigkeitDef.key])) + ' g' : '',
+    milch: flüssigkeitDef ? (flüssigkeitDef.hasBassinage ? fmt(c.fixedGramsRounded[flüssigkeitDef.key] - Math.round(c.bassinage)) : fmt(c.fixedGramsRounded[flüssigkeitDef.key])) + ' g' : '',
     bassinage: bassinageDef ? fmt(c.bassinage) + ' g' : '',
-    salz: salzDef ? fmt(c.fixedGrams[salzDef.key]) + ' g' : '',
-    oel: oelDef ? fmt(c.fixedGrams[oelDef.key]) + ' g' : '',
-    sauerteig: sauerteigDef ? fmt(c.fixedGrams[sauerteigDef.key]) + ' g' : '',
-    anstellgut: anstellgutDef ? fmt(c.fixedGrams[anstellgutDef.key]) + ' g' : '',
-    hefe: hefeDef ? fmt(c.fixedGrams[hefeDef.key]) + ' g' : '',
-    zucker: zuckerDef ? fmt(c.fixedGrams[zuckerDef.key]) + ' g' : '',
-    butter: butterDef ? fmt(c.fixedGrams[butterDef.key]) + ' g' : '',
-    honig: honigDef ? fmt(c.fixedGrams[honigDef.key]) + ' g' : '',
-    sesam: sesamDef ? fmt(c.fixedGrams[sesamDef.key]) + ' g' : '',
-    ei: eiDef ? fmt(c.fixedGrams[eiDef.key]) + ' g' : '',
-    eibestreichen: eiBestreichenDef ? fmt(c.fixedGrams[eiBestreichenDef.key]) + ' g' : ''
+    salz: salzDef ? fmt(c.fixedGramsRounded[salzDef.key]) + ' g' : '',
+    oel: oelDef ? fmt(c.fixedGramsRounded[oelDef.key]) + ' g' : '',
+    sauerteig: sauerteigDef ? fmt(c.fixedGramsRounded[sauerteigDef.key]) + ' g' : '',
+    anstellgut: anstellgutDef ? fmt(c.fixedGramsRounded[anstellgutDef.key]) + ' g' : '',
+    hefe: hefeDef ? fmt(c.fixedGramsRounded[hefeDef.key]) + ' g' : '',
+    zucker: zuckerDef ? fmt(c.fixedGramsRounded[zuckerDef.key]) + ' g' : '',
+    butter: butterDef ? fmt(c.fixedGramsRounded[butterDef.key]) + ' g' : '',
+    honig: honigDef ? fmt(c.fixedGramsRounded[honigDef.key]) + ' g' : '',
+    sesam: sesamDef ? fmt(c.fixedGramsRounded[sesamDef.key]) + ' g' : '',
+    ei: eiDef ? fmt(c.fixedGramsRounded[eiDef.key]) + ' g' : '',
+    eibestreichen: eiBestreichenDef ? fmt(c.fixedGramsRounded[eiBestreichenDef.key]) + ' g' : ''
   };
 
   return text.replace(/\{\{(\w+)\}\}/g, (match, name) => values[name] !== undefined ? values[name] : match);
@@ -1663,18 +1673,19 @@ function render(key){
   activeFlours.forEach((f, i) => {
     rows += `<div class="ing-row sub"><span class="ing-name">${f.name}</span><span class="ing-amt">${flourRounded[i].toLocaleString('de-CH')} g</span></div>`;
   });
+
   const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
   r.fixed.forEach(f=>{
     const displayPct = (wasserDef && f.key === wasserDef.key) ? Math.round(s.hydration) : f.pct;
     if(f.hasBassinage){
-      const totalWasser = Math.round(c.fixedGrams[f.key]);
+      const totalWasser = c.fixedGramsRounded[f.key];
       const bassinageRounded = Math.round(c.bassinage);
       const wasserImTeigRounded = totalWasser - bassinageRounded;
       rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${totalWasser.toLocaleString('de-CH')} g</span></div>`;
       rows += `<div class="ing-row sub"><span class="ing-name">davon im Teig (ohne Bassinage)</span><span class="ing-amt">${wasserImTeigRounded.toLocaleString('de-CH')} g</span></div>`;
       rows += `<div class="ing-row sub"><span class="ing-name">davon Bassinage</span><span class="ing-amt">${bassinageRounded.toLocaleString('de-CH')} g</span></div>`;
     } else {
-      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${fmt(c.fixedGrams[f.key])} g</span></div>`;
+      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${c.fixedGramsRounded[f.key].toLocaleString('de-CH')} g</span></div>`;
     }
   });
   rows += `<div class="ing-row total"><span class="ing-name">Teig gesamt</span><span class="ing-amt">${fmt(c.totalTeig)} g</span></div>`;
@@ -1915,9 +1926,9 @@ async function generatePdf(key, btn){
     // Mehl
     sectionTitle('Mehl');
     row('Total Mehl', fmt(c.totalMehl) + ' g');
-    r.flours.forEach(f=>{
-      if((s.flours[f.key]||0) > 0) row(f.name, fmt(c.flourGrams[f.key]) + ' g', true);
-    });
+    const activeFloursPdf = r.flours.filter(f => (s.flours[f.key]||0) > 0);
+    const flourRoundedPdf = roundToSum(activeFloursPdf.map(f => c.flourGrams[f.key]), c.totalMehl);
+    activeFloursPdf.forEach((f, i) => row(f.name, flourRoundedPdf[i] + ' g', true));
     y += 3;
 
     // Hydration
@@ -1932,9 +1943,11 @@ async function generatePdf(key, btn){
     const wasserDefPdf = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
     r.fixed.forEach(f=>{
       const pctLabel = (wasserDefPdf && f.key === wasserDefPdf.key) ? Math.round(s.hydration) : f.pct;
-      row(f.name + ' (' + pctLabel + '%)', fmt(c.fixedGrams[f.key]) + ' g');
+      row(f.name + ' (' + pctLabel + '%)', c.fixedGramsRounded[f.key] + ' g');
       if(f.hasBassinage){
-        row('davon Bassinage', fmt(c.bassinage) + ' g', true);
+        const bassinageRoundedPdf = Math.round(c.bassinage);
+        row('davon im Teig (ohne Bassinage)', (c.fixedGramsRounded[f.key] - bassinageRoundedPdf) + ' g', true);
+        row('davon Bassinage', bassinageRoundedPdf + ' g', true);
       }
     });
     y += 2;
