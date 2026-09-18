@@ -1315,19 +1315,14 @@ function buildPanel(key){
     ${r.hasStarterCards === false ? '' : `
     <div class="card">
       <h2><span class="icon">${icon('sprout')}</span>1. Anstellgut auffrischen</h2>
-      <p class="sub">Sollte sich gut verzweieinhalbfachen</p>
+      <p class="sub">Immer die gleiche Menge — unabhängig vom Rezept</p>
       <div class="starter-flow">
         <div class="starter-step">
-          <div class="step-title"><span>Insgesamt ansetzen</span><span class="ag-ansetzen-big">–</span></div>
-          <div class="chip-row"><div class="chip">gebraucht <b class="ag-benoetigt">–</b></div><div class="chip">Puffer <b class="ag-reserve">–</b></div></div>
-        </div>
-        <div class="starter-step">
-          <div class="step-title"><span>Daraus mischen</span><span class="ag2-total">–</span></div>
+          <div class="step-title"><span>Zusammenmischen</span><span class="ag2-total">–</span></div>
           <div class="chip-row"><div class="chip">altes Anstellgut <b class="ag2-starter">–</b></div><div class="chip">Mehl <b class="ag2-mehl">–</b></div><div class="chip">Wasser <b class="ag2-wasser">–</b></div></div>
         </div>
       </div>
-      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge gut verzweieinhalbfacht — meist 6&ndash;10 Std., je nach Temperatur und Aktivität.</div>
-      <div class="min-note"><span class="inline-icon">${icon('bulb')}</span>Kommt insgesamt weniger als 100 g raus? Dann einfach fix nehmen: 20 g Anstellgut, 50 g Mehl, 40 g Wasser.</div>
+      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge gut verzweieinhalbfacht — meist 6&ndash;10 Std., je nach Temperatur und Aktivität. Davon wird dann so viel für den Sauerteig-Ansatz gebraucht, wie unten steht.</div>
     </div>
 
     <div class="card">
@@ -1562,13 +1557,18 @@ function calc(key){
   const st2Wasser = stAnsetzen * 0.40;
   const st2Total = st2Starter + st2Mehl + st2Wasser;
 
+  // Anstellgut auffrischen ist ein fester Vorgang, unabhängig von der Rezeptmenge:
+  // immer 20 g Anstellgut + 50 g Mehl + 40 g Wasser. Man setzt daraus so oft an,
+  // wie für den Sauerteig-Ansatz (st2Starter) als Startmenge gebraucht wird.
+  const AG_FIXED_STARTER = 20, AG_FIXED_MEHL = 50, AG_FIXED_WASSER = 40;
+  const AG_FIXED_TOTAL = AG_FIXED_STARTER + AG_FIXED_MEHL + AG_FIXED_WASSER;
+  const ag2Starter = AG_FIXED_STARTER;
+  const ag2Mehl = AG_FIXED_MEHL;
+  const ag2Wasser = AG_FIXED_WASSER;
+  const ag2Total = AG_FIXED_TOTAL;
   const agBenoetigt = st2Starter;
-  const agReserve = agBenoetigt * 0.25;
-  const agAnsetzen = agBenoetigt + agReserve;
-  const ag2Starter = agAnsetzen * 0.19;
-  const ag2Mehl = agAnsetzen * 0.45;
-  const ag2Wasser = agAnsetzen * 0.36;
-  const ag2Total = ag2Starter + ag2Mehl + ag2Wasser;
+  const agAnsetzen = AG_FIXED_TOTAL;
+  const agReserve = Math.max(0, AG_FIXED_TOTAL - agBenoetigt);
 
   return {
     totalMehl, flourGrams, fixedGrams, bassinage, wasserTeig, totalTeig,
@@ -1694,9 +1694,6 @@ function render(key){
   setTxt('.st2-wasser', fmt(c.st2Wasser) + ' g');
   setTxt('.st2-total', fmt(c.st2Total) + ' g total');
 
-  setTxt('.ag-benoetigt', fmt(c.agBenoetigt) + ' g');
-  setTxt('.ag-reserve', '+' + fmt(c.agReserve) + ' g');
-  setTxt('.ag-ansetzen-big', fmt(c.agAnsetzen) + ' g');
   setTxt('.ag2-starter', fmt(c.ag2Starter) + ' g');
   setTxt('.ag2-mehl', fmt(c.ag2Mehl) + ' g');
   setTxt('.ag2-wasser', fmt(c.ag2Wasser) + ' g');
@@ -1963,7 +1960,7 @@ async function generatePdf(key, btn){
     if(c.stBenoetigt > 0){
       hr();
       sectionTitle('1. Anstellgut auffrischen');
-      row('Insgesamt ansetzen', fmt(c.agAnsetzen) + ' g');
+      row('Zusammenmischen', fmt(c.agAnsetzen) + ' g');
       row('altes Anstellgut', fmt(c.ag2Starter) + ' g', true);
       row('Mehl', fmt(c.ag2Mehl) + ' g', true);
       row('Wasser', fmt(c.ag2Wasser) + ' g', true);
