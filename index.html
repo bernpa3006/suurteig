@@ -964,8 +964,8 @@ const RECIPES = {
   brotkasten: {
     label: 'Focaccia im Brotkasten', icon: 'brotkasten', isCustom:false,
     defaultTeigmenge: 990,
-    unitLabel: 'Blech', unitWeight: 990, sizeInfo: 'Auflaufform, 40 × 25 cm',
-    portions: [ {n:1,label:'1 Blech'}, {n:2,label:'2 Bleche'} ], maxUnits: 4,
+    unitLabel: 'Kasten', unitWeight: 990, sizeInfo: 'Auflaufform, 40 × 25 cm',
+    portions: [ {n:1,label:'1 Kasten'}, {n:2,label:'2 Kästen'} ], maxUnits: 4,
     hydration: { min:70, max:85, basic:75, presets:[
       {v:70, label:'Fest'}, {v:75, label:'Basic'}, {v:80, label:'Offen'}
     ]},
@@ -1553,7 +1553,7 @@ function calc(key){
   const handTemp = H16 - s.korrektur;
   const kneterTemp = H16 - 7 - s.korrektur;
 
-  const sauerteigDef = r.fixed.find(f=>/sauerteig/i.test(f.name));
+  const sauerteigDef = r.fixed.find(f=>/sauerteig|anstellgut/i.test(f.name));
   const stBenoetigt = sauerteigDef ? fixedGrams[sauerteigDef.key] : 0;
   const stReserve = stBenoetigt * 0.20;
   const stAnsetzen = stBenoetigt + stReserve;
