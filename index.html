@@ -197,6 +197,12 @@
   .hero input[type=number]:focus{ outline: none; }
   .hero .hero-unit{ font-size: 1.3rem; font-weight: 700; opacity: 0.8; }
   .hero .hero-sub{ margin-top: 8px; font-size: 0.8rem; opacity: 0.75; }
+  .hero .source-link{
+    display:inline-block;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 
   .hero-copain{ background: linear-gradient(135deg, var(--copain-a), var(--copain-b)); color: #1a0510; --glow: rgba(255,46,196,0.45); }
   .hero-focaccia{ background: linear-gradient(135deg, var(--focaccia-a), var(--focaccia-b)); color: #04231a; --glow: rgba(0,245,160,0.4); }
@@ -963,8 +969,8 @@ const RECIPES = {
   },
   brotkasten: {
     label: 'Focaccia im Brotkasten', icon: 'brotkasten', isCustom:false,
-    defaultTeigmenge: 990,
-    unitLabel: 'Kasten', unitWeight: 990, sizeInfo: 'Auflaufform, 40 × 25 cm',
+    defaultTeigmenge: 700,
+    unitLabel: 'Kasten', unitWeight: 700, sizeInfo: 'Kastenform, ca. 30 × 11 cm',
     portions: [ {n:1,label:'1 Kasten'}, {n:2,label:'2 Kästen'} ], maxUnits: 4,
     hydration: { min:70, max:85, basic:75, presets:[
       {v:70, label:'Fest'}, {v:75, label:'Basic'}, {v:80, label:'Offen'}
@@ -980,6 +986,7 @@ const RECIPES = {
     ],
     stockgare: [ {temp:'Raumtemp., nach dem Falten',dauer:'1 h'}, {temp:'Über Nacht, Kühlschrank',dauer:'8–12 h'} ],
     gtt: 22,
+    sourceUrl: 'https://www.instagram.com/reel/DdWQd-YoDlb/',
     phases: [
       { title: 'Teig machen', steps: [
         '{{wasser}} Wasser und {{anstellgut}} Anstellgut in einer grossen Schüssel verrühren, bis sich das Anstellgut löst.',
@@ -995,14 +1002,15 @@ const RECIPES = {
         'Teig in eine leicht geölte grosse Box geben, Deckel drauf und über Nacht in den Kühlschrank.'
       ]},
       { title: 'Formen & Stückgare', steps: [
-        'Am nächsten Tag eine 40×25 cm Auflaufform leicht einölen, mit Backpapier auslegen. 3–4 EL Olivenöl in die Form geben und den Teig hineinstürzen.',
-        'Teig rechts und links, oben und unten einfalten und einmal wenden, sodass die unschöne Seite unten und die glatte Seite oben liegt.',
+        'Am nächsten Tag den Teig in mehrere unregelmässige Stücke teilen und zu groben Kugeln formen.',
+        'Eine Kastenform (ca. 30×11 cm) grosszügig mit Olivenöl auspinseln.',
+        'Die Teigkugeln locker aufgetürmt in die Form setzen, sodass sie sich beim Aufgehen zusammenschieben.',
         'Abgedeckt eine Stunde an einem warmen Ort gehen lassen, bis der Teig sichtbar aufgegangen ist und sich leichte Blasen abzeichnen.'
       ]},
       { title: 'Backen', steps: [
         'Ofen auf 230°C Ober-/Unterhitze vorheizen.',
         'Etwas Olivenöl über den Teig geben und mit den Fingern Dellen eindrücken, im besten Fall erheben sich einige Blasen.',
-        'Mit Meersalzflocken bestreuen und auf mittlerer Schiene oder auf dem Pizzastein 20–30 Min. backen, bis die Oberfläche goldbraun ist.',
+        'Mit Meersalzflocken bestreuen und auf mittlerer Schiene 20–30 Min. backen, bis die Oberfläche goldbraun ist.',
         'Kurz abkühlen lassen und am besten frisch geniessen.'
       ]}
     ]
@@ -1257,6 +1265,7 @@ function buildPanel(key){
       </div>
       <div class="hero-sub per-piece-sub">oder Menge frei eingeben</div>
       ${r.sizeInfo ? `<div class="hero-sub size-info">${r.sizeInfo}</div>` : ''}
+      ${r.sourceUrl ? `<a class="hero-sub source-link" href="${r.sourceUrl}" target="_blank" rel="noopener">Original-Rezept ansehen ↗</a>` : ''}
     </div>
 
     <div class="card">
