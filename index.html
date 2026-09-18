@@ -66,6 +66,69 @@
     font-size: 0.9rem;
   }
 
+  /* ---------- Quick Calc (allgemeiner Sauerteig-Rechner) ---------- */
+  .quick-calc{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+  }
+  .quick-calc-row{
+    display:flex;
+    align-items:baseline;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .quick-calc-label{
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .quick-calc-row input[type=number]{
+    flex: 1;
+    min-width: 0;
+    background: var(--surface2);
+    border: none;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+  }
+  .quick-calc-row input[type=number]:focus{ outline: 1px solid var(--copain-a); }
+  .quick-calc-unit{
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .quick-calc-results{
+    display:flex;
+    gap: 6px;
+  }
+  .quick-calc-item{
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 6px 4px;
+    text-align:center;
+  }
+  .quick-calc-val{
+    display:block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .quick-calc-key{
+    display:block;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
   /* ---------- Tabs ---------- */
   .tabs-wrap{
     position: relative;
@@ -785,6 +848,19 @@
   <header class="top">
     <h1>Sourdough Calculator</h1>
   </header>
+
+  <div class="quick-calc">
+    <div class="quick-calc-row">
+      <span class="quick-calc-label">Sauerteig für</span>
+      <input type="number" id="quickCalcInput" min="50" step="10" value="1000">
+      <span class="quick-calc-unit">g Teig</span>
+    </div>
+    <div class="quick-calc-results">
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcMehl">532</span><span class="quick-calc-key">Mehl</span></div>
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcWasser">367</span><span class="quick-calc-key">Wasser</span></div>
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcSauerteig">101</span><span class="quick-calc-key">Sauerteig</span></div>
+    </div>
+  </div>
 
   <div class="tabs-wrap">
     <nav class="tabs">
@@ -2064,6 +2140,33 @@ Object.keys(RECIPES).forEach(key=>{
   }
 });
 initTabs();
+
+/* -------------------------- Quick Calc (allgemeiner Sauerteig-Rechner) -------------------------- */
+(function initQuickCalc(){
+  const input = document.getElementById('quickCalcInput');
+  const mehlEl = document.getElementById('quickCalcMehl');
+  const wasserEl = document.getElementById('quickCalcWasser');
+  const sauerteigEl = document.getElementById('quickCalcSauerteig');
+  if(!input || !mehlEl || !wasserEl || !sauerteigEl) return;
+
+  // Verhältnis nach Copain-Rezept: Wasser 69%, Sauerteig 19% (bezogen auf Mehl = 100%)
+  const WASSER_PCT = 0.69, SAUERTEIG_PCT = 0.19;
+  const FAKTOR = 1 + WASSER_PCT + SAUERTEIG_PCT;
+
+  function updateQuickCalc(){
+    const total = Math.max(0, parseFloat(input.value) || 0);
+    const mehl = total / FAKTOR;
+    const wasser = mehl * WASSER_PCT;
+    const sauerteig = mehl * SAUERTEIG_PCT;
+    const rounded = roundToSum([mehl, wasser, sauerteig], total);
+    mehlEl.textContent = rounded[0].toLocaleString('de-CH');
+    wasserEl.textContent = rounded[1].toLocaleString('de-CH');
+    sauerteigEl.textContent = rounded[2].toLocaleString('de-CH');
+  }
+
+  input.addEventListener('input', updateQuickCalc);
+  updateQuickCalc();
+})();
 
 // Schriftarten erst nachträglich laden, damit ein Ladefehler die App nie blockiert
 try {
