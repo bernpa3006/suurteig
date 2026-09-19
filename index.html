@@ -28,6 +28,23 @@
     --brotkasten-a:#c4d94c;
     --brotkasten-b:#7a9a1f;
   }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:      #f5f1fb;
+      --surface: #ffffff;
+      --surface2:#f1ecfa;
+      --line:    #ddd3f0;
+      --text:    #241a3d;
+      --text-dim:#6f6390;
+    }
+    body{
+      background:
+        radial-gradient(circle at 15% 0%, rgba(255,46,196,0.10), transparent 45%),
+        radial-gradient(circle at 90% 15%, rgba(0,194,255,0.10), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(123,47,247,0.10), transparent 50%),
+        var(--bg) !important;
+    }
+  }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
   html,body{ margin:0; padding:0; }
   .num, [class*="pct"], .ing-amt, .t-value, .hero-unit, .flour-total-val,
