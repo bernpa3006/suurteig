@@ -851,14 +851,14 @@
 
   <div class="quick-calc">
     <div class="quick-calc-row">
-      <span class="quick-calc-label">Sauerteig für</span>
-      <input type="number" id="quickCalcInput" min="50" step="10" value="1000">
-      <span class="quick-calc-unit">g Teig</span>
+      <span class="quick-calc-label">Ich habe</span>
+      <input type="number" id="quickCalcInput" min="5" step="5" value="80">
+      <span class="quick-calc-unit">g Sauerteig</span>
     </div>
     <div class="quick-calc-results">
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcMehl">532</span><span class="quick-calc-key">Mehl</span></div>
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcWasser">367</span><span class="quick-calc-key">Wasser</span></div>
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcSauerteig">101</span><span class="quick-calc-key">Sauerteig</span></div>
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcMehl">421</span><span class="quick-calc-key">Mehl</span></div>
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcWasser">291</span><span class="quick-calc-key">Wasser</span></div>
+      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcTotal">792</span><span class="quick-calc-key">Teig gesamt</span></div>
     </div>
   </div>
 
@@ -2146,22 +2146,21 @@ initTabs();
   const input = document.getElementById('quickCalcInput');
   const mehlEl = document.getElementById('quickCalcMehl');
   const wasserEl = document.getElementById('quickCalcWasser');
-  const sauerteigEl = document.getElementById('quickCalcSauerteig');
-  if(!input || !mehlEl || !wasserEl || !sauerteigEl) return;
+  const totalEl = document.getElementById('quickCalcTotal');
+  if(!input || !mehlEl || !wasserEl || !totalEl) return;
 
   // Verhältnis nach Copain-Rezept: Wasser 69%, Sauerteig 19% (bezogen auf Mehl = 100%)
   const WASSER_PCT = 0.69, SAUERTEIG_PCT = 0.19;
-  const FAKTOR = 1 + WASSER_PCT + SAUERTEIG_PCT;
 
   function updateQuickCalc(){
-    const total = Math.max(0, parseFloat(input.value) || 0);
-    const mehl = total / FAKTOR;
+    const sauerteig = Math.max(0, parseFloat(input.value) || 0);
+    const mehl = sauerteig / SAUERTEIG_PCT;
     const wasser = mehl * WASSER_PCT;
-    const sauerteig = mehl * SAUERTEIG_PCT;
-    const rounded = roundToSum([mehl, wasser, sauerteig], total);
-    mehlEl.textContent = rounded[0].toLocaleString('de-CH');
-    wasserEl.textContent = rounded[1].toLocaleString('de-CH');
-    sauerteigEl.textContent = rounded[2].toLocaleString('de-CH');
+    const total = mehl + wasser + sauerteig;
+    const roundedMehlWasser = roundToSum([mehl, wasser], mehl + wasser);
+    mehlEl.textContent = roundedMehlWasser[0].toLocaleString('de-CH');
+    wasserEl.textContent = roundedMehlWasser[1].toLocaleString('de-CH');
+    totalEl.textContent = Math.round(total).toLocaleString('de-CH');
   }
 
   input.addEventListener('input', updateQuickCalc);
