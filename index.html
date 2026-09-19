@@ -978,6 +978,24 @@ function roundToSum(values, targetSum){
   return result;
 }
 
+/* -------------------------- Mehltyp-Hinweis für Schweizer Nutzer -------------------------- */
+// Zuordnung ausländischer Mehl-Typenbezeichnungen zur Schweizer Entsprechung.
+// Reihenfolge wichtig: spezifischere Muster (z.B. "Tipo 00") vor allgemeineren zuerst prüfen.
+const FLOUR_TYPE_HINTS = [
+  { pattern: /tipo\s*00/i,      ch: 'Weissmehl' },
+  { pattern: /tipo\s*0\b/i,     ch: 'Weissmehl' },
+  { pattern: /tipo\s*1\b/i,     ch: 'Halbweissmehl' },
+  { pattern: /type\s*400/i,     ch: 'Weissmehl' },
+  { pattern: /type\s*405/i,     ch: 'Weissmehl' },
+  { pattern: /type\s*550/i,     ch: 'Weissmehl' },
+  { pattern: /type\s*700|type\s*720|type\s*812/i, ch: 'Halbweissmehl' },
+  { pattern: /type\s*1050|type\s*1100/i, ch: 'Ruchmehl' }
+];
+function getFlourTypeHint(name){
+  const match = FLOUR_TYPE_HINTS.find(h => h.pattern.test(name));
+  return match ? `Entspricht in der Schweiz etwa ${match.ch}` : null;
+}
+
 /* -------------------------- Icons (clean line SVGs) -------------------------- */
 
 const ICONS = {
@@ -1837,6 +1855,10 @@ function render(key){
   const flourRounded = roundToSum(activeFlours.map(f => c.flourGrams[f.key]), c.totalMehl);
   activeFlours.forEach((f, i) => {
     rows += `<div class="ing-row sub"><span class="ing-name">${f.name}</span><span class="ing-amt">${flourRounded[i].toLocaleString('de-CH')} g</span></div>`;
+    const flourHint = getFlourTypeHint(f.name);
+    if(flourHint){
+      rows += `<div class="ing-row sub ing-hint"><span class="ing-name">${flourHint}</span></div>`;
+    }
   });
 
   const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
