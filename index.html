@@ -27,6 +27,8 @@
     --buns-b:#b5651d;
     --brotkasten-a:#c4d94c;
     --brotkasten-b:#7a9a1f;
+    --fladenbrot-a:#ff8f6b;
+    --fladenbrot-b:#c2452c;
   }
   @media (prefers-color-scheme: light){
     :root{
@@ -246,6 +248,7 @@
   nav.tabs button.active[data-tab="cuchaule"]{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
   nav.tabs button.active[data-tab="buns"]{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
   nav.tabs button.active[data-tab="brotkasten"]{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
+  nav.tabs button.active[data-tab="fladenbrot"]{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
 
   .panel{ display:none; animation: fade .25s ease; }
   .panel.active{ display:block; }
@@ -300,6 +303,7 @@
   .hero-cuchaule{ background: linear-gradient(135deg, var(--cuchaule-a), var(--cuchaule-b)); color: #2b1200; --glow: rgba(255,210,63,0.5); }
   .hero-buns{ background: linear-gradient(135deg, var(--buns-a), var(--buns-b)); color: #2b1200; --glow: rgba(232,169,76,0.5); }
   .hero-brotkasten{ background: linear-gradient(135deg, var(--brotkasten-a), var(--brotkasten-b)); color: #0f1400; --glow: rgba(196,217,76,0.5); }
+  .hero-fladenbrot{ background: linear-gradient(135deg, var(--fladenbrot-a), var(--fladenbrot-b)); color: #2b0d05; --glow: rgba(255,143,107,0.5); }
 
   .hero-emoji{
     position:absolute;
@@ -473,6 +477,7 @@
   .accent-cuchaule input[type=range]{ --track-color: var(--cuchaule-a); }
   .accent-buns input[type=range]{ --track-color: var(--buns-a); }
   .accent-brotkasten input[type=range]{ --track-color: var(--brotkasten-a); }
+  .accent-fladenbrot input[type=range]{ --track-color: var(--fladenbrot-a); }
 
   .flour-total{
     margin-top: 14px;
@@ -501,6 +506,7 @@
   .accent-cuchaule .hydration-num{ color: var(--cuchaule-a); }
   .accent-buns .hydration-num{ color: var(--buns-a); }
   .accent-brotkasten .hydration-num{ color: var(--brotkasten-a); }
+  .accent-fladenbrot .hydration-num{ color: var(--fladenbrot-a); }
   .hydration-scale{
     display:flex;
     justify-content:space-between;
@@ -527,6 +533,7 @@
   .accent-cuchaule .hydration-chip.active{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
   .accent-buns .hydration-chip.active{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
   .accent-brotkasten .hydration-chip.active{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
+  .accent-fladenbrot .hydration-chip.active{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
 
   /* ---------- Steps (Backanleitung) ---------- */
   .step-list{ display:flex; flex-direction:column; gap: 10px; }
@@ -553,6 +560,7 @@
   .accent-cuchaule .step-num{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
   .accent-buns .step-num{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
   .accent-brotkasten .step-num{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
+  .accent-fladenbrot .step-num{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
   .step-text{ font-size: 0.88rem; padding-top: 2px; }
 
   /* ---------- Aufklappbares Rezept ---------- */
@@ -629,6 +637,8 @@
   .ing-row.sub{ padding-left: 14px; }
   .ing-row.sub .ing-name{ color: var(--text-dim); font-size: 0.86rem; }
   .ing-row.sub .ing-amt{ font-size: 0.92rem; font-weight: 700; color: var(--text-dim); }
+  .ing-row.ing-hint{ padding-top: 0; padding-bottom: 6px; }
+  .ing-row.ing-hint .ing-name{ font-size: 0.76rem; font-style: italic; opacity: 0.75; }
   .ing-row.total{
     margin-top: 6px;
     padding-top: 14px;
@@ -645,6 +655,7 @@
   .accent-cuchaule .ing-row.total .ing-amt{ color: var(--cuchaule-a); }
   .accent-buns .ing-row.total .ing-amt{ color: var(--buns-a); }
   .accent-brotkasten .ing-row.total .ing-amt{ color: var(--brotkasten-a); }
+  .accent-fladenbrot .ing-row.total .ing-amt{ color: var(--fladenbrot-a); }
 
   /* ---------- Pills ---------- */
   .pill-row{
@@ -727,6 +738,7 @@
   .accent-cuchaule .temp-box{ background: rgba(255,210,63,0.14); }
   .accent-buns .temp-box{ background: rgba(232,169,76,0.14); }
   .accent-brotkasten .temp-box{ background: rgba(196,217,76,0.14); }
+  .accent-fladenbrot .temp-box{ background: rgba(255,143,107,0.14); }
   .temp-box .t-label{ font-size: 0.75rem; color: var(--text-dim); font-weight: 700; margin-bottom: 4px; }
   .temp-box .t-value{ font-size: 1.6rem; font-weight: 700; }
   .accent-copain .t-value{ color: var(--copain-a); }
@@ -736,6 +748,7 @@
   .accent-cuchaule .t-value{ color: var(--cuchaule-a); }
   .accent-buns .t-value{ color: var(--buns-a); }
   .accent-brotkasten .t-value{ color: var(--brotkasten-a); }
+  .accent-fladenbrot .t-value{ color: var(--fladenbrot-a); }
   .temp-box .t-unit{ font-size: 1rem; font-weight: 700; }
 
   .note{
@@ -777,6 +790,7 @@
   .accent-cuchaule .chip b{ color: var(--cuchaule-a); }
   .accent-buns .chip b{ color: var(--buns-a); }
   .accent-brotkasten .chip b{ color: var(--brotkasten-a); }
+  .accent-fladenbrot .chip b{ color: var(--fladenbrot-a); }
 
   .min-note{
     margin-top: 10px;
@@ -857,6 +871,7 @@
   .accent-cuchaule .pdf-btn{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(255,210,63,0.55); }
   .accent-buns .pdf-btn{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(232,169,76,0.55); }
   .accent-brotkasten .pdf-btn{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; box-shadow: 0 0 24px -4px rgba(196,217,76,0.55); }
+  .accent-fladenbrot .pdf-btn{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; box-shadow: 0 0 24px -4px rgba(255,143,107,0.55); }
   .pdf-btn .pdf-status{ font-size: 0.85rem; font-weight: 700; opacity: 0.85; }
 
   footer.credit{
@@ -898,6 +913,7 @@
       <button data-tab="pizza"><span class="tab-icon" data-icon="pizza"></span>Pizza</button>
       <button data-tab="buns"><span class="tab-icon" data-icon="buns"></span>Buns</button>
       <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
+      <button data-tab="fladenbrot"><span class="tab-icon" data-icon="fladenbrot"></span>Fladenbrot</button>
       <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
     </nav>
     <div class="tabs-fade tabs-fade-left"><span class="tabs-fade-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span></div>
@@ -910,6 +926,7 @@
   <div class="panel accent-pizza" id="panel-pizza"></div>
   <div class="panel accent-buns" id="panel-buns"></div>
   <div class="panel accent-cuchaule" id="panel-cuchaule"></div>
+  <div class="panel accent-fladenbrot" id="panel-fladenbrot"></div>
   <div class="panel accent-custom" id="panel-custom"></div>
 
   <footer class="credit">Alle Mengen in Gramm &middot; Build v6</footer>
@@ -971,6 +988,7 @@ const ICONS = {
   cuchaule: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="14" rx="8" ry="6"/><path d="M12 8V5"/><path d="M9.5 5.5c0-1 1-1.5 2.5-1.5s2.5.5 2.5 1.5"/></svg>',
   buns: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12c0-4 3.8-7 8.5-7s8.5 3 8.5 7"/><path d="M3.5 12h17v2a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-2Z"/><path d="M8 8.5h.01M12 7.5h.01M16 8.5h.01"/></svg>',
   brotkasten: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M3 8l2-4h14l2 4"/><path d="M8 12h8"/></svg>',
+  fladenbrot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="5.5"/><path d="M12 7.5v9M8 8.5v7M16 8.5v7"/></svg>',
   flour: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.3 15.5A2 2 0 0 1 13.7 20h-3.4a2 2 0 0 1-2-1.5L7 3Z"/><path d="M5 3h14"/></svg>',
   scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v3"/><path d="M6 7h12"/><path d="M6 7 4 11.5a2 2 0 0 0 4 0L6 7Z"/><path d="M18 7l-2 4.5a2 2 0 0 0 4 0L18 7Z"/><rect x="8" y="17" width="8" height="3.5" rx="1"/></svg>',
   thermometer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V5.5a2 2 0 1 0-4 0V14a4 4 0 1 0 4 0Z"/></svg>',
@@ -1307,6 +1325,52 @@ const RECIPES = {
         'Teiglinge nochmals mit verquirltem Ei bestreichen.',
         'Mit einem scharfen Messer die Oberfläche rautenförmig einschneiden, Klinge senkrecht führen.',
         'In die Mitte des vorgeheizten Ofens geben, 30–35 Min. backen.'
+      ]}
+    ]
+  },
+  fladenbrot: {
+    label: 'Türkisches Fladenbrot', icon: 'fladenbrot', isCustom:false,
+    defaultTeigmenge: 900,
+    unitLabel: 'Fladenbrot', unitWeight: 450,
+    portions: [ {n:2,label:'2 Fladenbrote'}, {n:4,label:'4 Fladenbrote'} ], maxUnits: 8,
+    hydration: { min:50, max:70, basic:60, presets:[
+      {v:55, label:'Fest'}, {v:60, label:'Basic'}, {v:65, label:'Weich'}
+    ]},
+    flours: [
+      { key:'weiss', name:'Weizenmehl (Type 550)', pct:100 }
+    ],
+    fixed: [
+      { key:'wasser',    name:'Wasser',      pct:60,   hasBassinage:false },
+      { key:'sauerteig', name:'Sauerteig',   pct:22.2 },
+      { key:'salz',      name:'Salz',        pct:2.7 },
+      { key:'joghurt',   name:'Joghurt',     pct:11.1 },
+      { key:'oel',       name:'Olivenöl',    pct:3.3 },
+      { key:'eibestreichen', name:'Eigelb zum Bestreichen', pct:5 }
+    ],
+    stockgare: [ {temp:'Raumtemp., nach dem Falten',dauer:'3–5 h'}, {temp:'Kühlschrank',dauer:'8–16 h'} ],
+    gtt: 22,
+    phases: [
+      { title: 'Teig machen', steps: [
+        '{{sauerteig}} Sauerteig im lauwarmen Wasser ({{wasser}}) auflösen.',
+        '{{mehl}} Mehl, {{salz}} Salz, {{joghurt}} Joghurt und {{oel}} Olivenöl dazugeben und alles zu einem glatten Teig verkneten.'
+      ]},
+      { title: 'Dehnen & Falten', steps: [
+        'Teig 2–3× im Abstand von 30 Min. dehnen und falten: dazu eine Seite vorsichtig hochziehen und über den Teig zur gegenüberliegenden Seite legen. Von allen vier Seiten wiederholen.'
+      ]},
+      { title: 'Stockgare & Kaltgare', steps: [
+        'Schüssel abdecken und den Teig 3–5 Std. bei Raumtemperatur gehen lassen, bis er sich deutlich vergrössert hat.',
+        'Danach für 8–16 Std. in den Kühlschrank stellen.'
+      ]},
+      { title: 'Formen', steps: [
+        'Am nächsten Tag aus dem Kühlschrank nehmen, in Portionen teilen, Kugeln formen und 30 Min. bei Raumtemperatur ruhen lassen.',
+        'Aus jeder Kugel von Hand einen runden Fladen (1,5–2 cm dick) formen, auf Backpapier legen und weitere 2 Std. gehen lassen.'
+      ]},
+      { title: 'Backen', steps: [
+        'Ofen auf 250°C Ober-/Unterhitze vorheizen, eine ofenfeste Form unten in den Ofen stellen.',
+        'In die Fladen aussen einen Kreis und innen ein Rautenmuster drücken.',
+        '{{eibestreichen}} Eigelb mit 1 EL Joghurt verrühren, die Fladen damit bestreichen und mit Sesam und Schwarzkümmel bestreuen.',
+        'Fladen in den Ofen schieben, Temperatur auf 200°C reduzieren und ca. 100 ml Wasser in die ofenfeste Form giessen (Dampf).',
+        '10 Min. backen, Wasserform entfernen, weitere 10–15 Min. backen, bis die Fladen goldbraun sind.'
       ]}
     ]
   }
@@ -1711,6 +1775,7 @@ function fillStepPlaceholders(text, key){
   const zuckerDef = findFixed(/zucker|sweety/i);
   const butterDef = findFixed(/butter/i);
   const honigDef = findFixed(/honig/i);
+  const joghurtDef = findFixed(/joghurt/i);
   const sesamDef = findFixed(/sesam/i);
   const eiDef = r.fixed.find(f => /^ei$/i.test(f.name.trim()));
   const eiBestreichenDef = findFixed(/bestreichen/i);
@@ -1730,6 +1795,7 @@ function fillStepPlaceholders(text, key){
     zucker: zuckerDef ? fmt(c.fixedGramsRounded[zuckerDef.key]) + ' g' : '',
     butter: butterDef ? fmt(c.fixedGramsRounded[butterDef.key]) + ' g' : '',
     honig: honigDef ? fmt(c.fixedGramsRounded[honigDef.key]) + ' g' : '',
+    joghurt: joghurtDef ? fmt(c.fixedGramsRounded[joghurtDef.key]) + ' g' : '',
     sesam: sesamDef ? fmt(c.fixedGramsRounded[sesamDef.key]) + ' g' : '',
     ei: eiDef ? fmt(c.fixedGramsRounded[eiDef.key]) + ' g' : '',
     eibestreichen: eiBestreichenDef ? fmt(c.fixedGramsRounded[eiBestreichenDef.key]) + ' g' : ''
@@ -1776,6 +1842,7 @@ function render(key){
   const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
   r.fixed.forEach(f=>{
     const displayPct = (wasserDef && f.key === wasserDef.key) ? Math.round(s.hydration) : f.pct;
+    const isSauerteig = /sauerteig|anstellgut/i.test(f.name) && r.hasStarterCards !== false;
     if(f.hasBassinage){
       const totalWasser = c.fixedGramsRounded[f.key];
       const bassinageRounded = Math.round(c.bassinage);
@@ -1785,6 +1852,9 @@ function render(key){
       rows += `<div class="ing-row sub"><span class="ing-name">davon Bassinage</span><span class="ing-amt">${bassinageRounded.toLocaleString('de-CH')} g</span></div>`;
     } else {
       rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${c.fixedGramsRounded[f.key].toLocaleString('de-CH')} g</span></div>`;
+      if(isSauerteig){
+        rows += `<div class="ing-row sub ing-hint"><span class="ing-name">Ansatz-Verhältnis 2 / 10 / 8 (Anstellgut / Mehl / Wasser)</span></div>`;
+      }
     }
   });
   rows += `<div class="ing-row total"><span class="ing-name">Teig gesamt</span><span class="ing-amt">${fmt(c.totalTeig)} g</span></div>`;
