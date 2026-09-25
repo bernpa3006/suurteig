@@ -2,936 +2,228 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f2fc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0713" media="(prefers-color-scheme: dark)">
 <title>Sourdough Calculator</title>
 <style>
   :root{
-    --bg:      #0b0713;
-    --surface: #17102b;
-    --surface2:#1f1638;
-    --line:    #382a5c;
-    --text:    #f5f0ff;
-    --text-dim:#a99bd4;
-
-    --copain-a:  #ff2ec4;
-    --copain-b:  #ff8a1e;
-    --focaccia-a:#00f5a0;
-    --focaccia-b:#00c2ff;
-    --pizza-a:   #ff3d5a;
-    --pizza-b:   #ff9d00;
-    --custom-a:  #7b2ff7;
-    --custom-b:  #00e5ff;
-    --cuchaule-a:#ffd23f;
-    --cuchaule-b:#f2a900;
-    --buns-a:#e8a94c;
-    --buns-b:#b5651d;
-    --brotkasten-a:#c4d94c;
-    --brotkasten-b:#7a9a1f;
-    --fladenbrot-a:#ff8f6b;
-    --fladenbrot-b:#c2452c;
+    --bg:#0b0713; --surface:#16102a; --surface2:#1e1636; --line:#322655;
+    --text:#f5f0ff; --text-dim:#a99bd4; --text-faint:#7c6fa6;
+    --warn:#ff5a6e;
+    --shadow: none;
+    --head: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --body: 'Sora', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
   @media (prefers-color-scheme: light){
     :root{
-      --bg:      #f5f1fb;
-      --surface: #ffffff;
-      --surface2:#f1ecfa;
-      --line:    #ddd3f0;
-      --text:    #241a3d;
-      --text-dim:#6f6390;
+      --bg:#f6f2fc; --surface:#ffffff; --surface2:#f3eefb; --line:#e3daf3;
+      --text:#231a3b; --text-dim:#6c6090; --text-faint:#9a8fbb;
+      --warn:#d8243f;
+      --shadow: 0 1px 2px rgba(40,20,80,.05), 0 10px 28px -16px rgba(40,20,80,.18);
     }
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; min-height:100vh;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(56px, env(safe-area-inset-bottom));
+    color:var(--text); font-family:var(--body); line-height:1.45;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(255,46,196,.16), transparent 42%),
+      radial-gradient(circle at 92% 12%, rgba(0,229,255,.12), transparent 38%),
+      radial-gradient(circle at 50% 100%, rgba(123,47,247,.16), transparent 50%),
+      var(--bg);
+    background-attachment: fixed;
+  }
+  @media (prefers-color-scheme: light){
     body{
       background:
-        radial-gradient(circle at 15% 0%, rgba(255,46,196,0.10), transparent 45%),
-        radial-gradient(circle at 90% 15%, rgba(0,194,255,0.10), transparent 40%),
-        radial-gradient(circle at 50% 100%, rgba(123,47,247,0.10), transparent 50%),
-        var(--bg) !important;
+        radial-gradient(circle at 12% 0%, rgba(255,46,196,.10), transparent 42%),
+        radial-gradient(circle at 92% 12%, rgba(0,194,255,.10), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(123,47,247,.10), transparent 50%),
+        var(--bg);
+      background-attachment: fixed;
     }
   }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  html,body{ margin:0; padding:0; }
-  .num, [class*="pct"], .ing-amt, .t-value, .hero-unit, .flour-total-val,
-  .chip b, .step-title span:last-child, .portion-chip{
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  body{
-    background:
-      radial-gradient(circle at 15% 0%, rgba(255,46,196,0.16), transparent 45%),
-      radial-gradient(circle at 90% 15%, rgba(0,229,255,0.14), transparent 40%),
-      radial-gradient(circle at 50% 100%, rgba(123,47,247,0.18), transparent 50%),
-      var(--bg);
-    color: var(--text);
-    font-family: 'Sora', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    line-height: 1.45;
-    padding: 20px 14px 70px;
-    min-height: 100vh;
-  }
-  .wrap{ max-width: 560px; margin: 0 auto; }
+  .app{ max-width:560px; margin:0 auto; }
+  button{ font:inherit; }
+  button:disabled{ cursor:default; }
+  svg{ display:block; }
+  input:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible{ outline:2px solid var(--a, #7b2ff7); outline-offset:2px; }
 
-  header.top{ margin-bottom: 20px; }
-  header.top h1{
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.7rem;
-    margin: 0 0 2px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    background: linear-gradient(90deg, #ff2ec4, #7b2ff7, #00e5ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  header.top p{
-    margin: 0;
-    color: var(--text-dim);
-    font-size: 0.9rem;
-  }
+  .top h1{ margin:0 0 16px; font-family:var(--head); font-weight:700; font-size:1.8rem; letter-spacing:-.02em;
+    background:linear-gradient(90deg,#ff2ec4,#7b2ff7,#00c8ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .section-label{ margin:24px 4px 10px; font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-dim); }
 
-  /* ---------- Quick Calc (allgemeiner Sauerteig-Rechner) ---------- */
-  .quick-calc{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 10px 12px;
-    margin-bottom: 16px;
-  }
-  .quick-calc-row{
-    display:flex;
-    align-items:baseline;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  .quick-calc-label{
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
-  .quick-calc-row input[type=number]{
-    flex: 1;
-    min-width: 0;
-    background: var(--surface2);
-    border: none;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text);
-    text-align: right;
-  }
-  .quick-calc-row input[type=number]:focus{ outline: 1px solid var(--copain-a); }
-  .quick-calc-unit{
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
-  .quick-calc-results{
-    display:flex;
-    gap: 6px;
-  }
-  .quick-calc-item{
-    flex: 1;
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 6px 4px;
-    text-align:center;
-  }
-  .quick-calc-val{
-    display:block;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .quick-calc-key{
-    display:block;
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    margin-top: 1px;
-  }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .card-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .ic{ width:34px; height:34px; flex:0 0 auto; border-radius:11px; display:grid; place-items:center; background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); }
+  .ic svg{ width:18px; height:18px; }
+  .card-title{ margin:0; font-size:1rem; font-weight:700; line-height:1.25; }
+  .card-sub{ margin:1px 0 0; font-size:.78rem; color:var(--text-dim); }
+  .card-head .right{ margin-left:auto; }
+  .big-val{ font-family:var(--head); font-size:1.9rem; font-weight:700; line-height:1; color:var(--acc); letter-spacing:-.02em; white-space:nowrap; }
+  .big-val small{ font-size:1.1rem; }
 
-  .section-heading{
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-dim);
-    margin: 0 0 10px 2px;
-  }
+  /* Sauerteig-Schnellrechner */
+  .qc{ padding:14px; }
+  .qc-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:.86rem; color:var(--text-dim); }
+  .qc-row input{ flex:1; min-width:0; text-align:right; padding:7px 10px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); color:var(--text); font-family:var(--head); font-size:16px; font-weight:700; }
+  .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .tile{ background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:8px 4px; text-align:center; }
+  .tile b{ display:block; font-family:var(--head); font-size:1.05rem; }
+  .tile small{ font-size:.7rem; color:var(--text-dim); }
+  .fine{ margin:8px 2px 0; font-size:.72rem; color:var(--text-faint); }
 
-  /* ---------- Tabs ---------- */
-  .tabs-wrap{
-    position: relative;
-    margin-bottom: 20px;
-  }
-  nav.tabs{
-    display:flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 5px;
-    border-radius: 16px;
-    border: 1px solid var(--line);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  nav.tabs::-webkit-scrollbar{ display:none; }
-  .tabs-fade{
-    position:absolute;
-    top: 1px;
-    bottom: 1px;
-    width: 46px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .15s ease;
-    display:flex;
-    align-items:center;
-  }
-  .tabs-fade-left{
-    left: 1px;
-    background: linear-gradient(90deg, var(--surface) 30%, transparent);
-    border-radius: 16px 0 0 16px;
-    justify-content: flex-start;
-    padding-left: 2px;
-  }
-  .tabs-fade-right{
-    right: 1px;
-    background: linear-gradient(270deg, var(--surface) 30%, transparent);
-    border-radius: 0 16px 16px 0;
-    opacity: 1;
-    justify-content: flex-end;
-    padding-right: 2px;
-  }
-  .tabs-fade-arrow{
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--text);
-    color: var(--bg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    animation: tabsFadeNudge 1.6s ease-in-out infinite;
-  }
-  .tabs-fade-arrow svg{ width: 13px; height:13px; }
-  @keyframes tabsFadeNudge{
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(3px); }
-  }
-  .tabs-fade-left .tabs-fade-arrow{ animation-direction: reverse; }
-  .tabs-wrap.at-start .tabs-fade-left{ opacity: 0; }
-  .tabs-wrap.at-end .tabs-fade-right{ opacity: 0; }
-  .tabs-wrap:not(.at-start) .tabs-fade-left{ opacity: 1; }
-  nav.tabs button{
-    flex: 1 1 0;
-    min-width: max-content;
-    background:none;
-    border:none;
-    font-family:inherit;
-    font-size: 0.78rem;
-    font-weight: 700;
-    padding: 10px 10px;
-    border-radius: 12px;
-    color: var(--text-dim);
-    cursor:pointer;
-    transition: background .18s ease, color .18s ease, transform .1s ease;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-  .tab-icon{ width:15px; height:15px; display:inline-flex; flex:0 0 auto; }
-  .tab-icon svg{ width:100%; height:100%; display:block; }
-  nav.tabs button:active{ transform: scale(0.96); }
-  nav.tabs button.active[data-tab="copain"]{ background: linear-gradient(120deg, var(--copain-a), var(--copain-b)); color:#1a0510; }
-  nav.tabs button.active[data-tab="focaccia"]{ background: linear-gradient(120deg, var(--focaccia-a), var(--focaccia-b)); color:#04231a; }
-  nav.tabs button.active[data-tab="pizza"]{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
-  nav.tabs button.active[data-tab="custom"]{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#0a0518; }
-  nav.tabs button.active[data-tab="cuchaule"]{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
-  nav.tabs button.active[data-tab="buns"]{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
-  nav.tabs button.active[data-tab="brotkasten"]{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
-  nav.tabs button.active[data-tab="fladenbrot"]{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
+  /* Rezept-Menü */
+  .menu{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  @media (min-width:520px){ .menu{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  .menu-btn{ display:flex; align-items:center; gap:10px; min-height:54px; padding:9px 10px; border-radius:16px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
+    color:var(--text); font-size:.86rem; font-weight:700; text-align:left; line-height:1.15; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, background .2s ease; }
+  .menu-btn:active{ transform:scale(.97); }
+  .menu-btn .ic{ width:32px; height:32px; border-radius:10px; }
+  .menu-btn .ic svg{ width:17px; height:17px; }
+  .menu-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); border-color:transparent; box-shadow:0 12px 28px -14px var(--a); }
+  .menu-btn.active .ic{ background:rgba(0,0,0,.14); color:var(--ink); }
 
-  .panel{ display:none; animation: fade .25s ease; }
-  .panel.active{ display:block; }
-  @keyframes fade{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none; } }
+  .panel{ display:none; margin-top:16px; scroll-margin-top:12px; }
+  .panel.active{ display:block; animation:fade .25s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
 
-  /* ---------- Hero number ---------- */
-  .hero{
-    border-radius: 24px;
-    padding: 22px 20px;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 40px -10px var(--glow, rgba(255,46,196,0.5));
-  }
-  .hero .hero-label{
-    font-size: 0.8rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.8;
-    margin-bottom: 4px;
-  }
-  .hero .hero-input-row{
-    display:flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .hero input[type=number]{
-    background: none;
-    border: none;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    width: 5.5ch;
-    color: inherit;
-    letter-spacing: -0.03em;
-  }
-  .hero input[type=number]:focus{ outline: none; }
-  .hero .hero-unit{ font-size: 1.3rem; font-weight: 700; opacity: 0.8; }
-  .hero .hero-sub{ margin-top: 8px; font-size: 0.8rem; opacity: 0.75; }
-  .hero .source-link{
-    display:inline-block;
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
+  /* Schieberegler */
+  input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:30px; margin:0; background:transparent; cursor:pointer; --track:var(--line); }
+  input[type=range]::-webkit-slider-runnable-track{ height:8px; border-radius:8px; background:linear-gradient(90deg,var(--a),var(--b)) 0 0 / var(--fill,0%) 100% no-repeat, var(--track); }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; height:26px; margin-top:-9px; border-radius:50%; background:#fff; border:4px solid var(--a); box-shadow:0 2px 8px rgba(0,0,0,.3); }
+  input[type=range]::-moz-range-track{ height:8px; border-radius:8px; background:var(--track); }
+  input[type=range]::-moz-range-progress{ height:8px; border-radius:8px; background:linear-gradient(90deg,var(--a),var(--b)); }
+  input[type=range]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:#fff; border:4px solid var(--a); }
+  .scale{ display:flex; justify-content:space-between; margin-top:4px; font-family:var(--head); font-size:.8rem; font-weight:700; color:var(--text-dim); }
 
-  .hero-copain{ background: linear-gradient(135deg, var(--copain-a), var(--copain-b)); color: #1a0510; --glow: rgba(255,46,196,0.45); }
-  .hero-focaccia{ background: linear-gradient(135deg, var(--focaccia-a), var(--focaccia-b)); color: #04231a; --glow: rgba(0,245,160,0.4); }
-  .hero-pizza{ background: linear-gradient(135deg, var(--pizza-a), var(--pizza-b)); color: #2b0503; --glow: rgba(255,61,90,0.45); }
-  .hero-custom{ background: linear-gradient(135deg, var(--custom-a), var(--custom-b)); color: #f5f0ff; --glow: rgba(123,47,247,0.5); }
-  .hero-cuchaule{ background: linear-gradient(135deg, var(--cuchaule-a), var(--cuchaule-b)); color: #2b1200; --glow: rgba(255,210,63,0.5); }
-  .hero-buns{ background: linear-gradient(135deg, var(--buns-a), var(--buns-b)); color: #2b1200; --glow: rgba(232,169,76,0.5); }
-  .hero-brotkasten{ background: linear-gradient(135deg, var(--brotkasten-a), var(--brotkasten-b)); color: #0f1400; --glow: rgba(196,217,76,0.5); }
-  .hero-fladenbrot{ background: linear-gradient(135deg, var(--fladenbrot-a), var(--fladenbrot-b)); color: #2b0d05; --glow: rgba(255,143,107,0.5); }
+  /* Hero */
+  .hero{ position:relative; overflow:hidden; border-radius:24px; padding:20px 18px 18px; margin-bottom:12px; background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); box-shadow:0 20px 40px -24px var(--a); }
+  .hero-bgicon{ position:absolute; right:-22px; top:-14px; width:150px; height:150px; opacity:.16; transform:rotate(-10deg); pointer-events:none; }
+  .hero-bgicon svg{ width:100%; height:100%; }
+  .hero-title, .hero-title-input{ position:relative; margin:0 0 16px; font-family:var(--head); font-size:1.55rem; font-weight:700; letter-spacing:-.01em; line-height:1.15; }
+  .hero-title-input{ display:block; width:100%; padding:2px 0; background:none; border:0; border-bottom:2px dashed rgba(0,0,0,.25); border-radius:0; color:inherit; }
+  .hero-title-input::placeholder{ color:inherit; opacity:.5; }
+  .eyebrow{ position:relative; margin-bottom:10px; font-size:.7rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; opacity:.72; }
+  .size-row{ position:relative; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+  .size-chip{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:9px 4px; border:0; border-radius:14px; background:rgba(0,0,0,.14); color:inherit; cursor:pointer; }
+  .size-chip b{ font-size:.92rem; } .size-chip small{ font-size:.7rem; opacity:.78; }
+  .size-chip.active{ background:rgba(255,255,255,.4); box-shadow:inset 0 0 0 2px rgba(0,0,0,.14); }
+  .count{ position:relative; display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
+  .count-num{ font-family:var(--head); font-size:3rem; font-weight:700; line-height:1; letter-spacing:-.03em; }
+  .count-unit{ font-size:1.05rem; font-weight:700; opacity:.85; }
+  .hero input[type=range]{ position:relative; --track:rgba(0,0,0,.16); }
+  .hero input[type=range]::-webkit-slider-runnable-track{ background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,.6)) 0 0 / var(--fill,0%) 100% no-repeat, var(--track); }
+  .hero input[type=range]::-webkit-slider-thumb{ border:0; box-shadow:0 2px 10px rgba(0,0,0,.3), 0 0 0 5px rgba(255,255,255,.3); }
+  .hero input[type=range]::-moz-range-progress{ background:rgba(255,255,255,.6); }
+  .hero input[type=range]::-moz-range-thumb{ border:0; }
+  .hero .scale{ color:inherit; opacity:.7; position:relative; }
+  .hero-foot{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(0,0,0,.14); }
+  .gram-field{ display:flex; align-items:baseline; gap:6px; padding:8px 12px; border-radius:14px; background:rgba(0,0,0,.12); cursor:text; }
+  .gram-field input{ width:5ch; padding:0; background:none; border:0; color:inherit; font-family:var(--head); font-size:1.5rem; font-weight:700; -moz-appearance:textfield; }
+  .gram-field input::-webkit-outer-spin-button, .gram-field input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .gram-field span{ font-size:.85rem; font-weight:700; opacity:.8; }
+  .per-piece{ font-size:.82rem; font-weight:700; opacity:.82; text-align:right; }
+  .hero-meta{ position:relative; display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:12px; font-size:.78rem; font-weight:600; opacity:.85; }
+  .hero-meta a{ color:inherit; }
 
-  .hero-emoji{
-    position:absolute;
-    right: -10px;
-    bottom: -14px;
-    width: 130px;
-    height: 130px;
-    opacity: 0.22;
-    transform: rotate(-8deg);
-  }
-  .hero-emoji svg{ width:100%; height:100%; display:block; }
+  .chip-row{ display:flex; gap:8px; margin-top:12px; }
+  .chip-btn{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:1px; padding:8px 4px; border:1px solid var(--line); border-radius:12px; background:var(--surface2); color:var(--text-dim); font-size:.8rem; font-weight:700; cursor:pointer; }
+  .chip-btn small{ font-family:var(--head); font-size:.72rem; font-weight:600; opacity:.85; }
+  .chip-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); border-color:transparent; }
 
-  .unit-slider-row{
-    display:flex;
-    justify-content:center;
-    margin: 4px 0 10px;
-  }
-  .unit-slider-value{
-    font-size: 2.4rem;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    line-height: 1;
-  }
-  .unit-slider-value .unit-label-text{
-    font-size: 1.1rem;
-    font-weight: 600;
-    opacity: 0.85;
-    margin-left: 4px;
-  }
-  .hero input[type=range].unit-slider{
-    height: 10px;
-    background: rgba(0,0,0,0.18);
-  }
-  .hero input[type=range].unit-slider::-webkit-slider-thumb{
-    background: var(--text);
-    border: 3px solid rgba(0,0,0,0.3);
-    box-shadow: 0 0 0 4px rgba(255,255,255,0.25);
-  }
-  .hero input[type=range].unit-slider::-moz-range-thumb{
-    background: var(--text);
-    border: 3px solid rgba(0,0,0,0.3);
-  }
-  .unit-slider-scale{
-    display:flex;
-    justify-content:space-between;
-    font-size: 1rem;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    opacity: 0.85;
-    margin-top: 8px;
-    margin-bottom: 16px;
-  }
+  /* Aufklappbare Karten */
+  .fold > summary{ list-style:none; display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .fold > summary::-webkit-details-marker{ display:none; }
+  .fold .sum-text{ flex:1; min-width:0; }
+  .chev{ width:20px; height:20px; color:var(--text-dim); transition:transform .2s ease; flex:0 0 auto; }
+  .chev svg{ width:20px; height:20px; }
+  .fold[open] .chev{ transform:rotate(180deg); }
+  .fold-body{ margin-top:16px; }
 
-  .size-chip-row{
-    display:flex;
-    gap: 8px;
-    margin: 10px 0 18px;
-  }
-  .size-chip{
-    flex: 1;
-    font-family: inherit;
-    border: none;
-    border-radius: 14px;
-    padding: 10px 6px;
-    background: rgba(0,0,0,0.2);
-    color: inherit;
-    cursor: pointer;
-    display:flex;
-    flex-direction: column;
-    align-items:center;
-    gap: 2px;
-    transition: background .15s ease, transform .1s ease;
-  }
-  .size-chip:active{ transform: scale(0.96); }
-  .size-chip.active{ background: rgba(0,0,0,0.4); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
-  .size-chip-label{ font-size: 0.95rem; font-weight: 800; }
-  .size-chip-desc{ font-size: 0.72rem; opacity: 0.8; }
+  .flour-row{ margin-bottom:10px; }
+  .flour-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:.9rem; font-weight:600; }
+  .flour-top b{ font-family:var(--head); white-space:nowrap; }
+  .flour-sum{ display:flex; justify-content:space-between; margin-top:8px; padding-top:10px; border-top:1px solid var(--line); font-size:.82rem; font-weight:700; color:var(--text-dim); }
+  .flour-sum b{ font-family:var(--head); color:var(--text); }
+  .flour-sum.warn b, .card-sub.warn{ color:var(--warn); }
 
-  .portion-row{
-    display:flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 10px 0 16px;
-  }
-  .portion-chip{
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 800;
-    border: none;
-    border-radius: 12px;
-    padding: 9px 14px;
-    background: rgba(0,0,0,0.2);
-    color: inherit;
-    cursor: pointer;
-    transition: background .15s ease, transform .1s ease;
-  }
-  .portion-chip:active{ transform: scale(0.95); }
-  .portion-chip.active{ background: rgba(0,0,0,0.4); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
+  .edit-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:6px 6px 6px 12px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; }
+  .edit-row input[type=text]{ flex:1; min-width:0; padding:4px 0; background:none; border:0; color:var(--text); font-size:16px; font-weight:600; font-family:var(--body); }
+  .edit-row input[type=number]{ width:66px; padding:5px 6px; text-align:right; background:var(--surface); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:var(--head); font-size:16px; font-weight:700; }
+  .edit-row input[type=number]:disabled{ opacity:.6; }
+  .edit-row .unit{ font-size:.82rem; color:var(--text-dim); }
+  .icon-btn{ width:32px; height:32px; flex:0 0 auto; display:grid; place-items:center; border:0; border-radius:9px; background:none; color:var(--text-dim); cursor:pointer; }
+  .icon-btn:disabled{ opacity:.3; }
+  .icon-btn svg{ width:16px; height:16px; }
+  .add-btn{ width:100%; margin-top:2px; padding:11px; border:1px dashed var(--line); border-radius:12px; background:none; color:var(--text-dim); font-size:.86rem; font-weight:700; cursor:pointer; }
+  .field-note{ margin:4px 2px 10px; font-size:.74rem; color:var(--text-faint); }
 
-  /* ---------- Cards ---------- */
-  .card{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 18px;
-    margin-bottom: 14px;
-  }
-  .card h2{
-    font-size: 1rem;
-    margin: 0 0 4px;
-    font-weight: 800;
-    display:flex;
-    align-items:center;
-    gap: 8px;
-  }
-  .card h2 .icon{ width:20px; height:20px; display:inline-flex; flex:0 0 auto; }
-  .card h2 .icon svg{ width:100%; height:100%; display:block; }
-  .inline-icon{ width:16px; height:16px; display:inline-flex; vertical-align:-3px; margin-right:6px; flex:0 0 auto; }
-  .inline-icon svg{ width:100%; height:100%; display:block; }
-  .card .sub{
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    margin: 0 0 14px;
-  }
+  /* Zutatenliste */
+  .ing{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .ing-name{ font-size:.95rem; min-width:0; }
+  .ing-pct{ margin-left:8px; padding:1px 6px; border-radius:6px; background:var(--surface2); font-family:var(--head); font-size:.72rem; color:var(--text-dim); white-space:nowrap; }
+  .ing-note{ display:block; margin-top:2px; font-size:.74rem; font-style:italic; color:var(--text-faint); }
+  .ing-amt{ font-family:var(--head); font-size:1.05rem; font-weight:700; white-space:nowrap; }
+  .ing.head .ing-name{ font-weight:700; } .ing.head .ing-amt{ color:var(--acc); font-size:1.2rem; }
+  .ing.sub{ padding:7px 0 7px 14px; border-bottom-style:dashed; }
+  .ing.sub .ing-name{ font-size:.88rem; color:var(--text-dim); } .ing.sub .ing-amt{ font-size:.92rem; color:var(--text-dim); }
+  .ing.total{ margin-top:4px; padding-top:14px; border-top:2px solid var(--line); border-bottom:0; }
+  .ing.total .ing-name{ font-weight:700; } .ing.total .ing-amt{ font-size:1.5rem; color:var(--acc); }
+  .sub-head{ display:flex; align-items:center; gap:6px; margin:18px 0 8px; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-dim); }
+  .sub-head svg{ width:14px; height:14px; }
+  .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{ padding:7px 11px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; }
+  .pill small{ display:block; font-size:.7rem; color:var(--text-dim); } .pill b{ font-family:var(--head); font-size:.9rem; }
 
-  /* ---------- Flour sliders ---------- */
-  .flour-row{ margin-bottom: 14px; }
-  .flour-row:last-child{ margin-bottom: 0; }
-  .flour-row .flour-head{
-    display:flex;
-    justify-content: space-between;
-    align-items:baseline;
-    margin-bottom: 6px;
-  }
-  .flour-row .flour-head .name{ font-size: 0.92rem; font-weight: 600; }
-  .flour-row .flour-head .pct{
-    font-size: 0.95rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-  }
-  input[type=range]{
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 8px;
-    border-radius: 8px;
-    background: var(--line);
-    outline: none;
-  }
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--track-color, #fff);
-    border: 3px solid var(--bg);
-    box-shadow: 0 0 12px var(--track-color, #fff);
-    cursor: pointer;
-  }
-  input[type=range]::-moz-range-thumb{
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--track-color, #fff);
-    border: 3px solid var(--bg);
-    cursor: pointer;
-  }
+  /* Sauerteig vorbereiten */
+  .step-block{ margin-top:10px; padding:14px; background:var(--surface2); border:1px solid var(--line); border-radius:16px; }
+  .step-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .step-no{ width:26px; height:26px; flex:0 0 auto; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); font-family:var(--head); font-size:.82rem; font-weight:700; }
+  .step-name{ font-size:.92rem; font-weight:700; }
+  .step-total{ margin-left:auto; font-family:var(--head); font-size:1.15rem; font-weight:700; color:var(--acc); white-space:nowrap; }
+  .step-block .tile{ background:var(--surface); }
+  .step-note{ margin:10px 0 0; font-size:.76rem; color:var(--text-dim); }
 
-  .accent-copain input[type=range]{ --track-color: var(--copain-a); }
-  .accent-focaccia input[type=range]{ --track-color: var(--focaccia-a); }
-  .accent-pizza input[type=range]{ --track-color: var(--pizza-a); }
-  .accent-custom input[type=range]{ --track-color: var(--custom-b); }
-  .accent-cuchaule input[type=range]{ --track-color: var(--cuchaule-a); }
-  .accent-buns input[type=range]{ --track-color: var(--buns-a); }
-  .accent-brotkasten input[type=range]{ --track-color: var(--brotkasten-a); }
-  .accent-fladenbrot input[type=range]{ --track-color: var(--fladenbrot-a); }
+  /* Zubereitung */
+  .phase + .phase{ margin-top:18px; }
+  .phase-title{ margin-bottom:10px; font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--acc); }
+  .steps{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .steps li{ display:flex; gap:10px; align-items:flex-start; font-size:.9rem; }
+  .steps .step-no{ width:22px; height:22px; font-size:.72rem; margin-top:1px; }
 
-  .flour-total{
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--line);
-    display:flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    font-weight: 700;
-  }
-  .flour-total .flour-total-val{ color: var(--text); }
-  .flour-total.warn .flour-total-val{ color: var(--pizza-a); }
-
-  /* ---------- Hydration ---------- */
-  .hydration-value-row{
-    display:flex;
-    justify-content:center;
-    margin: 4px 0 14px;
-  }
-  .hydration-big{ font-size: 2.4rem; font-weight: 700; line-height:1; }
-  .accent-copain .hydration-num{ color: var(--copain-a); }
-  .accent-focaccia .hydration-num{ color: var(--focaccia-a); }
-  .accent-pizza .hydration-num{ color: var(--pizza-a); }
-  .accent-custom .hydration-num{ color: var(--custom-b); }
-  .accent-cuchaule .hydration-num{ color: var(--cuchaule-a); }
-  .accent-buns .hydration-num{ color: var(--buns-a); }
-  .accent-brotkasten .hydration-num{ color: var(--brotkasten-a); }
-  .accent-fladenbrot .hydration-num{ color: var(--fladenbrot-a); }
-  .hydration-scale{
-    display:flex;
-    justify-content:space-between;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    margin-top: 6px;
-  }
-  .hydration-presets{ margin-top: 16px; margin-bottom: 0; }
-  .hydration-chip{
-    background: var(--surface2);
-    color: var(--text-dim);
-    display:flex;
-    flex-direction: column;
-    align-items:center;
-    gap: 2px;
-    line-height: 1.2;
-  }
-  .hydration-chip .chip-sub{ font-size: 0.7rem; opacity: 0.7; font-weight: 600; }
-  .hydration-chip.is-basic{ box-shadow: inset 0 0 0 1.5px var(--line); }
-  .accent-copain .hydration-chip.active{ background: linear-gradient(120deg, var(--copain-a), var(--copain-b)); color:#1a0510; }
-  .accent-focaccia .hydration-chip.active{ background: linear-gradient(120deg, var(--focaccia-a), var(--focaccia-b)); color:#04231a; }
-  .accent-pizza .hydration-chip.active{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
-  .accent-custom .hydration-chip.active{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; }
-  .accent-cuchaule .hydration-chip.active{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
-  .accent-buns .hydration-chip.active{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
-  .accent-brotkasten .hydration-chip.active{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
-  .accent-fladenbrot .hydration-chip.active{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
-
-  /* ---------- Steps (Backanleitung) ---------- */
-  .step-list{ display:flex; flex-direction:column; gap: 10px; }
-  .step-item{
-    display:flex;
-    align-items:flex-start;
-    gap: 10px;
-  }
-  .step-num{
-    flex: 0 0 auto;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size: 0.72rem;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text);
-    background: var(--surface2);
-  }
-  .accent-copain .step-num{ background: linear-gradient(120deg, var(--copain-a), var(--copain-b)); color:#1a0510; }
-  .accent-focaccia .step-num{ background: linear-gradient(120deg, var(--focaccia-a), var(--focaccia-b)); color:#04231a; }
-  .accent-pizza .step-num{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); color:#2b0503; }
-  .accent-custom .step-num{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; }
-  .accent-cuchaule .step-num{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; }
-  .accent-buns .step-num{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; }
-  .accent-brotkasten .step-num{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; }
-  .accent-fladenbrot .step-num{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; }
-  .step-text{ font-size: 0.88rem; padding-top: 2px; }
-
-  /* ---------- Aufklappbares Rezept ---------- */
-  .recipe-details{ padding: 0; overflow: hidden; }
-  .recipe-details summary{
-    list-style: none;
-    cursor: pointer;
-    padding: 18px;
-    display:flex;
-    align-items:center;
-    gap: 10px;
-  }
-  .recipe-details summary::-webkit-details-marker{ display:none; }
-  .recipe-details summary .icon{ margin:0; }
-  .recipe-details summary .summary-text{
-    flex: 1;
-    font-size: 1rem;
-    font-weight: 800;
-  }
-  .recipe-details summary .chevron{
-    width: 18px; height: 18px;
-    color: var(--text-dim);
-    transition: transform .2s ease;
-    flex: 0 0 auto;
-  }
-  .recipe-details summary .chevron svg{ width:100%; height:100%; display:block; }
-  .recipe-details[open] summary .chevron{ transform: rotate(180deg); }
-  .recipe-details .phase-list{
-    padding: 0 18px 18px;
-    display:flex;
-    flex-direction:column;
-    gap: 18px;
-  }
-  .phase-title{
-    font-size: 0.78rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
-
-  .add-flour-btn{
-    margin-top: 12px;
-    width: 100%;
-    background: var(--surface2);
-    border: 1px dashed var(--line);
-    border-radius: 12px;
-    padding: 10px;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-
-  /* ---------- Ingredient list ---------- */
-  .ing-list{ display:flex; flex-direction:column; gap: 2px; }
-  .ing-row{
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .ing-row:last-child{ border-bottom:none; }
-  .ing-row .ing-name{ font-size: 0.94rem; }
-  .ing-row .ing-pct{ font-size: 0.78rem; color: var(--text-dim); margin-left: 6px; }
-  .ing-row .ing-amt{
-    font-size: 1.05rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-  }
-  .ing-row.sub{ padding-left: 14px; }
-  .ing-row.sub .ing-name{ color: var(--text-dim); font-size: 0.86rem; }
-  .ing-row.sub .ing-amt{ font-size: 0.92rem; font-weight: 700; color: var(--text-dim); }
-  .ing-row.ing-hint{ padding-top: 0; padding-bottom: 6px; }
-  .ing-row.ing-hint .ing-name{ font-size: 0.76rem; font-style: italic; opacity: 0.75; }
-  .ing-row.total{
-    margin-top: 6px;
-    padding-top: 14px;
-    border-top: 2px solid var(--line);
-    border-bottom: none;
-  }
-  .ing-row.total .ing-name{ font-weight: 800; }
-  .ing-row.total .ing-amt{ font-size: 1.3rem; }
-
-  .accent-copain .ing-row.total .ing-amt{ color: var(--copain-a); }
-  .accent-focaccia .ing-row.total .ing-amt{ color: var(--focaccia-a); }
-  .accent-pizza .ing-row.total .ing-amt{ color: var(--pizza-a); }
-  .accent-custom .ing-row.total .ing-amt{ color: var(--custom-b); }
-  .accent-cuchaule .ing-row.total .ing-amt{ color: var(--cuchaule-a); }
-  .accent-buns .ing-row.total .ing-amt{ color: var(--buns-a); }
-  .accent-brotkasten .ing-row.total .ing-amt{ color: var(--brotkasten-a); }
-  .accent-fladenbrot .ing-row.total .ing-amt{ color: var(--fladenbrot-a); }
-
-  /* ---------- Pills ---------- */
-  .pill-row{
-    display:flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    margin-top: 4px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .pill{
-    flex: 0 0 auto;
-    background: var(--surface2);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 8px 12px;
-    text-align:center;
-    min-width: 84px;
-  }
-  .pill .p-temp{ font-size: 0.78rem; color: var(--text-dim); }
-  .pill .p-time{ font-size: 0.88rem; font-weight: 700; margin-top: 2px; }
-
-  /* ---------- Number fields ---------- */
-  .field-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .field{
-    background: var(--surface2);
-    border-radius: 14px;
-    padding: 10px 12px;
-  }
-  .field label{
-    display:block;
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .field .field-input-row{ display:flex; align-items:baseline; gap:4px; }
-  .field input[type=number]{
-    background:none;
-    border:none;
-    font-family: inherit;
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--text);
-    width: 4ch;
-  }
-  .field input[type=number]:focus{ outline:none; }
-  .field .field-unit{ font-size: 0.8rem; color: var(--text-dim); }
-  .field input[type=text]{
-    background:none;
-    border:none;
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text);
-    width: 100%;
-  }
-  .field input[type=text]:focus{ outline:none; }
-
-  /* ---------- Temp result boxes ---------- */
-  .temp-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  .temp-box{
-    border-radius: 16px;
-    padding: 14px;
-    text-align:center;
-  }
-  .accent-copain .temp-box{ background: rgba(255,46,196,0.1); }
-  .accent-focaccia .temp-box{ background: rgba(0,245,160,0.1); }
-  .accent-pizza .temp-box{ background: rgba(255,61,90,0.1); }
-  .accent-custom .temp-box{ background: rgba(123,47,247,0.14); }
-  .accent-cuchaule .temp-box{ background: rgba(255,210,63,0.14); }
-  .accent-buns .temp-box{ background: rgba(232,169,76,0.14); }
-  .accent-brotkasten .temp-box{ background: rgba(196,217,76,0.14); }
-  .accent-fladenbrot .temp-box{ background: rgba(255,143,107,0.14); }
-  .temp-box .t-label{ font-size: 0.75rem; color: var(--text-dim); font-weight: 700; margin-bottom: 4px; }
-  .temp-box .t-value{ font-size: 1.6rem; font-weight: 700; }
-  .accent-copain .t-value{ color: var(--copain-a); }
-  .accent-focaccia .t-value{ color: var(--focaccia-a); }
-  .accent-pizza .t-value{ color: var(--pizza-a); }
-  .accent-custom .t-value{ color: var(--custom-b); }
-  .accent-cuchaule .t-value{ color: var(--cuchaule-a); }
-  .accent-buns .t-value{ color: var(--buns-a); }
-  .accent-brotkasten .t-value{ color: var(--brotkasten-a); }
-  .accent-fladenbrot .t-value{ color: var(--fladenbrot-a); }
-  .temp-box .t-unit{ font-size: 1rem; font-weight: 700; }
-
-  .note{
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    margin-top: 12px;
-    line-height: 1.5;
-  }
-  .note strong{ color: var(--text); }
-
-  /* ---------- Starter mini cards ---------- */
-  .starter-flow{ display:flex; flex-direction: column; gap: 10px; }
-  .starter-step{
-    background: var(--surface2);
-    border-radius: 14px;
-    padding: 12px 14px;
-  }
-  .starter-step .step-title{
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    display:flex;
-    justify-content: space-between;
-  }
-  .chip-row{ display:flex; gap: 8px; flex-wrap: wrap; }
-  .chip{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 0.82rem;
-  }
-  .chip b{ font-variant-numeric: tabular-nums; }
-  .accent-copain .chip b{ color: var(--copain-a); }
-  .accent-focaccia .chip b{ color: var(--focaccia-a); }
-  .accent-pizza .chip b{ color: var(--pizza-a); }
-  .accent-custom .chip b{ color: var(--custom-b); }
-  .accent-cuchaule .chip b{ color: var(--cuchaule-a); }
-  .accent-buns .chip b{ color: var(--buns-a); }
-  .accent-brotkasten .chip b{ color: var(--brotkasten-a); }
-  .accent-fladenbrot .chip b{ color: var(--fladenbrot-a); }
-
-  .min-note{
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 8px 10px;
-  }
-
-  /* ---------- Custom recipe list ---------- */
-  .custom-flour-item, .custom-fixed-item{
-    display:flex;
-    align-items:center;
-    gap: 8px;
-    margin-bottom: 10px;
-    background: var(--surface2);
-    border-radius: 12px;
-    padding: 8px 10px;
-  }
-  .custom-flour-item input[type=text], .custom-fixed-item input[type=text]{
-    flex: 1;
-    background:none;
-    border:none;
-    font-family:inherit;
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-  .custom-flour-item input[type=text]:focus, .custom-fixed-item input[type=text]:focus{ outline:none; }
-  .custom-flour-item input[type=number], .custom-fixed-item input[type=number]{
-    width: 60px;
-    text-align:right;
-    background:none;
-    border:none;
-    font-family:inherit;
-    color: var(--text);
-    font-size: 0.95rem;
-    font-weight: 800;
-  }
-  .custom-flour-item input[type=number]:focus, .custom-fixed-item input[type=number]:focus{ outline:none; }
-  .pct-sign{ color: var(--text-dim); font-size: 0.85rem; }
-  .remove-btn{
-    background:none;
-    border:none;
-    color: var(--text-dim);
-    font-size: 1.1rem;
-    cursor:pointer;
-    padding: 2px 6px;
-    line-height: 1;
-  }
-  .remove-btn:hover{ color: var(--pizza-a); }
-
-  /* ---------- PDF button ---------- */
-  .pdf-btn{
-    width: 100%;
-    border: none;
-    border-radius: 16px;
-    padding: 16px;
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    color: #0a0518;
-    cursor: pointer;
-    margin-top: 4px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap: 8px;
-    transition: transform .1s ease, box-shadow .15s ease;
-  }
-  .pdf-btn:active{ transform: scale(0.98); }
-  .accent-copain .pdf-btn{ background: linear-gradient(120deg, var(--copain-a), var(--copain-b)); box-shadow: 0 0 24px -4px rgba(255,46,196,0.55); }
-  .accent-focaccia .pdf-btn{ background: linear-gradient(120deg, var(--focaccia-a), var(--focaccia-b)); box-shadow: 0 0 24px -4px rgba(0,245,160,0.5); }
-  .accent-pizza .pdf-btn{ background: linear-gradient(120deg, var(--pizza-a), var(--pizza-b)); box-shadow: 0 0 24px -4px rgba(255,61,90,0.5); }
-  .accent-custom .pdf-btn{ background: linear-gradient(120deg, var(--custom-a), var(--custom-b)); color:#f5f0ff; box-shadow: 0 0 24px -4px rgba(123,47,247,0.6); }
-  .accent-cuchaule .pdf-btn{ background: linear-gradient(120deg, var(--cuchaule-a), var(--cuchaule-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(255,210,63,0.55); }
-  .accent-buns .pdf-btn{ background: linear-gradient(120deg, var(--buns-a), var(--buns-b)); color:#2b1200; box-shadow: 0 0 24px -4px rgba(232,169,76,0.55); }
-  .accent-brotkasten .pdf-btn{ background: linear-gradient(120deg, var(--brotkasten-a), var(--brotkasten-b)); color:#0f1400; box-shadow: 0 0 24px -4px rgba(196,217,76,0.55); }
-  .accent-fladenbrot .pdf-btn{ background: linear-gradient(120deg, var(--fladenbrot-a), var(--fladenbrot-b)); color:#2b0d05; box-shadow: 0 0 24px -4px rgba(255,143,107,0.55); }
-  .pdf-btn .pdf-status{ font-size: 0.85rem; font-weight: 700; opacity: 0.85; }
-
-  footer.credit{
-    text-align:center;
-    font-size: 0.75rem;
-    color: #5b5177;
-    margin-top: 26px;
-  }
+  .pdf-btn{ width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:16px; margin-top:4px; border:0; border-radius:18px; background:linear-gradient(120deg,var(--a),var(--b)); color:var(--ink); font-size:1rem; font-weight:800; cursor:pointer; box-shadow:0 14px 30px -16px var(--a); }
+  .pdf-btn svg{ width:18px; height:18px; } .pdf-btn:disabled{ opacity:.7; }
+  .foot{ margin-top:28px; text-align:center; font-size:.72rem; color:var(--text-faint); }
 </style>
 </head>
 <body>
 <div id="crash-banner" style="display:none;position:fixed;top:0;left:0;right:0;background:#ff2ec4;color:#1a0510;font-family:monospace;font-size:12px;padding:10px;z-index:9999;white-space:pre-wrap;"></div>
-<div class="wrap">
+<div class="app">
+  <header class="top"><h1>Sourdough Calculator</h1></header>
 
-  <header class="top">
-    <h1>Sourdough Calculator</h1>
-  </header>
-
-  <div class="quick-calc">
-    <div class="quick-calc-row">
-      <span class="quick-calc-label">Ich brauche</span>
-      <input type="number" id="quickCalcInput" min="5" step="5" value="110">
-      <span class="quick-calc-unit">g Sauerteig</span>
+  <section class="card qc t-brand" aria-label="Sauerteig-Rechner">
+    <label class="qc-row"><span>Ich brauche</span>
+      <input type="number" id="qcInput" inputmode="numeric" min="0" step="5" value="110" aria-label="Benötigte Sauerteigmenge in Gramm">
+      <span>g Sauerteig</span></label>
+    <div class="tiles">
+      <div class="tile"><b id="qcAnstellgut">13</b><small>Anstellgut</small></div>
+      <div class="tile"><b id="qcMehl">66</b><small>Mehl</small></div>
+      <div class="tile"><b id="qcWasser">53</b><small>Wasser</small></div>
     </div>
-    <div class="quick-calc-results">
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcAnstellgut">13</span><span class="quick-calc-key">Anstellgut</span></div>
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcMehl">66</span><span class="quick-calc-key">Mehl</span></div>
-      <div class="quick-calc-item"><span class="quick-calc-val" id="quickCalcWasser">53</span><span class="quick-calc-key">Wasser</span></div>
-    </div>
-  </div>
+    <p class="fine">Verhältnis 2 / 10 / 8, inkl. 20 % Reserve</p>
+  </section>
 
-  <h2 class="section-heading">Recipes</h2>
+  <h2 class="section-label">Recipes</h2>
+  <nav class="menu" id="menu" aria-label="Rezepte"></nav>
+  <main id="panels"></main>
 
-  <div class="tabs-wrap">
-    <nav class="tabs">
-      <button class="active" data-tab="copain"><span class="tab-icon" data-icon="bread"></span>Copain</button>
-      <button data-tab="focaccia"><span class="tab-icon" data-icon="focaccia"></span>Focaccia</button>
-      <button data-tab="brotkasten"><span class="tab-icon" data-icon="brotkasten"></span>Focaccia Brotkasten</button>
-      <button data-tab="pizza"><span class="tab-icon" data-icon="pizza"></span>Pizza</button>
-      <button data-tab="buns"><span class="tab-icon" data-icon="buns"></span>Buns</button>
-      <button data-tab="cuchaule"><span class="tab-icon" data-icon="cuchaule"></span>Cuchaule</button>
-      <button data-tab="fladenbrot"><span class="tab-icon" data-icon="fladenbrot"></span>Fladenbrot</button>
-      <button data-tab="custom"><span class="tab-icon" data-icon="custom"></span>Eigenes</button>
-    </nav>
-    <div class="tabs-fade tabs-fade-left"><span class="tabs-fade-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span></div>
-    <div class="tabs-fade tabs-fade-right"><span class="tabs-fade-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
-  </div>
-
-  <div class="panel active accent-copain" id="panel-copain"></div>
-  <div class="panel accent-focaccia" id="panel-focaccia"></div>
-  <div class="panel accent-brotkasten" id="panel-brotkasten"></div>
-  <div class="panel accent-pizza" id="panel-pizza"></div>
-  <div class="panel accent-buns" id="panel-buns"></div>
-  <div class="panel accent-cuchaule" id="panel-cuchaule"></div>
-  <div class="panel accent-fladenbrot" id="panel-fladenbrot"></div>
-  <div class="panel accent-custom" id="panel-custom"></div>
-
-  <footer class="credit">Alle Mengen in Gramm &middot; Build v6</footer>
+  <footer class="foot">Alle Mengen in Gramm · v8</footer>
 </div>
-
 <script>
 window.onerror = function(msg, url, line, col, err){
   var banner = document.getElementById('crash-banner');
@@ -941,62 +233,65 @@ window.onerror = function(msg, url, line, col, err){
   }
 };
 
-/* =========================================================================
-   RECHENLOGIK
-   ========================================================================= */
-
+/* ---------- Hilfsfunktionen ---------- */
 function roundUp10(n){ return Math.ceil(n/10)*10; }
-
-function getUnitWeight(key){
-  const r = RECIPES[key];
-  if(r.sizes){
-    const sizeKey = state[key] && state[key].size;
-    const found = r.sizes.find(s => s.key === sizeKey);
-    return found ? found.weight : r.unitWeight;
-  }
-  return r.unitWeight;
-}
-function round1(n){ return Math.round(n*10)/10; }
 function fmt(n){
   if(n > 0 && n < 1) return n.toLocaleString('de-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   return Math.round(n).toLocaleString('de-CH');
 }
 function uid(){ return 'x' + Math.random().toString(36).slice(2,9); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// Rundet eine Liste von Werten auf ganze Zahlen, deren Summe exakt targetSum ergibt
-// (Largest-Remainder-Methode) — verhindert, dass Einzelsummen und Gesamtsumme auseinanderlaufen.
+// Rundet eine Liste so, dass die Summe der gerundeten Werte exakt targetSum (gerundet) ergibt.
 function roundToSum(values, targetSum){
   const target = Math.round(targetSum);
   const floors = values.map(v => Math.floor(v));
-  let remainder = target - floors.reduce((a,b)=>a+b, 0);
+  const remainder = target - floors.reduce((a,b)=>a+b, 0);
   const withFrac = values.map((v,i) => ({ i, frac: v - floors[i] }));
   withFrac.sort((a,b) => b.frac - a.frac);
   const result = floors.slice();
-  for(let k = 0; k < remainder && k < withFrac.length; k++){
-    result[withFrac[k].i] += 1;
-  }
+  for(let k = 0; k < remainder && k < withFrac.length; k++){ result[withFrac[k].i] += 1; }
   return result;
 }
 
-/* -------------------------- Mehltyp-Hinweis für Schweizer Nutzer -------------------------- */
-// Zuordnung ausländischer Mehl-Typenbezeichnungen zur Schweizer Entsprechung.
-// Reihenfolge wichtig: spezifischere Muster (z.B. "Tipo 00") vor allgemeineren zuerst prüfen.
+/* ---------- Mehltypen: Schweizer Entsprechung ---------- */
 const FLOUR_TYPE_HINTS = [
-  { pattern: /tipo\s*00/i,      ch: 'Weissmehl' },
-  { pattern: /tipo\s*0\b/i,     ch: 'Weissmehl' },
-  { pattern: /tipo\s*1\b/i,     ch: 'Halbweissmehl' },
-  { pattern: /type\s*400/i,     ch: 'Weissmehl' },
-  { pattern: /type\s*405/i,     ch: 'Weissmehl' },
-  { pattern: /type\s*550/i,     ch: 'Weissmehl' },
-  { pattern: /type\s*700|type\s*720|type\s*812/i, ch: 'Halbweissmehl' },
-  { pattern: /type\s*1050|type\s*1100/i, ch: 'Ruchmehl' }
+  { pattern: /tipo\s*00/i, ch: 'Weissmehl' },
+  { pattern: /tipo\s*0\b/i, ch: 'Weissmehl' },
+  { pattern: /tipo\s*1\b/i, ch: 'Halbweissmehl' },
+  { pattern: /type\s*40[05]/i, ch: 'Weissmehl' },
+  { pattern: /type\s*550/i, ch: 'Weissmehl' },
+  { pattern: /type\s*(700|720|812)/i, ch: 'Halbweissmehl' },
+  { pattern: /type\s*(1050|1100)/i, ch: 'Ruchmehl' }
 ];
 function getFlourTypeHint(name){
-  const match = FLOUR_TYPE_HINTS.find(h => h.pattern.test(name));
-  return match ? `Entspricht in der Schweiz etwa ${match.ch}` : null;
+  const m = FLOUR_TYPE_HINTS.find(h => h.pattern.test(name));
+  return m ? 'In der Schweiz: ' + m.ch : null;
 }
 
-/* -------------------------- Icons (clean line SVGs) -------------------------- */
+/* ---------- Farben pro Rezept ---------- */
+const THEMES = {
+  brand:      {a:'#ff2ec4', b:'#7b2ff7', ink:'#ffffff'},
+  copain:     {a:'#ff2ec4', b:'#ff8a1e', ink:'#1a0510'},
+  focaccia:   {a:'#00f5a0', b:'#00c2ff', ink:'#04231a'},
+  brotkasten: {a:'#c4d94c', b:'#7a9a1f', ink:'#0f1400'},
+  pizza:      {a:'#ff3d5a', b:'#ff9d00', ink:'#2b0503'},
+  buns:       {a:'#e8a94c', b:'#b5651d', ink:'#2b1200'},
+  cuchaule:   {a:'#ffd23f', b:'#f2a900', ink:'#2b1200'},
+  fladenbrot: {a:'#ff8f6b', b:'#c2452c', ink:'#2b0d05'},
+  custom:     {a:'#7b2ff7', b:'#00c8ff', ink:'#ffffff'}
+};
+(function injectThemes(){
+  let css = '';
+  Object.keys(THEMES).forEach(k => { const t = THEMES[k]; css += `.t-${k}{--a:${t.a};--b:${t.b};--ink:${t.ink};--acc:${t.a};}\n`; });
+  css += '@media (prefers-color-scheme: light){\n';
+  Object.keys(THEMES).forEach(k => { css += `.t-${k}{--acc:color-mix(in srgb, ${THEMES[k].b} 68%, #000);}\n`; });
+  css += '}\n';
+  const st = document.createElement('style');
+  st.textContent = css;
+  document.head.appendChild(st);
+})();
+function hexToRgb(h){ const n = parseInt(h.slice(1),16); return [(n>>16)&255, (n>>8)&255, n&255]; }
 
 const ICONS = {
   bread: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5C4 6.9 7.4 4 12 4s8 2.9 8 6.5V18a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18v-7.5Z"/><path d="M4 11h16"/></svg>',
@@ -1009,7 +304,6 @@ const ICONS = {
   fladenbrot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="5.5"/><path d="M12 7.5v9M8 8.5v7M16 8.5v7"/></svg>',
   flour: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1.3 15.5A2 2 0 0 1 13.7 20h-3.4a2 2 0 0 1-2-1.5L7 3Z"/><path d="M5 3h14"/></svg>',
   scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v3"/><path d="M6 7h12"/><path d="M6 7 4 11.5a2 2 0 0 0 4 0L6 7Z"/><path d="M18 7l-2 4.5a2 2 0 0 0 4 0L18 7Z"/><rect x="8" y="17" width="8" height="3.5" rx="1"/></svg>',
-  thermometer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V5.5a2 2 0 1 0-4 0V14a4 4 0 1 0 4 0Z"/></svg>',
   jar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6"/><path d="M9 4v2l-2 2.5V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8.5L15 6V4"/><path d="M7 13h10"/></svg>',
   sprout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V12"/><path d="M12 12c0-3 2-5 5-5.5C17 10 15 12 12 12Z"/><path d="M12 14.5c0-2-1.5-3.5-4-4 0 2.7 1.3 4 4 4Z"/></svg>',
   note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9l-4-5Z"/><path d="M14 4v5h4"/><path d="M9 13h6M9 16.5h6"/></svg>',
@@ -1046,18 +340,17 @@ const RECIPES = {
       { key:'salz',      name:'Salz',      pct:2.5 },
       { key:'sauerteig', name:'Sauerteig', pct:19 }
     ],
-    stockgare: [ {temp:'24°C',dauer:'5–5.5 h'}, {temp:'25°C',dauer:'4.5–5 h'}, {temp:'26°C',dauer:'4–4.5 h'}, {temp:'27°C',dauer:'4 h'} ],
-    gtt: 26,
+    stockgare: [ {temp:'Stockgare',dauer:'4-5.5 h'}, {temp:'Stückgare',dauer:'1-2 h oder über Nacht'} ],
     phases: [
       { title: 'Teig machen', steps: [
-        'Autolyse: {{mehl}} Mehl und {{wasser}} Wasser (ohne Bassinage) grob vermischen, 30–60 Min. ruhen lassen.',
+        'Autolyse: {{mehl}} Mehl und {{wasser}} Wasser (ohne Bassinage) grob vermischen, 30-60 Min. ruhen lassen.',
         '{{sauerteig}} Sauerteig und {{salz}} Salz einarbeiten, gut durchkneten.',
         'Die {{bassinage}} Bassinage nach und nach unterarbeiten, bis sie komplett aufgenommen ist.'
       ]},
       { title: 'Formen & Gare', steps: [
-        'Stockgare bei Zieltemperatur, dabei 2–3× dehnen und falten.',
+        'Stockgare bei Raumtemperatur, dabei 2-3× dehnen und falten.',
         'Rundwirken, in ein bemehltes Gärkörbchen legen.',
-        'Stückgare: 1–2 Std. bei Raumtemperatur oder über Nacht im Kühlschrank.'
+        'Stückgare: 1-2 Std. bei Raumtemperatur oder über Nacht im Kühlschrank.'
       ]},
       { title: 'Backen', steps: [
         'Ofen mit Gusseisentopf oder Backstein auf 260°C vorheizen.',
@@ -1087,8 +380,7 @@ const RECIPES = {
       { key:'salz',      name:'Salz',        pct:2.2 },
       { key:'sauerteig', name:'Sauerteig',   pct:20 }
     ],
-    stockgare: [ {temp:'24°C',dauer:'4–4.5 h'}, {temp:'26°C',dauer:'3–3.5 h'}, {temp:'28°C',dauer:'2.5–3 h'} ],
-    gtt: 26,
+    stockgare: [ {temp:'Stockgare',dauer:'2.5-4.5 h'}, {temp:'Stückgare',dauer:'45-75 Min.'} ],
     phases: [
       { title: 'Teig machen', steps: [
         '{{wasser}} Wasser, {{sauerteig}} Sauerteig und {{mehl}} Mehl vermischen, kurz ruhen lassen.',
@@ -1096,14 +388,14 @@ const RECIPES = {
         '{{oel}} Öl nach und nach einkneten oder einfalten.'
       ]},
       { title: 'Formen & Gare', steps: [
-        'Stockgare bei Zieltemperatur, dabei 2–3× im Gefäss falten.',
+        'Stockgare bei Raumtemperatur, dabei 2-3× im Gefäss falten.',
         'Geöltes Blech mit dem Teig auslegen, leicht dehnen.',
-        'Stückgare: 45–75 Min., bis der Teig sichtbar aufgegangen ist.',
+        'Stückgare: 45-75 Min., bis der Teig sichtbar aufgegangen ist.',
         'Mit den Fingern Dellen eindrücken, mit Öl, Salz und Belag nach Wahl bestreuen.'
       ]},
       { title: 'Backen', steps: [
-        'Ofen auf 220–230°C vorheizen.',
-        'Ca. 20–25 Min. backen, bis die Oberfläche goldbraun ist.'
+        'Ofen auf 220-230°C vorheizen.',
+        'Ca. 20-25 Min. backen, bis die Oberfläche goldbraun ist.'
       ]}
     ]
   },
@@ -1116,7 +408,7 @@ const RECIPES = {
       {v:70, label:'Fest'}, {v:75, label:'Basic'}, {v:80, label:'Offen'}
     ]},
     flours: [
-      { key:'weiss', name:'Weizenmehl Tipo 0 (12–13% Protein)', pct:100 }
+      { key:'weiss', name:'Weizenmehl Tipo 0 (12-13% Protein)', pct:100 }
     ],
     fixed: [
       { key:'wasser',     name:'Wasser',    pct:75,   hasBassinage:false },
@@ -1124,8 +416,7 @@ const RECIPES = {
       { key:'salz',       name:'Salz',      pct:2.6 },
       { key:'anstellgut', name:'Anstellgut (aktiv)', pct:18 }
     ],
-    stockgare: [ {temp:'Raumtemp., nach dem Falten',dauer:'1 h'}, {temp:'Über Nacht, Kühlschrank',dauer:'8–12 h'} ],
-    gtt: 22,
+    stockgare: [ {temp:'Nach dem Falten',dauer:'1 h'}, {temp:'Kühlschrank',dauer:'8-12 h'} ],
     sourceUrl: 'https://www.instagram.com/reel/DdWQd-YoDlb/',
     phases: [
       { title: 'Teig machen', steps: [
@@ -1142,14 +433,14 @@ const RECIPES = {
         'Teig in eine leicht geölte grosse Box geben, Deckel drauf und über Nacht in den Kühlschrank.'
       ]},
       { title: 'Formen & Stückgare', steps: [
-        'Am nächsten Tag eine Kastenform (ca. 30×11 cm) leicht einölen, mit Backpapier auslegen. 3–4 EL Olivenöl hineingeben und den Teig hineinstürzen.',
+        'Am nächsten Tag eine Kastenform (ca. 30×11 cm) leicht einölen, mit Backpapier auslegen. 3-4 EL Olivenöl hineingeben und den Teig hineinstürzen.',
         'Teig rechts und links, oben und unten einfalten und einmal wenden, sodass die unschöne Seite unten und die glatte Seite oben liegt.',
         'Abgedeckt eine Stunde an einem warmen Ort gehen lassen, bis der Teig sichtbar aufgegangen ist und sich leichte Blasen abzeichnen.'
       ]},
       { title: 'Backen', steps: [
         'Ofen auf 230°C Ober-/Unterhitze vorheizen.',
         'Etwas Olivenöl über den Teig geben und mit den Fingern Dellen eindrücken, im besten Fall erheben sich einige Blasen.',
-        'Mit Meersalzflocken bestreuen und auf mittlerer Schiene 20–30 Min. backen, bis die Oberfläche goldbraun ist.',
+        'Mit Meersalzflocken bestreuen und auf mittlerer Schiene 20-30 Min. backen, bis die Oberfläche goldbraun ist.',
         'Kurz abkühlen lassen und am besten frisch geniessen.'
       ]}
     ]
@@ -1178,8 +469,7 @@ const RECIPES = {
       { key:'oel',        name:'Olivenöl',  pct:9.3 },
       { key:'anstellgut', name:'Anstellgut (Weizensauerteig, aufgefrischt und aktiv)', pct:6.9 }
     ],
-    stockgare: [ {temp:'Vorteig, 21°C',dauer:'ca. 3 h'}, {temp:'Stückgare 24°C',dauer:'3 h'}, {temp:'4°C Kühlschrank',dauer:'über Nacht – 72 h'} ],
-    gtt: 24,
+    stockgare: [ {temp:'Vorteig',dauer:'ca. 3 h'}, {temp:'Stückgare',dauer:'ca. 3 h'}, {temp:'Kühlschrank',dauer:'über Nacht bis 72 h'} ],
     phases: [
       { title: 'Vorteig', steps: [
         'Ca. 14% des Mehls und Wassers mit dem {{anstellgut}} Anstellgut in einem hohen Gefäss verrühren.',
@@ -1200,7 +490,7 @@ const RECIPES = {
       { title: 'Backen', steps: [
         'Eine Stunde vor Verarbeitung aus dem Kühlschrank nehmen.',
         'Teigkugeln auf bemehlter Fläche von der Mitte nach aussen zu runden Fladen formen, ca. 3 cm Rand lassen.',
-        'Belegen und bei höchstmöglicher Ofentemperatur (idealerweise 400–450°C, Stein oder Stahl) wenige Minuten backen.'
+        'Belegen und bei höchstmöglicher Ofentemperatur (idealerweise 400-450°C, Stein oder Stahl) wenige Minuten backen.'
       ]}
     ]
   },
@@ -1220,17 +510,16 @@ const RECIPES = {
       { key:uid(), name:'Salz', pct:2.2 },
       { key:uid(), name:'Sauerteig', pct:18 }
     ],
-    stockgare: [ {temp:'24°C',dauer:'4–5 h'}, {temp:'26°C',dauer:'3–4 h'} ],
-    gtt: 26,
+    stockgare: [ {temp:'Stockgare',dauer:'3-5 h'}, {temp:'Stückgare',dauer:'1-3 h'} ],
     phases: [
       { title: 'Teig machen', steps: [
-        'Autolyse (optional): {{mehl}} Mehl und {{wasser}} Wasser grob vermischen, 30–45 Min. ruhen lassen.',
+        'Autolyse (optional): {{mehl}} Mehl und {{wasser}} Wasser grob vermischen, 30-45 Min. ruhen lassen.',
         '{{sauerteig}} Sauerteig und {{salz}} Salz einarbeiten, gut durchkneten.'
       ]},
       { title: 'Formen & Gare', steps: [
-        'Stockgare bei Zieltemperatur, dabei 2–3× dehnen und falten.',
-        'Formen — je nach Rezept rundwirken, in Form geben oder zu Fladen ausziehen.',
-        'Stückgare: 1–3 Std. bei Raumtemperatur oder über Nacht im Kühlschrank.'
+        'Stockgare bei Raumtemperatur, dabei 2-3× dehnen und falten.',
+        'Formen: je nach Rezept rundwirken, in Form geben oder zu Fladen ausziehen.',
+        'Stückgare: 1-3 Std. bei Raumtemperatur oder über Nacht im Kühlschrank.'
       ]},
       { title: 'Backen', steps: [
         'Ofen möglichst heiss vorheizen.',
@@ -1257,8 +546,7 @@ const RECIPES = {
       { key:'ei',         name:'Ei zum Bestreichen', pct:5 },
       { key:'sesam',      name:'Sesam zum Bestreuen', pct:1 }
     ],
-    stockgare: [ {temp:'22°C',dauer:'ca. 6 h'}, {temp:'24°C',dauer:'ca. 4–5 h'}, {temp:'4°C Kühlschrank',dauer:'bis zu 2 Tage'} ],
-    gtt: 24,
+    stockgare: [ {temp:'Stockgare',dauer:'4-6 h'}, {temp:'Stückgare',dauer:'1-2 h'}, {temp:'Kühlschrank',dauer:'bis 2 Tage'} ],
     phases: [
       { title: 'Anstellgut auffrischen', steps: [
         '12 Std. vor dem Teigmachen etwas Anstellgut, Mehl und Wasser in einem sauberen Glas verrühren.',
@@ -1270,7 +558,7 @@ const RECIPES = {
       ]},
       { title: 'Dehnen & Falten', steps: [
         'Hände leicht anfeuchten. Eine Seite des Teigs hochziehen und über sich selbst falten, die Schüssel eine Vierteldrehung weiterdrehen und wiederholen, bis einmal ganz herum gegangen wurde.',
-        'Abgedeckt 30 Min. ruhen lassen, dann den Vorgang zwei weitere Male wiederholen (alternativ: 8–10 Min. in der Küchenmaschine bei mittlerer Geschwindigkeit kneten).'
+        'Abgedeckt 30 Min. ruhen lassen, dann den Vorgang zwei weitere Male wiederholen (alternativ: 8-10 Min. in der Küchenmaschine bei mittlerer Geschwindigkeit kneten).'
       ]},
       { title: 'Stockgare', steps: [
         'Abgedeckt bei Raumtemperatur gehen lassen, bis sich der Teig verdoppelt hat.',
@@ -1279,7 +567,7 @@ const RECIPES = {
       { title: 'Formen & Stückgare', steps: [
         'Teig auf eine bemehlte Fläche geben und in gleich grosse Portionen teilen.',
         'Jede Portion zu einer Kugel formen, obenauf leicht bemehlen und auf ein mit Backpapier ausgelegtes Blech setzen.',
-        'Mit einem sauberen Tuch abdecken und bei Raumtemperatur 1–2 Std. gehen lassen, bis die Buns sichtbar aufgegangen sind.'
+        'Mit einem sauberen Tuch abdecken und bei Raumtemperatur 1-2 Std. gehen lassen, bis die Buns sichtbar aufgegangen sind.'
       ]},
       { title: 'Backen', steps: [
         'Ofen auf 190°C vorheizen.',
@@ -1312,8 +600,7 @@ const RECIPES = {
       { key:'sauerteig',name:'Sauerteig (optional)', pct:8 },
       { key:'eibestreichen', name:'Ei zum Bestreichen', pct:10 }
     ],
-    stockgare: [ {temp:'Vorteig, 12 Std. RT',dauer:'—'}, {temp:'Hauptteig 24°C',dauer:'90–120 Min.'} ],
-    gtt: 24,
+    stockgare: [ {temp:'Vorteig',dauer:'ca. 12 h'}, {temp:'Stockgare',dauer:'90-120 Min.'}, {temp:'Stückgare',dauer:'50-60 Min.'} ],
     phases: [
       { title: 'Kochstück', steps: [
         'Safranfäden im Mörser fein verreiben und in der Milch bei 60°C auflösen.',
@@ -1325,24 +612,24 @@ const RECIPES = {
         'Zudecken und ca. 12 Std. bei Raumtemperatur gären lassen.'
       ]},
       { title: 'Hauptteig', steps: [
-        'Kochstück, Vorteig, {{milch}} Milch, {{mehl}} Mehl, {{zucker}} Zucker, {{butter}} Butter, {{hefe}} Hefe, {{salz}} Salz, {{ei}} Ei und ggf. {{sauerteig}} Sauerteig in der Küchenmaschine 2–3 Min. ankneten.',
-        'Knetgeschwindigkeit erhöhen, ca. 15–20 Min. bei mittlerer Geschwindigkeit kneten.',
+        'Kochstück, Vorteig, {{milch}} Milch, {{mehl}} Mehl, {{zucker}} Zucker, {{butter}} Butter, {{hefe}} Hefe, {{salz}} Salz, {{ei}} Ei und ggf. {{sauerteig}} Sauerteig in der Küchenmaschine 2-3 Min. ankneten.',
+        'Knetgeschwindigkeit erhöhen, ca. 15-20 Min. bei mittlerer Geschwindigkeit kneten.',
         'Die {{bassinage}} Bassinage-Milch nach und nach schluckweise einziehen lassen.',
-        'Teig in ein leicht gefettetes Becken geben, mit Gärfolie zudecken, 90–120 Min. bei Raumtemperatur gären lassen.',
-        'In der Zwischenzeit 1–2× von allen vier Seiten dehnen und falten.'
+        'Teig in ein leicht gefettetes Becken geben, mit Gärfolie zudecken, 90-120 Min. bei Raumtemperatur gären lassen.',
+        'In der Zwischenzeit 1-2× von allen vier Seiten dehnen und falten.'
       ]},
       { title: 'Formen', steps: [
         'Teig auf die Arbeitsfläche geben, in gleich grosse Stücke portionieren.',
-        'Teiglinge 2–3× über die Arbeitsplatte schleifen für eine glatte Oberfläche.',
+        'Teiglinge 2-3× über die Arbeitsplatte schleifen für eine glatte Oberfläche.',
         'Auf unbemehlter Fläche zu gleichmässigen Kugeln formen.',
         'Mit dem Verschluss nach unten aufs Blech legen, leicht flach drücken, mit {{eibestreichen}} verquirltem Ei bestreichen.',
-        'Stückgare: 50–60 Min. bei Raumtemperatur.'
+        'Stückgare: 50-60 Min. bei Raumtemperatur.'
       ]},
       { title: 'Backen', steps: [
         'Ofen auf 180°C Ober-/Unterhitze vorheizen.',
         'Teiglinge nochmals mit verquirltem Ei bestreichen.',
         'Mit einem scharfen Messer die Oberfläche rautenförmig einschneiden, Klinge senkrecht führen.',
-        'In die Mitte des vorgeheizten Ofens geben, 30–35 Min. backen.'
+        'In die Mitte des vorgeheizten Ofens geben, 30-35 Min. backen.'
       ]}
     ]
   },
@@ -1365,931 +652,735 @@ const RECIPES = {
       { key:'oel',       name:'Olivenöl',    pct:3.3 },
       { key:'eibestreichen', name:'Eigelb zum Bestreichen', pct:5 }
     ],
-    stockgare: [ {temp:'Raumtemp., nach dem Falten',dauer:'3–5 h'}, {temp:'Kühlschrank',dauer:'8–16 h'} ],
-    gtt: 22,
+    stockgare: [ {temp:'Stockgare',dauer:'3-5 h'}, {temp:'Kühlschrank',dauer:'8-16 h'} ],
     phases: [
       { title: 'Teig machen', steps: [
         '{{sauerteig}} Sauerteig im lauwarmen Wasser ({{wasser}}) auflösen.',
         '{{mehl}} Mehl, {{salz}} Salz, {{joghurt}} Joghurt und {{oel}} Olivenöl dazugeben und alles zu einem glatten Teig verkneten.'
       ]},
       { title: 'Dehnen & Falten', steps: [
-        'Teig 2–3× im Abstand von 30 Min. dehnen und falten: dazu eine Seite vorsichtig hochziehen und über den Teig zur gegenüberliegenden Seite legen. Von allen vier Seiten wiederholen.'
+        'Teig 2-3× im Abstand von 30 Min. dehnen und falten: dazu eine Seite vorsichtig hochziehen und über den Teig zur gegenüberliegenden Seite legen. Von allen vier Seiten wiederholen.'
       ]},
       { title: 'Stockgare & Kaltgare', steps: [
-        'Schüssel abdecken und den Teig 3–5 Std. bei Raumtemperatur gehen lassen, bis er sich deutlich vergrössert hat.',
-        'Danach für 8–16 Std. in den Kühlschrank stellen.'
+        'Schüssel abdecken und den Teig 3-5 Std. bei Raumtemperatur gehen lassen, bis er sich deutlich vergrössert hat.',
+        'Danach für 8-16 Std. in den Kühlschrank stellen.'
       ]},
       { title: 'Formen', steps: [
         'Am nächsten Tag aus dem Kühlschrank nehmen, in Portionen teilen, Kugeln formen und 30 Min. bei Raumtemperatur ruhen lassen.',
-        'Aus jeder Kugel von Hand einen runden Fladen (1,5–2 cm dick) formen, auf Backpapier legen und weitere 2 Std. gehen lassen.'
+        'Aus jeder Kugel von Hand einen runden Fladen (1,5-2 cm dick) formen, auf Backpapier legen und weitere 2 Std. gehen lassen.'
       ]},
       { title: 'Backen', steps: [
         'Ofen auf 250°C Ober-/Unterhitze vorheizen, eine ofenfeste Form unten in den Ofen stellen.',
         'In die Fladen aussen einen Kreis und innen ein Rautenmuster drücken.',
         '{{eibestreichen}} Eigelb mit 1 EL Joghurt verrühren, die Fladen damit bestreichen und mit Sesam und Schwarzkümmel bestreuen.',
         'Fladen in den Ofen schieben, Temperatur auf 200°C reduzieren und ca. 100 ml Wasser in die ofenfeste Form giessen (Dampf).',
-        '10 Min. backen, Wasserform entfernen, weitere 10–15 Min. backen, bis die Fladen goldbraun sind.'
+        '10 Min. backen, Wasserform entfernen, weitere 10-15 Min. backen, bis die Fladen goldbraun sind.'
       ]}
     ]
   }
 };
 
+Object.assign(ICONS, {
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>'
+});
+
+const MENU = [
+  { key:'copain',     label:'Copain' },
+  { key:'focaccia',   label:'Focaccia' },
+  { key:'brotkasten', label:'Focaccia Kasten' },
+  { key:'pizza',      label:'Pizza' },
+  { key:'buns',       label:'Burger Buns' },
+  { key:'cuchaule',   label:'Cuchaule' },
+  { key:'fladenbrot', label:'Fladenbrot' },
+  { key:'custom',     label:'Eigenes Rezept' }
+];
+
+/* =========================================================================
+   ZUSTAND
+   ========================================================================= */
+
+let activeKey = 'copain';
 const state = {};
-Object.keys(RECIPES).forEach(key=>{
+Object.keys(RECIPES).forEach(key => {
   const r = RECIPES[key];
   state[key] = {
     name: r.label,
     teigmenge: r.defaultTeigmenge,
-    flours: Object.fromEntries(r.flours.map(f=>[f.key, f.pct])),
+    flours: Object.fromEntries(r.flours.map(f => [f.key, f.pct])),
     hydration: r.hydration.basic,
-    lt: 20, mt: 18, gtt: r.gtt, korrektur: 0,
     size: r.sizes ? (r.sizes.find(s => s.weight === r.unitWeight) || r.sizes[Math.floor(r.sizes.length/2)]).key : null
   };
 });
 
-/* -------------------------- Build -------------------------- */
-
-function buildPanel(key){
+function getUnitWeight(key){
   const r = RECIPES[key];
-  const el = document.getElementById('panel-'+key);
-
-  const flourRows = r.flours.map(f => `
-    <div class="flour-row" data-fkey="${f.key}">
-      <div class="flour-head">
-        <span class="name">${f.name}</span>
-        <span class="pct"><span class="pct-val">${state[key].flours[f.key]}</span>%</span>
-      </div>
-      <input type="range" min="0" max="100" step="5" value="${state[key].flours[f.key]}" data-recipe="${key}" data-flour="${f.key}">
-    </div>
-  `).join('');
-
-  const initialUnits = Math.max(1, Math.round(state[key].teigmenge / getUnitWeight(key)));
-
-  const sizeChips = r.sizes ? r.sizes.map(sz => `
-    <button class="size-chip${state[key].size === sz.key ? ' active' : ''}" data-recipe="${key}" data-size="${sz.key}">
-      <span class="size-chip-label">${sz.label}</span>
-      <span class="size-chip-desc">${sz.desc}</span>
-    </button>
-  `).join('') : '';
-
-  el.innerHTML = `
-    <div class="hero hero-${key}">
-      <div class="hero-emoji">${icon(r.icon)}</div>
-      <div class="hero-label">Wie viel willst du machen?</div>
-      ${r.sizes ? `
-      <div class="size-chip-row">${sizeChips}</div>
-      ` : ''}
-      <div class="unit-slider-row">
-        <span class="unit-slider-value"><span class="unit-count">${initialUnits}</span><span class="unit-label-text">× ${r.unitLabel}</span></span>
-      </div>
-      <input type="range" class="unit-slider" min="1" max="${r.maxUnits || 12}" step="1" value="${initialUnits}" data-recipe="${key}" data-role="unitcount">
-      <div class="unit-slider-scale"><span>1</span><span>${r.maxUnits || 12}</span></div>
-      <div class="hero-input-row">
-        <input type="number" min="100" step="10" value="${state[key].teigmenge}" data-recipe="${key}" data-role="teigmenge">
-        <span class="hero-unit">g Teig</span>
-      </div>
-      <div class="hero-sub per-piece-sub">oder Menge frei eingeben</div>
-      ${r.sizeInfo ? `<div class="hero-sub size-info">${r.sizeInfo}</div>` : ''}
-      ${r.sourceUrl ? `<a class="hero-sub source-link" href="${r.sourceUrl}" target="_blank" rel="noopener">Original-Rezept ansehen ↗</a>` : ''}
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('flour')}</span>Mehl</h2>
-      <p class="sub">Mischung anpassen — zusammen sollte es 100% sein</p>
-      <div class="flour-list">${flourRows}</div>
-      <div class="flour-total">
-        <span>Total</span>
-        <span class="flour-total-val">100%</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('droplet')}</span>Hydration</h2>
-      <p class="sub">Wasseranteil — mehr Wasser heisst offenere, feuchtere Krume</p>
-      <div class="hydration-value-row">
-        <span class="hydration-big"><span class="hydration-num">${Math.round(state[key].hydration)}</span>%</span>
-      </div>
-      <input type="range" class="hydration-slider" min="${r.hydration.min}" max="${r.hydration.max}" step="1" value="${state[key].hydration}" data-recipe="${key}" data-role="hydration">
-      <div class="hydration-scale">
-        <span>${r.hydration.min}%</span>
-        <span>${r.hydration.max}%</span>
-      </div>
-      <div class="portion-row hydration-presets">
-        ${r.hydration.presets.map(p => `<button class="portion-chip hydration-chip${p.v === r.hydration.basic ? ' is-basic':''}" data-recipe="${key}" data-hydration="${p.v}">${p.label}<span class="chip-sub">${p.v}%</span></button>`).join('')}
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('scale')}</span>Das brauchst du</h2>
-      <div class="ing-list result-body"></div>
-      <div class="note">
-        <strong>Gehzeit</strong> je nach Raumtemperatur
-        <div class="pill-row">
-          ${r.stockgare.map(sg => `<div class="pill"><div class="p-temp">${sg.temp}</div><div class="p-time">${sg.dauer}</div></div>`).join('')}
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('thermometer')}</span>Wassertemperatur</h2>
-      <p class="sub">Damit der Teig genau richtig warm wird</p>
-      <div class="field-grid">
-        <div class="field"><label>Teig soll haben</label><div class="field-input-row"><input type="number" min="15" max="35" step="0.5" value="${state[key].gtt}" data-recipe="${key}" data-role="gtt"><span class="field-unit">°C</span></div></div>
-        <div class="field"><label>Luft gerade</label><div class="field-input-row"><input type="number" min="0" max="40" step="0.5" value="${state[key].lt}" data-recipe="${key}" data-role="lt"><span class="field-unit">°C</span></div></div>
-        <div class="field"><label>Mehl gerade</label><div class="field-input-row"><input type="number" min="0" max="40" step="0.5" value="${state[key].mt}" data-recipe="${key}" data-role="mt"><span class="field-unit">°C</span></div></div>
-        <div class="field"><label>Abzug (heisser Sommer)</label><div class="field-input-row"><input type="number" min="0" max="15" step="0.5" value="${state[key].korrektur}" data-recipe="${key}" data-role="korrektur"><span class="field-unit">°C</span></div></div>
-      </div>
-      <div class="temp-grid">
-        <div class="temp-box"><div class="t-label">Von Hand kneten</div><div class="t-value temp-hand">–<span class="t-unit"> °C</span></div></div>
-        <div class="temp-box"><div class="t-label">Mit Maschine</div><div class="t-value temp-kneter">–<span class="t-unit"> °C</span></div></div>
-      </div>
-      <div class="note">Sauerteig im Kühlschrank? Dann 1–2°C dazuzählen.</div>
-    </div>
-
-    ${r.hasStarterCards === false ? '' : `
-    <div class="card">
-      <h2><span class="icon">${icon('sprout')}</span>1. Anstellgut auffrischen</h2>
-      <p class="sub">Immer die gleiche Menge — unabhängig vom Rezept</p>
-      <div class="starter-flow">
-        <div class="starter-step">
-          <div class="step-title"><span>Zusammenmischen</span><span class="ag2-total">–</span></div>
-          <div class="chip-row"><div class="chip">altes Anstellgut <b class="ag2-starter">–</b></div><div class="chip">Mehl <b class="ag2-mehl">–</b></div><div class="chip">Wasser <b class="ag2-wasser">–</b></div></div>
-        </div>
-      </div>
-      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge gut verzweieinhalbfacht — meist 6&ndash;10 Std., je nach Temperatur und Aktivität. Davon wird dann so viel für den Sauerteig-Ansatz gebraucht, wie unten steht.</div>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon">${icon('jar')}</span>2. Sauerteig ansetzen</h2>
-      <p class="sub">Sollte sich mindestens verdoppeln</p>
-      <div class="starter-flow">
-        <div class="starter-step">
-          <div class="step-title"><span>Insgesamt ansetzen</span><span class="st-ansetzen-big">–</span></div>
-          <div class="chip-row"><div class="chip">gebraucht <b class="st-benoetigt">–</b></div><div class="chip">Puffer <b class="st-reserve">–</b></div></div>
-        </div>
-        <div class="starter-step">
-          <div class="step-title"><span>Daraus mischen</span><span class="st2-total">–</span></div>
-          <div class="chip-row"><div class="chip">Anstellgut <b class="st2-starter">–</b></div><div class="chip">Mehl <b class="st2-mehl">–</b></div><div class="chip">Wasser <b class="st2-wasser">–</b></div></div>
-        </div>
-      </div>
-      <div class="note">Warmer Ort (Wasser dafür 32°C), bis sich die Menge mindestens verdoppelt hat — meist 6&ndash;12 Std., je nach Temperatur.</div>
-    </div>
-    `}
-
-    <details class="card recipe-details">
-      <summary>
-        <span class="icon">${icon('list')}</span>
-        <span class="summary-text">Rezept anzeigen — kompletter Ablauf</span>
-        <span class="chevron">${icon('chevronDown')}</span>
-      </summary>
-      <div class="phase-list">
-        ${r.phases.map(phase => `
-          <div class="phase">
-            <div class="phase-title">${phase.title}</div>
-            <div class="step-list">
-              ${phase.steps.map((step, i) => `<div class="step-item"><span class="step-num">${i+1}</span><span class="step-text" data-template="${step.replace(/"/g,'&quot;')}">${fillStepPlaceholders(step, key)}</span></div>`).join('')}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </details>
-
-    <div class="card">
-      <button class="pdf-btn" data-recipe="${key}">
-        <span class="inline-icon">${icon('doc')}</span>Rezept als PDF erstellen
-      </button>
-    </div>
-  `;
-}
-
-function buildCustomExtra(key){
-  const r = RECIPES[key];
-  const el = document.getElementById('panel-'+key);
-  if(!el) return;
-
-  // Vorhandene Karten merken, bevor wir etwas einfügen (Reihenfolge: Hero, Mehl-Karte, Zutaten-Karte, ...)
-  const existingCards = Array.prototype.filter.call(el.children, c => c.classList && c.classList.contains('card'));
-  const flourCard = existingCards[0];
-  const resultCard = existingCards[1];
-
-  // Name-Feld über der Hero-Karte einfügen
-  const nameField = document.createElement('div');
-  nameField.className = 'card';
-  nameField.innerHTML = `
-    <h2><span class="icon">${icon('note')}</span>Rezeptname</h2>
-    <div class="field" style="background:var(--surface2);">
-      <label>Name für dein Rezept</label>
-      <input type="text" value="${state[key].name}" data-recipe="${key}" data-role="name" placeholder="z.B. Mein Sonntagsbrot">
-    </div>
-  `;
-  el.insertBefore(nameField, el.firstChild);
-
-  // Editierbare Mehl-Liste mit Hinzufügen/Entfernen
-  if(!flourCard){ return; }
-  const flourListDiv = flourCard.querySelector('.flour-list');
-  if(flourListDiv){
-    flourListDiv.innerHTML = '';
-    flourListDiv.classList.add('custom-flour-list');
+  if(r.sizes){
+    const found = r.sizes.find(s => s.key === state[key].size);
+    return found ? found.weight : r.unitWeight;
   }
-  renderCustomFlourList(key);
-
-  const addBtn = document.createElement('button');
-  addBtn.className = 'add-flour-btn';
-  addBtn.textContent = '+ Mehlsorte hinzufügen';
-  addBtn.addEventListener('click', ()=>{
-    const newKey = uid();
-    RECIPES.custom.flours.push({ key:newKey, name:'Neues Mehl', pct:0 });
-    state.custom.flours[newKey] = 0;
-    renderCustomFlourList('custom');
-    attachCustomFlourEvents('custom');
-    render('custom');
-  });
-  flourCard.appendChild(addBtn);
-
-  // Editierbare Fixzutaten-Liste (nach der Zutaten-Ergebniskarte einfügen)
-  if(!resultCard){ return; }
-  const fixedCard = document.createElement('div');
-  fixedCard.className = 'card';
-  fixedCard.innerHTML = `
-    <h2><span class="icon">${icon('salt')}</span>Weitere Zutaten</h2>
-    <p class="sub">In % vom Mehlgewicht — z.B. Öl, Zucker, Gewürze</p>
-    <div class="custom-fixed-list"></div>
-    <button class="add-flour-btn add-fixed-btn">+ Zutat hinzufügen</button>
-  `;
-  resultCard.after(fixedCard);
-
-  renderCustomFixedList(key);
-  fixedCard.querySelector('.add-fixed-btn').addEventListener('click', ()=>{
-    const newKey = uid();
-    RECIPES.custom.fixed.push({ key:newKey, name:'Neue Zutat', pct:0 });
-    renderCustomFixedList('custom');
-    attachCustomFixedEvents('custom');
-    render('custom');
-  });
+  return r.unitWeight;
 }
+function unitsOf(key){ return Math.max(1, Math.round(state[key].teigmenge / getUnitWeight(key))); }
+function waterDefOf(r){ return r.fixed.find(f => f.hasBassinage) || r.fixed.find(f => /wasser|milch/i.test(f.name)); }
+function starterDefOf(r){ return r.fixed.find(f => /sauerteig|anstellgut/i.test(f.name)); }
+function hasStarter(r){ return r.hasStarterCards !== false && !!starterDefOf(r); }
 
-function renderCustomFlourList(key){
-  const el = document.getElementById('panel-'+key);
-  const listDiv = el.querySelector('.custom-flour-list');
-  listDiv.innerHTML = RECIPES[key].flours.map(f => `
-    <div class="custom-flour-item" data-fkey="${f.key}">
-      <input type="text" value="${f.name}" data-role="flourname" data-fkey="${f.key}">
-      <input type="number" min="0" max="100" step="5" value="${state[key].flours[f.key]}" data-role="flourpct" data-fkey="${f.key}">
-      <span class="pct-sign">%</span>
-      <button class="remove-btn" data-role="removeflour" data-fkey="${f.key}">✕</button>
-    </div>
-  `).join('');
-  attachCustomFlourEvents(key);
-}
-
-function renderCustomFixedList(key){
-  const el = document.getElementById('panel-'+key);
-  const listDiv = el.querySelector('.custom-fixed-list');
-  listDiv.innerHTML = RECIPES[key].fixed.map(f => `
-    <div class="custom-fixed-item" data-fkey="${f.key}">
-      <input type="text" value="${f.name}" data-role="fixedname" data-fkey="${f.key}">
-      <input type="number" min="0" max="100" step="0.5" value="${f.pct}" data-role="fixedpct" data-fkey="${f.key}">
-      <span class="pct-sign">%</span>
-      <button class="remove-btn" data-role="removefixed" data-fkey="${f.key}">✕</button>
-    </div>
-  `).join('');
-  attachCustomFixedEvents(key);
-}
-
-function attachCustomFlourEvents(key){
-  const el = document.getElementById('panel-'+key);
-  el.querySelectorAll('[data-role="flourname"]').forEach(inp=>{
-    inp.addEventListener('input', e=>{
-      const f = RECIPES[key].flours.find(x=>x.key===e.target.dataset.fkey);
-      if(f) f.name = e.target.value;
-      render(key);
-    });
-  });
-  el.querySelectorAll('[data-role="flourpct"]').forEach(inp=>{
-    inp.addEventListener('input', e=>{
-      state[key].flours[e.target.dataset.fkey] = parseFloat(e.target.value) || 0;
-      render(key);
-    });
-  });
-  el.querySelectorAll('[data-role="removeflour"]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      const fkey = e.target.dataset.fkey;
-      if(RECIPES[key].flours.length <= 1) return;
-      RECIPES[key].flours = RECIPES[key].flours.filter(x=>x.key!==fkey);
-      delete state[key].flours[fkey];
-      renderCustomFlourList(key);
-      render(key);
-    });
-  });
-}
-
-function attachCustomFixedEvents(key){
-  const el = document.getElementById('panel-'+key);
-  el.querySelectorAll('[data-role="fixedname"]').forEach(inp=>{
-    inp.addEventListener('input', e=>{
-      const f = RECIPES[key].fixed.find(x=>x.key===e.target.dataset.fkey);
-      if(f) f.name = e.target.value;
-      render(key);
-    });
-  });
-  el.querySelectorAll('[data-role="fixedpct"]').forEach(inp=>{
-    inp.addEventListener('input', e=>{
-      const f = RECIPES[key].fixed.find(x=>x.key===e.target.dataset.fkey);
-      if(f) f.pct = parseFloat(e.target.value) || 0;
-      render(key);
-    });
-  });
-  el.querySelectorAll('[data-role="removefixed"]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      const fkey = e.target.dataset.fkey;
-      RECIPES[key].fixed = RECIPES[key].fixed.filter(x=>x.key!==fkey);
-      render(key);
-    });
-  });
-}
-
-/* -------------------------- Berechnung -------------------------- */
+/* =========================================================================
+   BERECHNUNG
+   Mehl = 100 %. Alle anderen Zutaten in % vom Mehl, Wasser/Milch über Hydration.
+   ========================================================================= */
 
 function calc(key){
-  const r = RECIPES[key];
-  const s = state[key];
-  const teigmenge = s.teigmenge;
-  const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
+  const r = RECIPES[key], s = state[key];
+  const wasserDef = waterDefOf(r);
+  const effectivePct = f => (wasserDef && f.key === wasserDef.key) ? s.hydration : f.pct;
 
-  const effectivePct = (f) => (wasserDef && f.key === wasserDef.key) ? s.hydration : f.pct;
-
-  const fixedPctSum = r.fixed.reduce((acc,f)=> acc + effectivePct(f)/100, 0);
-  const totalMehl = roundUp10(teigmenge / (1 + fixedPctSum));
+  const fixedPctSum = r.fixed.reduce((acc,f) => acc + effectivePct(f)/100, 0);
+  const totalMehl = roundUp10(s.teigmenge / (1 + fixedPctSum));
 
   const flourGrams = {};
-  r.flours.forEach(f=>{ flourGrams[f.key] = totalMehl * ((s.flours[f.key]||0)/100); });
-
+  r.flours.forEach(f => { flourGrams[f.key] = totalMehl * ((s.flours[f.key]||0)/100); });
   const fixedGrams = {};
-  r.fixed.forEach(f=>{ fixedGrams[f.key] = totalMehl * (effectivePct(f)/100); });
+  r.fixed.forEach(f => { fixedGrams[f.key] = totalMehl * (effectivePct(f)/100); });
 
-  let bassinage = 0, wasserTeig = 0;
-  if(wasserDef && wasserDef.hasBassinage){
-    bassinage = fixedGrams[wasserDef.key] * (wasserDef.bassinagePct/100);
-    wasserTeig = fixedGrams[wasserDef.key] - bassinage;
-  }
+  let bassinage = 0;
+  if(wasserDef && wasserDef.hasBassinage){ bassinage = fixedGrams[wasserDef.key] * (wasserDef.bassinagePct/100); }
 
-  const totalTeig = Object.values(flourGrams).reduce((a,b)=>a+b,0)
-                   + Object.values(fixedGrams).reduce((a,b)=>a+b,0);
+  // Teig gesamt = Mehl gesamt + Zutaten (Mehlmischung wird separat auf Mehl gesamt verteilt)
+  const fixedSum = Object.values(fixedGrams).reduce((a,b) => a+b, 0);
+  const totalTeig = totalMehl + fixedSum;
 
-  // Konsistent gerundete Anzeige-Werte: Mehl gesamt + alle Fixzutaten zusammen so runden,
-  // dass ihre Summe garantiert exakt "Teig gesamt" (gerundet) ergibt. Wird von render(),
-  // den Zubereitungstexten und dem PDF-Export gleichermassen verwendet, damit überall
-  // dieselben Zahlen erscheinen.
-  const topLevelKeys = r.fixed.map(f => f.key);
-  const topLevelValues = [totalMehl, ...topLevelKeys.map(k => fixedGrams[k])];
-  const topLevelRounded = roundToSum(topLevelValues, totalTeig);
+  // Konsistent gerundet: Mehl gesamt + Zutaten ergeben exakt "Teig gesamt"
+  const keys = r.fixed.map(f => f.key);
+  const rounded = roundToSum([totalMehl, ...keys.map(k => fixedGrams[k])], totalTeig);
   const fixedGramsRounded = {};
-  topLevelKeys.forEach((k, i) => { fixedGramsRounded[k] = topLevelRounded[i + 1]; });
+  keys.forEach((k,i) => { fixedGramsRounded[k] = rounded[i+1]; });
 
-  const H13 = s.gtt * 2;
-  const H14 = (s.lt + s.mt) / 2;
-  const H16 = H13 - H14;
-  const handTemp = H16 - s.korrektur;
-  const kneterTemp = H16 - 7 - s.korrektur;
+  // Mehlsorten auf Mehl gesamt verteilen
+  const activeFlours = r.flours.filter(f => (s.flours[f.key]||0) > 0);
+  const flourSumPct = r.flours.reduce((acc,f) => acc + (s.flours[f.key]||0), 0);
+  const flourTarget = activeFlours.reduce((acc,f) => acc + flourGrams[f.key], 0);
+  const flourRounded = roundToSum(activeFlours.map(f => flourGrams[f.key]), flourTarget);
 
-  const sauerteigDef = r.fixed.find(f=>/sauerteig|anstellgut/i.test(f.name));
-  const stBenoetigt = sauerteigDef ? fixedGrams[sauerteigDef.key] : 0;
-  const stReserve = stBenoetigt * 0.20;
-  const stAnsetzen = stBenoetigt + stReserve;
-  // Sauerteig-Ansatz im Verhältnis 2/10/8 (Starter/Mehl/Wasser) = 10% / 50% / 40%
-  const st2Starter = stAnsetzen * (2/20);
-  const st2Mehl = stAnsetzen * (10/20);
-  const st2Wasser = stAnsetzen * (8/20);
-  const st2Total = st2Starter + st2Mehl + st2Wasser;
-
-  // Anstellgut auffrischen: feste Formel, unabhängig vom Rezept, keine Reserve.
-  const ag2Starter = 20, ag2Mehl = 50, ag2Wasser = 40;
-  const ag2Total = ag2Starter + ag2Mehl + ag2Wasser;
-  const agBenoetigt = st2Starter;
-  const agAnsetzen = ag2Total;
-  const agReserve = 0;
+  // Sauerteig ansetzen: benötigte Menge + 20 % Reserve, Verhältnis 2/10/8
+  const stDef = starterDefOf(r);
+  const stNeed = stDef ? fixedGramsRounded[stDef.key] : 0;
+  const stAnsetzen = stDef ? fixedGrams[stDef.key] * 1.2 : 0;
+  const st = roundToSum([stAnsetzen*2/20, stAnsetzen*10/20, stAnsetzen*8/20], stAnsetzen);
 
   return {
-    totalMehl, flourGrams, fixedGrams, fixedGramsRounded, bassinage, wasserTeig, totalTeig,
-    handTemp, kneterTemp,
-    stBenoetigt, stReserve, stAnsetzen, st2Starter, st2Mehl, st2Wasser, st2Total,
-    agBenoetigt, agReserve, agAnsetzen, ag2Starter, ag2Mehl, ag2Wasser, ag2Total,
-    wasserDefKey: wasserDef ? wasserDef.key : null
+    totalMehl, flourGrams, fixedGrams, fixedGramsRounded, activeFlours, flourRounded, flourSumPct,
+    bassinage, bassinageRounded: Math.round(bassinage), totalTeig, wasserDef,
+    stNeed, stTotal: Math.round(stAnsetzen), stStarter: st[0], stMehl: st[1], stWasser: st[2]
   };
 }
 
-/* -------------------------- Mengen in Zubereitungstext einsetzen -------------------------- */
+// Anstellgut auffrischen: immer gleich, unabhängig vom Rezept, ohne Reserve
+const REFRESH = { starter:20, mehl:50, wasser:40, total:110 };
 
-function fillStepPlaceholders(text, key){
+/* ---------- Mengen in Zubereitungstext einsetzen ---------- */
+function fillStepPlaceholders(text, key, c){
   const r = RECIPES[key];
-  const c = calc(key);
-  const findFixed = (regex) => r.fixed.find(f => regex.test(f.name));
-
-  const salzDef = findFixed(/salz/i);
-  const oelDef = findFixed(/öl|oel/i);
-  const sauerteigDef = findFixed(/sauerteig/i);
-  const anstellgutDef = findFixed(/anstellgut/i);
-  const hefeDef = findFixed(/hefe/i);
-  const zuckerDef = findFixed(/zucker|sweety/i);
-  const butterDef = findFixed(/butter/i);
-  const honigDef = findFixed(/honig/i);
-  const joghurtDef = findFixed(/joghurt/i);
-  const sesamDef = findFixed(/sesam/i);
-  const eiDef = r.fixed.find(f => /^ei$/i.test(f.name.trim()));
-  const eiBestreichenDef = findFixed(/bestreichen/i);
-  const bassinageDef = r.fixed.find(f => f.hasBassinage);
-  const flüssigkeitDef = bassinageDef || findFixed(/wasser|milch/i);
-
+  c = c || calc(key);
+  const find = re => r.fixed.find(f => re.test(f.name));
+  const g = def => def ? fmt(c.fixedGramsRounded[def.key]) + ' g' : '';
+  const liquid = c.wasserDef;
+  const liquidTeig = liquid
+    ? fmt(liquid.hasBassinage ? c.fixedGramsRounded[liquid.key] - c.bassinageRounded : c.fixedGramsRounded[liquid.key]) + ' g'
+    : '';
   const values = {
     mehl: fmt(c.totalMehl) + ' g',
-    wasser: flüssigkeitDef ? (flüssigkeitDef.hasBassinage ? fmt(c.fixedGramsRounded[flüssigkeitDef.key] - Math.round(c.bassinage)) : fmt(c.fixedGramsRounded[flüssigkeitDef.key])) + ' g' : '',
-    milch: flüssigkeitDef ? (flüssigkeitDef.hasBassinage ? fmt(c.fixedGramsRounded[flüssigkeitDef.key] - Math.round(c.bassinage)) : fmt(c.fixedGramsRounded[flüssigkeitDef.key])) + ' g' : '',
-    bassinage: bassinageDef ? fmt(c.bassinage) + ' g' : '',
-    salz: salzDef ? fmt(c.fixedGramsRounded[salzDef.key]) + ' g' : '',
-    oel: oelDef ? fmt(c.fixedGramsRounded[oelDef.key]) + ' g' : '',
-    sauerteig: sauerteigDef ? fmt(c.fixedGramsRounded[sauerteigDef.key]) + ' g' : '',
-    anstellgut: anstellgutDef ? fmt(c.fixedGramsRounded[anstellgutDef.key]) + ' g' : '',
-    hefe: hefeDef ? fmt(c.fixedGramsRounded[hefeDef.key]) + ' g' : '',
-    zucker: zuckerDef ? fmt(c.fixedGramsRounded[zuckerDef.key]) + ' g' : '',
-    butter: butterDef ? fmt(c.fixedGramsRounded[butterDef.key]) + ' g' : '',
-    honig: honigDef ? fmt(c.fixedGramsRounded[honigDef.key]) + ' g' : '',
-    joghurt: joghurtDef ? fmt(c.fixedGramsRounded[joghurtDef.key]) + ' g' : '',
-    sesam: sesamDef ? fmt(c.fixedGramsRounded[sesamDef.key]) + ' g' : '',
-    ei: eiDef ? fmt(c.fixedGramsRounded[eiDef.key]) + ' g' : '',
-    eibestreichen: eiBestreichenDef ? fmt(c.fixedGramsRounded[eiBestreichenDef.key]) + ' g' : ''
+    wasser: liquidTeig,
+    milch: liquidTeig,
+    bassinage: (liquid && liquid.hasBassinage) ? fmt(c.bassinageRounded) + ' g' : '',
+    salz: g(find(/salz/i)),
+    oel: g(find(/öl|oel/i)),
+    sauerteig: g(find(/sauerteig/i)),
+    anstellgut: g(find(/anstellgut/i)),
+    hefe: g(find(/hefe/i)),
+    zucker: g(find(/zucker|sweety/i)),
+    butter: g(find(/butter/i)),
+    honig: g(find(/honig/i)),
+    joghurt: g(find(/joghurt/i)),
+    sesam: g(find(/sesam/i)),
+    ei: g(r.fixed.find(f => /^ei$/i.test(f.name.trim()))),
+    eibestreichen: g(find(/bestreichen/i))
   };
-
-  return text.replace(/\{\{(\w+)\}\}/g, (match, name) => values[name] !== undefined ? values[name] : match);
+  return text.replace(/\{\{(\w+)\}\}/g, (m, name) => values[name] !== undefined ? values[name] : m);
 }
+
+/* =========================================================================
+   AUFBAU
+   ========================================================================= */
+
+function panelEl(key){ return document.getElementById('panel-' + key); }
+function setFill(inp){
+  const min = parseFloat(inp.min) || 0, max = parseFloat(inp.max) || 100;
+  const v = Math.min(max, Math.max(min, parseFloat(inp.value) || 0));
+  inp.style.setProperty('--fill', ((v - min) / (max - min || 1) * 100) + '%');
+}
+
+function buildMenu(){
+  const nav = document.getElementById('menu');
+  nav.innerHTML = MENU.map(m => `
+    <button type="button" class="menu-btn t-${m.key}" data-key="${m.key}" aria-pressed="false">
+      <span class="ic">${icon(RECIPES[m.key].icon)}</span><span>${m.label}</span>
+    </button>`).join('');
+  nav.addEventListener('click', e => {
+    const btn = e.target.closest('.menu-btn');
+    if(btn) selectRecipe(btn.dataset.key, true);
+  });
+}
+
+function selectRecipe(key, fromUser){
+  if(!RECIPES[key]) key = 'copain';
+  activeKey = key;
+  document.querySelectorAll('.menu-btn').forEach(b => {
+    const on = b.dataset.key === key;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + key));
+  try { localStorage.setItem('sdc-recipe', key); } catch(e){}
+  if(fromUser){
+    const p = panelEl(key);
+    if(p && typeof p.getBoundingClientRect === 'function' && typeof p.scrollIntoView === 'function'){
+      if(p.getBoundingClientRect().top > window.innerHeight * 0.55) p.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  }
+}
+
+function buildPanel(key){
+  const r = RECIPES[key], s = state[key];
+  const max = r.maxUnits || 12;
+  const multiFlour = r.isCustom || r.flours.length > 1;
+  const liquidName = (waterDefOf(r) && /milch/i.test(waterDefOf(r).name)) ? 'Milch' : 'Wasser';
+
+  const sizeRow = r.sizes ? `<div class="size-row">${r.sizes.map(z => `
+      <button type="button" class="size-chip" data-role="size" data-size="${z.key}"><b>${z.label}</b><small>${z.desc} · ${z.weight} g</small></button>`).join('')}
+    </div>` : '';
+
+  const meta = (r.sizeInfo || r.sourceUrl) ? `<div class="hero-meta">
+      ${r.sizeInfo ? `<span>${esc(r.sizeInfo)}</span>` : ''}
+      ${r.sourceUrl ? `<a href="${r.sourceUrl}" target="_blank" rel="noopener">Original-Rezept ↗</a>` : ''}
+    </div>` : '';
+
+  const hero = `
+    <div class="hero">
+      <div class="hero-bgicon">${icon(r.icon)}</div>
+      ${r.isCustom
+        ? `<input class="hero-title-input" type="text" data-role="name" value="${esc(s.name)}" placeholder="Name für dein Rezept" aria-label="Rezeptname">`
+        : `<h2 class="hero-title">${esc(r.label)}</h2>`}
+      <div class="eyebrow">Wie viel willst du machen?</div>
+      ${sizeRow}
+      <div class="count"><span class="count-num" data-out="units">1</span><span class="count-unit">× ${esc(r.unitLabel)}</span></div>
+      <input type="range" min="1" max="${max}" step="1" value="1" data-role="units" aria-label="Anzahl ${esc(r.unitLabel)}">
+      <div class="scale"><span>1</span><span>${max}</span></div>
+      <div class="hero-foot">
+        <label class="gram-field"><input type="number" inputmode="numeric" min="50" step="10" value="${s.teigmenge}" data-role="teigmenge" aria-label="Teigmenge in Gramm"><span>g Teig</span></label>
+        <div class="per-piece" data-out="perpiece"></div>
+      </div>
+      ${meta}
+    </div>`;
+
+  const hydration = `
+    <section class="card">
+      <div class="card-head">
+        <div class="ic">${icon('droplet')}</div>
+        <div><h3 class="card-title">Hydration</h3><p class="card-sub">${liquidName === 'Milch' ? 'Milchanteil, bezogen aufs Mehl' : 'Mehr Wasser gibt eine offenere, feuchtere Krume'}</p></div>
+        <div class="right big-val"><span data-out="hyd"></span><small>%</small></div>
+      </div>
+      <input type="range" min="${r.hydration.min}" max="${r.hydration.max}" step="1" value="${s.hydration}" data-role="hydration" aria-label="Hydration in Prozent">
+      <div class="scale"><span>${r.hydration.min} %</span><span>${r.hydration.max} %</span></div>
+      <div class="chip-row">${r.hydration.presets.map(p => `
+        <button type="button" class="chip-btn" data-role="preset" data-v="${p.v}">${p.label}<small>${p.v} %</small></button>`).join('')}
+      </div>
+    </section>`;
+
+  const flourCard = multiFlour ? `
+    <details class="card fold"${r.isCustom ? ' open' : ''}>
+      <summary>
+        <div class="ic">${icon('flour')}</div>
+        <div class="sum-text"><h3 class="card-title">Mehlmischung</h3><p class="card-sub" data-out="floursub"></p></div>
+        <span class="chev">${icon('chevronDown')}</span>
+      </summary>
+      <div class="fold-body">
+        ${r.isCustom
+          ? `<div data-out="customflours"></div><button type="button" class="add-btn" data-role="addflour">+ Mehlsorte hinzufügen</button>`
+          : r.flours.map(f => `
+            <div class="flour-row">
+              <div class="flour-top"><span>${esc(f.name)}</span><b><span data-out="fpct" data-fkey="${f.key}"></span> %</b></div>
+              <input type="range" min="0" max="100" step="5" value="${s.flours[f.key]}" data-role="flour" data-fkey="${f.key}" aria-label="Anteil ${esc(f.name)}">
+            </div>`).join('')}
+        <div class="flour-sum" data-out="floursumrow"><span>Summe</span><b data-out="floursumval"></b></div>
+      </div>
+    </details>` : '';
+
+  const customFixed = r.isCustom ? `
+    <section class="card">
+      <div class="card-head">
+        <div class="ic">${icon('salt')}</div>
+        <div><h3 class="card-title">Weitere Zutaten</h3><p class="card-sub">In % vom Mehlgewicht</p></div>
+      </div>
+      <div data-out="customfixed"></div>
+      <p class="field-note">Der Wasseranteil wird über die Hydration oben eingestellt.</p>
+      <button type="button" class="add-btn" data-role="addfixed">+ Zutat hinzufügen</button>
+    </section>` : '';
+
+  const ingredients = `
+    <section class="card">
+      <div class="card-head">
+        <div class="ic">${icon('scale')}</div>
+        <div><h3 class="card-title">Das brauchst du</h3><p class="card-sub" data-out="ingsub"></p></div>
+      </div>
+      <div data-out="ings"></div>
+      <div class="sub-head">${icon('clock')}Gehzeit, Richtwerte</div>
+      <div class="pills">${r.stockgare.map(sg => `<div class="pill"><small>${esc(sg.temp)}</small><b>${esc(sg.dauer)}</b></div>`).join('')}</div>
+      <p class="step-note">Massgebend ist, wie stark der Teig aufgeht, nicht die Uhr.</p>
+    </section>`;
+
+  const starter = hasStarter(r) ? `
+    <section class="card">
+      <div class="card-head">
+        <div class="ic">${icon('jar')}</div>
+        <div><h3 class="card-title">Sauerteig vorbereiten</h3><p class="card-sub">Zuerst Anstellgut, dann Sauerteig</p></div>
+      </div>
+      <div class="step-block">
+        <div class="step-top"><span class="step-no">1</span><span class="step-name">Anstellgut auffrischen</span><span class="step-total">${REFRESH.total} g</span></div>
+        <div class="tiles">
+          <div class="tile"><b>${REFRESH.starter} g</b><small>Anstellgut</small></div>
+          <div class="tile"><b>${REFRESH.mehl} g</b><small>Mehl</small></div>
+          <div class="tile"><b>${REFRESH.wasser} g</b><small>Wasser</small></div>
+        </div>
+        <p class="step-note">Immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.</p>
+      </div>
+      <div class="step-block">
+        <div class="step-top"><span class="step-no">2</span><span class="step-name">Sauerteig ansetzen</span><span class="step-total" data-out="st-total"></span></div>
+        <div class="tiles">
+          <div class="tile"><b data-out="st-starter"></b><small>Anstellgut</small></div>
+          <div class="tile"><b data-out="st-mehl"></b><small>Mehl</small></div>
+          <div class="tile"><b data-out="st-wasser"></b><small>Wasser</small></div>
+        </div>
+        <p class="step-note" data-out="st-note"></p>
+      </div>
+    </section>` : '';
+
+  const steps = `
+    <details class="card fold">
+      <summary>
+        <div class="ic">${icon('list')}</div>
+        <div class="sum-text"><h3 class="card-title">Zubereitung</h3><p class="card-sub">Schritt für Schritt, mit deinen Mengen</p></div>
+        <span class="chev">${icon('chevronDown')}</span>
+      </summary>
+      <div class="fold-body">
+        ${r.phases.map((ph, pi) => `
+          <div class="phase">
+            <div class="phase-title">${esc(ph.title)}</div>
+            <ol class="steps">${ph.steps.map((st, si) => `<li><span class="step-no">${si+1}</span><span data-phase="${pi}" data-step="${si}"></span></li>`).join('')}</ol>
+          </div>`).join('')}
+      </div>
+    </details>
+    <button type="button" class="pdf-btn" data-role="pdf">${icon('doc')}<span>Rezept als PDF</span></button>`;
+
+  const section = document.createElement('section');
+  section.className = 'panel t-' + key;
+  section.id = 'panel-' + key;
+  section.setAttribute('aria-label', r.label);
+  section.innerHTML = hero + hydration + flourCard + customFixed + ingredients + starter + steps;
+  document.getElementById('panels').appendChild(section);
+
+  if(r.isCustom) renderCustomLists(key);
+  attachEvents(key, section);
+}
+
+function renderCustomLists(key){
+  const el = panelEl(key), r = RECIPES[key], s = state[key], wd = waterDefOf(r);
+  const fl = el.querySelector('[data-out="customflours"]');
+  if(fl){
+    fl.innerHTML = r.flours.map(f => `
+      <div class="edit-row">
+        <input type="text" value="${esc(f.name)}" data-role="flourname" data-fkey="${f.key}" aria-label="Mehlsorte">
+        <input type="number" inputmode="decimal" min="0" max="100" step="5" value="${s.flours[f.key] || 0}" data-role="flourpct" data-fkey="${f.key}" aria-label="Anteil in Prozent">
+        <span class="unit">%</span>
+        <button type="button" class="icon-btn" data-role="removeflour" data-fkey="${f.key}" aria-label="Mehlsorte entfernen"${r.flours.length <= 1 ? ' disabled' : ''}>${icon('trash')}</button>
+      </div>`).join('');
+  }
+  const fx = el.querySelector('[data-out="customfixed"]');
+  if(fx){
+    fx.innerHTML = r.fixed.map(f => {
+      const isWater = wd && f.key === wd.key;
+      return `
+      <div class="edit-row">
+        <input type="text" value="${esc(f.name)}" data-role="fixedname" data-fkey="${f.key}" aria-label="Zutat">
+        <input type="number" inputmode="decimal" min="0" max="200" step="0.5" value="${isWater ? s.hydration : f.pct}" data-role="fixedpct" data-fkey="${f.key}" aria-label="Anteil in Prozent"${isWater ? ' disabled data-water="1"' : ''}>
+        <span class="unit">%</span>
+        <button type="button" class="icon-btn" data-role="removefixed" data-fkey="${f.key}" aria-label="Zutat entfernen">${icon('trash')}</button>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* =========================================================================
+   ANZEIGE AKTUALISIEREN
+   ========================================================================= */
 
 function render(key){
-  const r = RECIPES[key];
-  const s = state[key];
-  const c = calc(key);
-  const el = document.getElementById('panel-'+key);
+  const r = RECIPES[key], s = state[key], c = calc(key);
+  const el = panelEl(key);
+  if(!el) return;
+  const q = sel => el.querySelector(sel);
+  const setTxt = (sel, v) => { const e = q(sel); if(e) e.textContent = v; };
 
-  const pieceCount = Math.max(1, Math.round(s.teigmenge / getUnitWeight(key)));
-  const perPiece = Math.round(s.teigmenge / pieceCount);
-  const perPieceEl = el.querySelector('.per-piece-sub');
-  if(perPieceEl){
-    perPieceEl.textContent = `≈ ${fmt(perPiece)} g pro ${r.unitLabel} (${pieceCount}×)`;
+  // Menge
+  const units = unitsOf(key);
+  const uSlider = q('[data-role="units"]');
+  if(uSlider){ uSlider.value = Math.min(parseInt(uSlider.max, 10), units); setFill(uSlider); }
+  setTxt('[data-out="units"]', units);
+  setTxt('[data-out="perpiece"]', `≈ ${fmt(s.teigmenge / units)} g pro ${r.unitLabel}`);
+  el.querySelectorAll('.size-chip').forEach(ch => ch.classList.toggle('active', ch.dataset.size === s.size));
+
+  // Hydration
+  const hyd = Math.round(s.hydration);
+  setTxt('[data-out="hyd"]', hyd);
+  const hSlider = q('[data-role="hydration"]');
+  if(hSlider){ hSlider.value = s.hydration; setFill(hSlider); }
+  el.querySelectorAll('[data-role="preset"]').forEach(b => b.classList.toggle('active', parseFloat(b.dataset.v) === hyd));
+  const waterInput = q('[data-water="1"]');
+  if(waterInput) waterInput.value = s.hydration;
+
+  // Mehlmischung
+  const sumOk = Math.abs(c.flourSumPct - 100) < 0.001;
+  const sub = q('[data-out="floursub"]');
+  if(sub){
+    sub.textContent = sumOk
+      ? c.activeFlours.map(f => `${s.flours[f.key]} % ${f.name}`).join(', ')
+      : `Summe ${fmt(c.flourSumPct)} %, bitte auf 100 % anpassen`;
+    sub.classList.toggle('warn', !sumOk);
   }
+  setTxt('[data-out="floursumval"]', fmt(c.flourSumPct) + ' %');
+  const sumRow = q('[data-out="floursumrow"]');
+  if(sumRow) sumRow.classList.toggle('warn', !sumOk);
+  el.querySelectorAll('[data-out="fpct"]').forEach(sp => { sp.textContent = s.flours[sp.dataset.fkey] || 0; });
+  el.querySelectorAll('[data-role="flour"]').forEach(inp => { inp.value = s.flours[inp.dataset.fkey] || 0; setFill(inp); });
 
-  const unitSliderEl = el.querySelector('.unit-slider');
-  if(unitSliderEl){
-    const clampedCount = Math.min(parseInt(unitSliderEl.max), pieceCount);
-    unitSliderEl.value = clampedCount;
-    const unitCountEl = el.querySelector('.unit-count');
-    if(unitCountEl) unitCountEl.textContent = clampedCount;
-  }
-
-  const flourSum = r.flours.reduce((acc,f)=> acc + (s.flours[f.key]||0), 0);
-  const totalEl = el.querySelector('.flour-total-val');
-  if(totalEl) totalEl.textContent = flourSum + '%';
-  const totalWrap = el.querySelector('.flour-total');
-  if(totalWrap) totalWrap.classList.toggle('warn', flourSum !== 100);
-
-  let rows = '';
-  rows += `<div class="ing-row total"><span class="ing-name">Mehl gesamt</span><span class="ing-amt">${fmt(c.totalMehl)} g</span></div>`;
-  const activeFlours = r.flours.filter(f => (s.flours[f.key]||0) > 0);
-  const flourRounded = roundToSum(activeFlours.map(f => c.flourGrams[f.key]), c.totalMehl);
-  activeFlours.forEach((f, i) => {
-    rows += `<div class="ing-row sub"><span class="ing-name">${f.name}</span><span class="ing-amt">${flourRounded[i].toLocaleString('de-CH')} g</span></div>`;
-    const flourHint = getFlourTypeHint(f.name);
-    if(flourHint){
-      rows += `<div class="ing-row sub ing-hint"><span class="ing-name">${flourHint}</span></div>`;
-    }
+  // Zutaten
+  const row = (name, amt, cls, pct, note) => `
+    <div class="ing${cls ? ' ' + cls : ''}">
+      <span class="ing-name">${esc(name)}${pct !== undefined && pct !== null ? `<span class="ing-pct">${pct} %</span>` : ''}${note ? `<span class="ing-note">${esc(note)}</span>` : ''}</span>
+      <span class="ing-amt">${amt}</span>
+    </div>`;
+  let html = row('Mehl gesamt', fmt(c.totalMehl) + ' g', 'head');
+  if(!sumOk) html += row(`Mehlmischung ergibt ${fmt(c.flourSumPct)} % statt 100 %`, '', 'sub');
+  c.activeFlours.forEach((f, i) => {
+    html += row(f.name, c.flourRounded[i].toLocaleString('de-CH') + ' g', 'sub', null, getFlourTypeHint(f.name));
   });
-
-  const wasserDef = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
-  r.fixed.forEach(f=>{
-    const displayPct = (wasserDef && f.key === wasserDef.key) ? Math.round(s.hydration) : f.pct;
-    const isSauerteig = /sauerteig|anstellgut/i.test(f.name) && r.hasStarterCards !== false;
+  const stDef = starterDefOf(r);
+  r.fixed.forEach(f => {
+    const isLiquid = c.wasserDef && f.key === c.wasserDef.key;
+    const pct = isLiquid ? hyd : f.pct;
+    const grams = c.fixedGramsRounded[f.key];
+    const note = (hasStarter(r) && stDef && f.key === stDef.key) ? 'Angesetzt im Verhältnis 2 / 10 / 8' : null;
+    html += row(f.name, grams.toLocaleString('de-CH') + ' g', '', pct, note);
     if(f.hasBassinage){
-      const totalWasser = c.fixedGramsRounded[f.key];
-      const bassinageRounded = Math.round(c.bassinage);
-      const wasserImTeigRounded = totalWasser - bassinageRounded;
-      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${totalWasser.toLocaleString('de-CH')} g</span></div>`;
-      rows += `<div class="ing-row sub"><span class="ing-name">davon im Teig (ohne Bassinage)</span><span class="ing-amt">${wasserImTeigRounded.toLocaleString('de-CH')} g</span></div>`;
-      rows += `<div class="ing-row sub"><span class="ing-name">davon Bassinage</span><span class="ing-amt">${bassinageRounded.toLocaleString('de-CH')} g</span></div>`;
-    } else {
-      rows += `<div class="ing-row"><span class="ing-name">${f.name}<span class="ing-pct">${displayPct}%</span></span><span class="ing-amt">${c.fixedGramsRounded[f.key].toLocaleString('de-CH')} g</span></div>`;
-      if(isSauerteig){
-        rows += `<div class="ing-row sub ing-hint"><span class="ing-name">Ansatz-Verhältnis 2 / 10 / 8 (Anstellgut / Mehl / Wasser)</span></div>`;
-      }
+      html += row('davon im Teig', (grams - c.bassinageRounded).toLocaleString('de-CH') + ' g', 'sub');
+      html += row('davon Bassinage (später zugeben)', c.bassinageRounded.toLocaleString('de-CH') + ' g', 'sub');
     }
   });
-  rows += `<div class="ing-row total"><span class="ing-name">Teig gesamt</span><span class="ing-amt">${fmt(c.totalTeig)} g</span></div>`;
-  const resultBody = el.querySelector('.result-body');
-  if(resultBody) resultBody.innerHTML = rows;
+  html += row('Teig gesamt', fmt(c.totalTeig) + ' g', 'total');
+  const ings = q('[data-out="ings"]');
+  if(ings) ings.innerHTML = html;
+  setTxt('[data-out="ingsub"]', `Für ${units} × ${r.unitLabel}`);
 
-  const hydNum = el.querySelector('.hydration-num');
-  if(hydNum) hydNum.textContent = Math.round(s.hydration);
-  const hydSlider = el.querySelector('.hydration-slider');
-  if(hydSlider) hydSlider.value = s.hydration;
-  el.querySelectorAll('.hydration-chip').forEach(chip=>{
-    chip.classList.toggle('active', parseInt(chip.dataset.hydration) === Math.round(s.hydration));
-  });
+  // Sauerteig ansetzen
+  if(hasStarter(r)){
+    setTxt('[data-out="st-total"]', fmt(c.stTotal) + ' g');
+    setTxt('[data-out="st-starter"]', c.stStarter + ' g');
+    setTxt('[data-out="st-mehl"]', c.stMehl + ' g');
+    setTxt('[data-out="st-wasser"]', c.stWasser + ' g');
+    setTxt('[data-out="st-note"]', `Für ${fmt(c.stNeed)} g im Teig plus 20 % Reserve. Warm stehen lassen, bis er sich mindestens verdoppelt hat, meist 6-12 Std.`);
+  }
 
-  const th = el.querySelector('.temp-hand'), tk = el.querySelector('.temp-kneter');
-  if(th) th.innerHTML = round1(c.handTemp) + '<span class="t-unit"> °C</span>';
-  if(tk) tk.innerHTML = round1(c.kneterTemp) + '<span class="t-unit"> °C</span>';
-
-  const setTxt = (sel, val) => { const e = el.querySelector(sel); if(e) e.textContent = val; };
-  setTxt('.st-benoetigt', fmt(c.stBenoetigt) + ' g');
-  setTxt('.st-reserve', '+' + fmt(c.stReserve) + ' g');
-  setTxt('.st-ansetzen-big', fmt(c.stAnsetzen) + ' g');
-  setTxt('.st2-starter', fmt(c.st2Starter) + ' g');
-  setTxt('.st2-mehl', fmt(c.st2Mehl) + ' g');
-  setTxt('.st2-wasser', fmt(c.st2Wasser) + ' g');
-  setTxt('.st2-total', fmt(c.st2Total) + ' g total');
-
-  setTxt('.ag2-starter', fmt(c.ag2Starter) + ' g');
-  setTxt('.ag2-mehl', fmt(c.ag2Mehl) + ' g');
-  setTxt('.ag2-wasser', fmt(c.ag2Wasser) + ' g');
-  setTxt('.ag2-total', fmt(c.ag2Total) + ' g total');
-
-  el.querySelectorAll('.step-text[data-template]').forEach(span=>{
-    span.textContent = fillStepPlaceholders(span.dataset.template, key);
+  // Zubereitung
+  el.querySelectorAll('[data-phase]').forEach(sp => {
+    const tpl = r.phases[+sp.dataset.phase].steps[+sp.dataset.step];
+    sp.textContent = fillStepPlaceholders(tpl, key, c);
   });
 }
 
-/* -------------------------- Events -------------------------- */
+/* =========================================================================
+   EREIGNISSE
+   ========================================================================= */
 
-function attachEvents(key){
-  const el = document.getElementById('panel-'+key);
-  const r = RECIPES[key];
+function attachEvents(key, el){
+  const r = RECIPES[key], s = state[key];
+  const gramInput = () => el.querySelector('[data-role="teigmenge"]');
+  const setGrams = g => { s.teigmenge = g; const gi = gramInput(); if(gi) gi.value = g; };
 
-  el.querySelector('[data-role="teigmenge"]').addEventListener('input', e=>{
-    state[key].teigmenge = Math.max(50, parseFloat(e.target.value) || 0);
+  el.addEventListener('input', e => {
+    const t = e.target, role = t.dataset.role;
+    if(!role) return;
+    const fkey = t.dataset.fkey;
+    switch(role){
+      case 'teigmenge': s.teigmenge = Math.max(50, parseFloat(t.value) || 0); break;
+      case 'units': setGrams(roundUp10(parseInt(t.value, 10) * getUnitWeight(key))); break;
+      case 'hydration': s.hydration = parseFloat(t.value) || r.hydration.basic; break;
+      case 'flour': s.flours[fkey] = parseFloat(t.value) || 0; break;
+      case 'name': s.name = t.value.trim() || r.label; return;
+      case 'flourname': { const f = r.flours.find(x => x.key === fkey); if(f) f.name = t.value; break; }
+      case 'flourpct': s.flours[fkey] = Math.max(0, parseFloat(t.value) || 0); break;
+      case 'fixedname': { const f = r.fixed.find(x => x.key === fkey); if(f) f.name = t.value; break; }
+      case 'fixedpct': { const f = r.fixed.find(x => x.key === fkey); if(f) f.pct = Math.max(0, parseFloat(t.value) || 0); break; }
+      default: return;
+    }
     render(key);
   });
 
-  el.querySelectorAll('.size-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      const currentUnits = Math.max(1, Math.round(state[key].teigmenge / getUnitWeight(key)));
-      state[key].size = chip.dataset.size;
-      const grams = roundUp10(currentUnits * getUnitWeight(key));
-      state[key].teigmenge = grams;
-      el.querySelector('[data-role="teigmenge"]').value = grams;
-      el.querySelectorAll('.size-chip').forEach(c=>c.classList.remove('active'));
-      chip.classList.add('active');
-      render(key);
-    });
+  el.addEventListener('change', e => {
+    const role = e.target.dataset.role;
+    if(role === 'fixedname'){ renderCustomLists(key); render(key); }
+    if(role === 'teigmenge'){ e.target.value = s.teigmenge; }
   });
 
-  const unitSlider = el.querySelector('.unit-slider');
-  if(unitSlider){
-    unitSlider.addEventListener('input', e=>{
-      const n = parseInt(e.target.value);
-      const grams = roundUp10(n * getUnitWeight(key));
-      state[key].teigmenge = grams;
-      el.querySelector('[data-role="teigmenge"]').value = grams;
-      render(key);
-    });
-  }
-
-  const hydSlider = el.querySelector('.hydration-slider');
-  if(hydSlider){
-    hydSlider.addEventListener('input', e=>{
-      state[key].hydration = parseFloat(e.target.value) || 0;
-      render(key);
-    });
-  }
-
-  el.querySelectorAll('.hydration-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      state[key].hydration = parseFloat(chip.dataset.hydration);
-      render(key);
-    });
-  });
-
-  el.querySelectorAll('.flour-row input[type=range]').forEach(input=>{
-    input.addEventListener('input', e=>{
-      const fkey = e.target.dataset.flour;
-      state[key].flours[fkey] = parseFloat(e.target.value);
-      e.target.closest('.flour-row').querySelector('.pct-val').textContent = e.target.value;
-      render(key);
-    });
-  });
-
-  ['gtt','lt','mt','korrektur'].forEach(role=>{
-    const input = el.querySelector(`[data-role="${role}"]`);
-    input.addEventListener('input', e=>{
-      state[key][role] = parseFloat(e.target.value) || 0;
-      render(key);
-    });
-  });
-
-  const pdfBtn = el.querySelector('.pdf-btn');
-  pdfBtn.addEventListener('click', ()=> generatePdf(key, pdfBtn));
-}
-
-function attachNameEvent(key){
-  const el = document.getElementById('panel-'+key);
-  const nameInput = el.querySelector('[data-role="name"]');
-  if(nameInput){
-    nameInput.addEventListener('input', e=>{ state[key].name = e.target.value || RECIPES[key].label; });
-  }
-}
-
-/* -------------------------- Tabs -------------------------- */
-
-function initTabs(){
-  document.querySelectorAll('.tab-icon').forEach(span=>{
-    span.innerHTML = icon(span.dataset.icon);
-  });
-  const buttons = document.querySelectorAll('nav.tabs button');
-  buttons.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      buttons.forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-      if(typeof btn.scrollIntoView === 'function'){
-        btn.scrollIntoView({ behavior:'smooth', inline:'nearest', block:'nearest' });
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-role]');
+    if(!b || b.tagName === 'INPUT') return;
+    const role = b.dataset.role, fkey = b.dataset.fkey;
+    switch(role){
+      case 'size': {
+        const units = unitsOf(key);
+        s.size = b.dataset.size;
+        setGrams(roundUp10(units * getUnitWeight(key)));
+        break;
       }
-    });
+      case 'preset': s.hydration = parseFloat(b.dataset.v); break;
+      case 'pdf': generatePdf(key, b); return;
+      case 'addflour': { const k = uid(); r.flours.push({ key:k, name:'Neues Mehl', pct:0 }); s.flours[k] = 0; renderCustomLists(key); break; }
+      case 'removeflour':
+        if(r.flours.length <= 1) return;
+        r.flours = r.flours.filter(x => x.key !== fkey); delete s.flours[fkey]; renderCustomLists(key); break;
+      case 'addfixed': r.fixed.push({ key:uid(), name:'Neue Zutat', pct:0 }); renderCustomLists(key); break;
+      case 'removefixed': r.fixed = r.fixed.filter(x => x.key !== fkey); renderCustomLists(key); break;
+      default: return;
+    }
+    render(key);
   });
-
-  const nav = document.querySelector('nav.tabs');
-  const wrap = document.querySelector('.tabs-wrap');
-  if(nav && wrap){
-    const updateFades = () => {
-      const atStart = nav.scrollLeft <= 2;
-      const atEnd = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 2;
-      wrap.classList.toggle('at-start', atStart);
-      wrap.classList.toggle('at-end', atEnd);
-    };
-    nav.addEventListener('scroll', updateFades);
-    window.addEventListener('resize', updateFades);
-    updateFades();
-  }
 }
 
-/* -------------------------- PDF Export -------------------------- */
+/* =========================================================================
+   SAUERTEIG-SCHNELLRECHNER (oben)
+   ========================================================================= */
+
+function initQuickCalc(){
+  const input = document.getElementById('qcInput');
+  if(!input) return;
+  const update = () => {
+    const need = Math.max(0, parseFloat(input.value) || 0);
+    const total = need * 1.2;
+    const v = roundToSum([total*2/20, total*10/20, total*8/20], total);
+    document.getElementById('qcAnstellgut').textContent = v[0].toLocaleString('de-CH');
+    document.getElementById('qcMehl').textContent = v[1].toLocaleString('de-CH');
+    document.getElementById('qcWasser').textContent = v[2].toLocaleString('de-CH');
+  };
+  input.addEventListener('input', update);
+  update();
+}
+
+/* =========================================================================
+   PDF
+   ========================================================================= */
 
 let jsPdfLoadPromise = null;
 function loadJsPdf(){
   if(window.jspdf) return Promise.resolve();
   if(jsPdfLoadPromise) return jsPdfLoadPromise;
-  jsPdfLoadPromise = new Promise((resolve, reject)=>{
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('jsPDF konnte nicht geladen werden'));
-    document.head.appendChild(script);
+  jsPdfLoadPromise = new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload = () => resolve();
+    sc.onerror = () => { jsPdfLoadPromise = null; reject(new Error('jsPDF konnte nicht geladen werden')); };
+    document.head.appendChild(sc);
   });
   return jsPdfLoadPromise;
 }
 
+function pdfText(t){ return String(t).replace(/≈/g, 'ca.').replace(/→/g, '->').replace(/↗/g, '').replace(/[–—]/g, '-'); }
+
 async function generatePdf(key, btn){
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<span class="inline-icon">' + icon('hourglass') + '</span>Erstelle PDF …';
+  const original = btn.innerHTML;
+  const restore = (msg) => {
+    if(msg){ btn.innerHTML = icon('warn') + '<span>' + msg + '</span>'; setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 2200); }
+    else { btn.innerHTML = original; btn.disabled = false; }
+  };
   btn.disabled = true;
+  btn.innerHTML = icon('hourglass') + '<span>PDF wird erstellt …</span>';
+  try { await loadJsPdf(); } catch(err){ console.error(err); restore('PDF nicht verfügbar'); return; }
 
   try {
-    await loadJsPdf();
-  } catch(err){
-    console.error(err);
-    btn.innerHTML = '<span class="inline-icon">' + icon('warn') + '</span>PDF nicht verfügbar';
-    setTimeout(()=>{ btn.innerHTML = originalText; btn.disabled = false; }, 2200);
-    return;
-  }
-
-  const r = RECIPES[key];
-  const s = state[key];
-  const c = calc(key);
-
-  try {
+    const r = RECIPES[key], s = state[key], c = calc(key);
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const pageW = 210;
-    let y = 20;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W = 210, L = 16, R = W - 16;
+    const th = THEMES[key] || THEMES.brand;
+    const A = hexToRgb(th.a), INK = hexToRgb(th.ink);
+    const ACC = hexToRgb(th.b).map(v => Math.round(v * 0.68));
+    const TEXT = [35,26,59], DIM = [110,100,140];
+    const units = unitsOf(key);
+    let y;
 
-    const accentMap = {
-      copain:  [255, 46, 196],
-      focaccia:[0, 194, 160],
-      pizza:   [255, 61, 90],
-      custom:  [123, 47, 247]
-    };
-    const [ar, ag, ab] = accentMap[key] || [123,47,247];
-
-    // Titel
-    doc.setFillColor(ar, ag, ab);
-    doc.rect(0, 0, pageW, 34, 'F');
-    doc.setTextColor(255,255,255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.text(s.name || r.label, 15, 20);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    doc.text(fmt(c.totalTeig) + ' g Teig gesamt', 15, 28);
-
+    // Kopf
+    doc.setFillColor(A[0], A[1], A[2]);
+    doc.rect(0, 0, W, 32, 'F');
+    doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(21);
+    doc.text(pdfText(s.name || r.label), L, 17);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    doc.text(pdfText(`${units} x ${r.unitLabel}  |  ${fmt(c.totalTeig)} g Teig  |  Hydration ${Math.round(s.hydration)} %`), L, 25);
     y = 44;
-    doc.setTextColor(30,20,40);
 
-    function sectionTitle(txt){
+    const ensure = h => { if(y + h > 280){ doc.addPage(); y = 20; } };
+    const section = title => {
+      ensure(16);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5);
+      doc.setTextColor(ACC[0], ACC[1], ACC[2]);
+      doc.text(pdfText(title), L, y);
+      doc.setDrawColor(A[0], A[1], A[2]); doc.setLineWidth(0.5);
+      doc.line(L, y + 2, R, y + 2);
+      y += 8.5;
+      doc.setTextColor(TEXT[0], TEXT[1], TEXT[2]);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    };
+    const row = (name, val, o) => {
+      o = o || {};
+      ensure(7);
+      const x = L + (o.indent ? 5 : 0);
+      doc.setFontSize(o.big ? 12.5 : (o.indent ? 10 : 10.5));
+      doc.setFont('helvetica', o.bold ? 'bold' : 'normal');
+      doc.setTextColor(...(o.indent ? DIM : TEXT));
+      doc.text(pdfText(name), x, y);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(13);
-      doc.setTextColor(ar, ag, ab);
-      doc.text(txt, 15, y);
-      y += 7;
-      doc.setTextColor(30,20,40);
+      if(val) doc.text(pdfText(val), R, y, { align:'right' });
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-    }
-
-    function row(name, val, indent){
-      doc.text((indent ? '   ' : '') + name, 15 + (indent?3:0), y);
-      doc.setFont('helvetica', 'bold');
-      doc.text(val, pageW - 15, y, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      y += 6.2;
-    }
-
-    function hr(){
-      doc.setDrawColor(220,220,220);
-      doc.line(15, y-2, pageW-15, y-2);
-      y += 2;
-    }
-
-    // Mehl
-    sectionTitle('Mehl');
-    row('Total Mehl', fmt(c.totalMehl) + ' g');
-    const activeFloursPdf = r.flours.filter(f => (s.flours[f.key]||0) > 0);
-    const flourRoundedPdf = roundToSum(activeFloursPdf.map(f => c.flourGrams[f.key]), c.totalMehl);
-    activeFloursPdf.forEach((f, i) => row(f.name, flourRoundedPdf[i] + ' g', true));
-    y += 3;
-
-    // Hydration
-    hr();
-    sectionTitle('Hydration');
-    row('Wasseranteil', Math.round(s.hydration) + '%');
-    y += 2;
+      doc.setTextColor(TEXT[0], TEXT[1], TEXT[2]);
+      y += o.big ? 7.5 : 6;
+    };
+    const note = (txt, indent) => {
+      doc.setFontSize(8.8); doc.setFont('helvetica', 'italic'); doc.setTextColor(DIM[0], DIM[1], DIM[2]);
+      const lines = doc.splitTextToSize(pdfText(txt), R - L - (indent ? 5 : 0));
+      ensure(lines.length * 4 + 2);
+      doc.text(lines, L + (indent ? 5 : 0), y - 1.5);
+      y += lines.length * 4 + 0.5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.setTextColor(TEXT[0], TEXT[1], TEXT[2]);
+    };
 
     // Zutaten
-    hr();
-    sectionTitle('Weitere Zutaten');
-    const wasserDefPdf = r.fixed.find(f=>f.hasBassinage) || r.fixed.find(f=>/wasser|milch/i.test(f.name));
-    r.fixed.forEach(f=>{
-      const pctLabel = (wasserDefPdf && f.key === wasserDefPdf.key) ? Math.round(s.hydration) : f.pct;
-      row(f.name + ' (' + pctLabel + '%)', c.fixedGramsRounded[f.key] + ' g');
-      if(f.hasBassinage){
-        const bassinageRoundedPdf = Math.round(c.bassinage);
-        row('davon im Teig (ohne Bassinage)', (c.fixedGramsRounded[f.key] - bassinageRoundedPdf) + ' g', true);
-        row('davon Bassinage', bassinageRoundedPdf + ' g', true);
-      }
+    section('Zutaten');
+    row('Mehl gesamt', fmt(c.totalMehl) + ' g', { bold:true });
+    c.activeFlours.forEach((f, i) => {
+      row(f.name, c.flourRounded[i] + ' g', { indent:true });
+      const hint = getFlourTypeHint(f.name);
+      if(hint) note(hint, true);
     });
-    y += 2;
-    hr();
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    row('Teig gesamt', fmt(c.totalTeig) + ' g');
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(11);
+    const stDef = starterDefOf(r);
+    r.fixed.forEach(f => {
+      const isLiquid = c.wasserDef && f.key === c.wasserDef.key;
+      const pct = isLiquid ? Math.round(s.hydration) : f.pct;
+      const grams = c.fixedGramsRounded[f.key];
+      row(`${f.name} (${pct} %)`, grams + ' g');
+      if(f.hasBassinage){
+        row('davon im Teig', (grams - c.bassinageRounded) + ' g', { indent:true });
+        row('davon Bassinage (später zugeben)', c.bassinageRounded + ' g', { indent:true });
+      }
+      if(hasStarter(r) && stDef && f.key === stDef.key) note('Angesetzt im Verhältnis 2 / 10 / 8', true);
+    });
+    ensure(10);
+    doc.setDrawColor(210, 200, 230); doc.setLineWidth(0.3);
+    doc.line(L, y - 3, R, y - 3);
+    y += 1.5;
+    row('Teig gesamt', fmt(c.totalTeig) + ' g', { bold:true, big:true });
     y += 4;
 
     // Gehzeit
-    hr();
-    sectionTitle('Gehzeit (Stockgare)');
-    r.stockgare.forEach(sg=>{
-      row(sg.temp, sg.dauer);
-    });
-    y += 2;
+    section('Gehzeit (Richtwerte)');
+    r.stockgare.forEach(sg => row(sg.temp, sg.dauer));
+    note('Massgebend ist, wie stark der Teig aufgeht, nicht die Uhr.');
+    y += 4;
 
-    // Wassertemperatur
-    hr();
-    sectionTitle('Wassertemperatur');
-    row('Teig soll haben', s.gtt + ' °C');
-    row('Luft / Mehl gerade', s.lt + ' °C / ' + s.mt + ' °C');
-    if(s.korrektur > 0) row('Abzug Sommer', s.korrektur + ' °C');
-    row('Von Hand kneten', round1(c.handTemp) + ' °C');
-    row('Mit Maschine', round1(c.kneterTemp) + ' °C');
-    y += 2;
-
-    // Anstellgut & Sauerteig (Anstellgut zuerst ansetzen)
-    if(c.stBenoetigt > 0){
-      hr();
-      sectionTitle('1. Anstellgut auffrischen');
-      row('Zusammenmischen', fmt(c.agAnsetzen) + ' g');
-      row('altes Anstellgut', fmt(c.ag2Starter) + ' g', true);
-      row('Mehl', fmt(c.ag2Mehl) + ' g', true);
-      row('Wasser', fmt(c.ag2Wasser) + ' g', true);
-      doc.setFontSize(9.5);
-      doc.setTextColor(120,120,120);
-      doc.text('Warmer Ort (32C Wasser), bis Menge verzweieinhalbfacht - meist 6-10 Std.', 15, y);
-      doc.setTextColor(30,20,40);
-      doc.setFontSize(11);
-      y += 8;
-
-      hr();
-      sectionTitle('2. Sauerteig ansetzen');
-      row('Insgesamt ansetzen', fmt(c.stAnsetzen) + ' g');
-      row('Anstellgut', fmt(c.st2Starter) + ' g', true);
-      row('Mehl', fmt(c.st2Mehl) + ' g', true);
-      row('Wasser', fmt(c.st2Wasser) + ' g', true);
-      doc.setFontSize(9.5);
-      doc.setTextColor(120,120,120);
-      doc.text('Warmer Ort (32C Wasser), bis Menge sich verdoppelt - meist 6-12 Std.', 15, y);
-      doc.setTextColor(30,20,40);
-      doc.setFontSize(11);
-      y += 8;
+    // Sauerteig
+    if(hasStarter(r)){
+      section('Sauerteig vorbereiten');
+      row('1. Anstellgut auffrischen', REFRESH.total + ' g', { bold:true });
+      row('Anstellgut', REFRESH.starter + ' g', { indent:true });
+      row('Mehl', REFRESH.mehl + ' g', { indent:true });
+      row('Wasser', REFRESH.wasser + ' g', { indent:true });
+      note('Immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.');
+      y += 2;
+      row('2. Sauerteig ansetzen', fmt(c.stTotal) + ' g', { bold:true });
+      row('Anstellgut', c.stStarter + ' g', { indent:true });
+      row('Mehl', c.stMehl + ' g', { indent:true });
+      row('Wasser', c.stWasser + ' g', { indent:true });
+      note(`Für ${fmt(c.stNeed)} g im Teig plus 20 % Reserve, Verhältnis 2 / 10 / 8. Warm stehen lassen, bis er sich mindestens verdoppelt hat, meist 6-12 Std.`);
+      y += 4;
     }
 
     // Zubereitung
-    if(y > 240){ doc.addPage(); y = 20; }
-    hr();
-    sectionTitle('Zubereitung');
-    (r.phases || []).forEach(phase => {
-      if(y > 265){ doc.addPage(); y = 20; }
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10.5);
-      doc.text(phase.title, 15, y);
+    section('Zubereitung');
+    r.phases.forEach(ph => {
+      ensure(14);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+      doc.setTextColor(ACC[0], ACC[1], ACC[2]);
+      doc.text(pdfText(ph.title), L, y);
       y += 5.5;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10.5);
-      phase.steps.forEach((step, i) => {
-        if(y > 278){ doc.addPage(); y = 20; }
-        const filledStep = fillStepPlaceholders(step, key);
-        const lines = doc.splitTextToSize((i+1) + '. ' + filledStep, pageW - 32);
-        doc.text(lines, 18, y);
-        y += lines.length * 5.2 + 1.5;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(TEXT[0], TEXT[1], TEXT[2]);
+      ph.steps.forEach((st, i) => {
+        const lines = doc.splitTextToSize(pdfText(fillStepPlaceholders(st, key, c)), R - L - 7);
+        ensure(lines.length * 5 + 1.5);
+        doc.setFont('helvetica', 'bold'); doc.text((i+1) + '.', L, y);
+        doc.setFont('helvetica', 'normal'); doc.text(lines, L + 7, y);
+        y += lines.length * 5 + 1.5;
       });
       y += 3;
     });
-    doc.setFontSize(11);
-    y += 2;
 
-    // Footer
-    doc.setFontSize(9);
-    doc.setTextColor(150,150,150);
-    doc.text('Erstellt mit dem Sourdough Calculator', 15, 287);
+    // Seitenfuss
+    const pages = doc.getNumberOfPages();
+    for(let p = 1; p <= pages; p++){
+      doc.setPage(p);
+      doc.setFontSize(8.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(150, 140, 175);
+      doc.text('Erstellt mit dem Sourdough Calculator', L, 290);
+      doc.text(`Seite ${p} / ${pages}`, R, 290, { align:'right' });
+    }
 
-    const filename = (s.name || r.label).replace(/[^a-z0-9äöüÄÖÜ]+/gi, '_').toLowerCase() + '.pdf';
-    doc.save(filename);
+    const filename = (s.name || r.label).replace(/[^a-z0-9äöüÄÖÜ]+/gi, '_').replace(/^_+|_+$/g, '').toLowerCase() + '.pdf';
+    doc.save(filename || 'rezept.pdf');
+    restore();
   } catch(err){
     console.error(err);
-    btn.innerHTML = '<span class="inline-icon">' + icon('warn') + '</span>Fehler beim Erstellen';
-    setTimeout(()=>{ btn.innerHTML = originalText; btn.disabled = false; }, 2200);
-    return;
+    restore('Fehler beim Erstellen');
   }
-
-  btn.innerHTML = originalText;
-  btn.disabled = false;
 }
 
-/* -------------------------- Init -------------------------- */
+/* =========================================================================
+   START
+   ========================================================================= */
 
-Object.keys(RECIPES).forEach(key=>{
-  try {
-    buildPanel(key);
-    if(RECIPES[key].isCustom){
-      buildCustomExtra(key);
-    }
-    attachEvents(key);
-    attachNameEvent(key);
-    render(key);
-  } catch(err){
-    console.error('Fehler beim Aufbau von', key, err);
-  }
+buildMenu();
+MENU.forEach(m => {
+  try { buildPanel(m.key); render(m.key); }
+  catch(err){ console.error('Fehler beim Aufbau von', m.key, err); }
 });
-initTabs();
+let startKey = 'copain';
+try { const saved = localStorage.getItem('sdc-recipe'); if(saved && RECIPES[saved]) startKey = saved; } catch(e){}
+selectRecipe(startKey, false);
+initQuickCalc();
 
-/* -------------------------- Quick Calc (allgemeiner Sauerteig-Rechner) -------------------------- */
-(function initQuickCalc(){
-  const input = document.getElementById('quickCalcInput');
-  const anstellgutEl = document.getElementById('quickCalcAnstellgut');
-  const mehlEl = document.getElementById('quickCalcMehl');
-  const wasserEl = document.getElementById('quickCalcWasser');
-  if(!input || !anstellgutEl || !mehlEl || !wasserEl) return;
-
-  // Gleiche Formel wie "Sauerteig ansetzen" in den Rezepten: 20% Reserve auf die
-  // benötigte Menge, dann 10% Anstellgut / 50% Mehl / 40% Wasser vom Ansatz.
-  function updateQuickCalc(){
-    const benoetigt = Math.max(0, parseFloat(input.value) || 0);
-    const reserve = benoetigt * 0.20;
-    const ansetzen = benoetigt + reserve;
-    const anstellgut = ansetzen * 0.10;
-    const mehl = ansetzen * 0.50;
-    const wasser = ansetzen * 0.40;
-    const rounded = roundToSum([anstellgut, mehl, wasser], ansetzen);
-    anstellgutEl.textContent = rounded[0].toLocaleString('de-CH');
-    mehlEl.textContent = rounded[1].toLocaleString('de-CH');
-    wasserEl.textContent = rounded[2].toLocaleString('de-CH');
-  }
-
-  input.addEventListener('input', updateQuickCalc);
-  updateQuickCalc();
-})();
-
-// Schriftarten erst nachträglich laden, damit ein Ladefehler die App nie blockiert
+// Schriften erst am Schluss laden, damit ein Ladefehler die App nie blockiert
 try {
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@400;500;600;700;800&display=swap';
   document.head.appendChild(fontLink);
-} catch(e){ /* Fonts sind optional, App läuft ohne sie weiter */ }
+} catch(e){}
 </script>
 </body>
 </html>
