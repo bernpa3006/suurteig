@@ -80,17 +80,33 @@
   .tile small{ font-size:.7rem; color:var(--text-dim); }
   .fine{ margin:8px 2px 0; font-size:.72rem; color:var(--text-faint); }
 
-  /* Rezept-Menü */
-  .menu{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
-  @media (min-width:520px){ .menu{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
-  .menu-btn{ display:flex; align-items:center; gap:10px; min-height:54px; padding:9px 10px; border-radius:16px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
-    color:var(--text); font-size:.86rem; font-weight:700; text-align:left; line-height:1.15; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, background .2s ease; }
-  .menu-btn:last-child{ grid-column:1 / -1; }
-  .menu-btn:active{ transform:scale(.97); }
-  .menu-btn .ic{ width:32px; height:32px; border-radius:10px; }
-  .menu-btn .ic svg{ width:17px; height:17px; }
-  .menu-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); border-color:transparent; box-shadow:0 12px 28px -14px var(--a); }
+  /* Rezept-Dropdown */
+  .dd{ position:relative; }
+  .dd-trigger{ width:100%; display:flex; align-items:center; gap:12px; padding:10px 14px 10px 10px; border-radius:18px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
+    color:var(--text); text-align:left; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease; }
+  .dd-trigger:active{ transform:scale(.985); }
+  .dd-trigger .ic{ width:40px; height:40px; border-radius:13px; box-shadow:0 8px 20px -10px var(--a); }
+  .dd-trigger .ic svg{ width:21px; height:21px; }
+  .dd-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+  .dd-txt small{ font-size:.7rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
+  .dd-txt b{ font-family:var(--head); font-size:1.08rem; font-weight:700; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dd.open .dd-trigger{ border-color:var(--a); box-shadow:0 12px 30px -16px var(--a); }
+  .dd.open .dd-trigger .chev{ transform:rotate(180deg); color:var(--text); }
+  .menu{ position:absolute; z-index:30; left:0; right:0; top:calc(100% + 8px); display:flex; flex-direction:column; gap:2px; padding:6px; max-height:min(68vh,460px); overflow:auto;
+    background:var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow:0 24px 60px -20px rgba(0,0,0,.55), var(--shadow);
+    opacity:0; transform:translateY(-6px) scale(.98); transform-origin:top center; visibility:hidden; pointer-events:none; transition:opacity .16s ease, transform .16s ease, visibility 0s linear .16s; }
+  .dd.open .menu{ opacity:1; transform:none; visibility:visible; pointer-events:auto; transition:opacity .16s ease, transform .16s ease; }
+  .menu-btn{ display:flex; align-items:center; gap:12px; min-height:50px; padding:7px 10px; border-radius:14px; border:1px solid transparent; background:transparent;
+    color:var(--text); font-size:.95rem; font-weight:600; text-align:left; line-height:1.15; cursor:pointer; transition:background .15s ease; }
+  .menu-btn > span:nth-child(2){ flex:1; min-width:0; }
+  .menu-btn:hover{ background:var(--surface2); }
+  .menu-btn:active{ background:var(--surface2); }
+  .menu-btn .ic{ width:34px; height:34px; border-radius:11px; }
+  .menu-btn .ic svg{ width:18px; height:18px; }
+  .menu-btn .tick{ width:18px; height:18px; opacity:0; flex:0 0 auto; }
+  .menu-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); }
   .menu-btn.active .ic{ background:rgba(0,0,0,.14); color:var(--ink); }
+  .menu-btn.active .tick{ opacity:1; }
 
   .panel{ display:none; margin-top:16px; scroll-margin-top:12px; }
   .panel.active{ display:block; animation:fade .25s ease; }
@@ -249,7 +265,14 @@
   </details>
 
   <h2 class="section-label">Recipes</h2>
-  <nav class="menu" id="menu" aria-label="Rezepte"></nav>
+  <div class="dd" id="dd">
+    <button type="button" class="dd-trigger" id="ddBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="menu">
+      <span class="ic" id="ddIcon"></span>
+      <span class="dd-txt"><small>Rezept wählen</small><b id="ddLabel"></b></span>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </button>
+    <nav class="menu" id="menu" role="listbox" aria-label="Rezepte"></nav>
+  </div>
   <main id="panels"></main>
 
   <footer class="foot">Alle Mengen in Gramm · v13</footer>
@@ -932,15 +955,42 @@ function setFill(inp){
   inp.style.setProperty('--fill', ((v - min) / (max - min || 1) * 100) + '%');
 }
 
+const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function setMenuOpen(open){
+  const dd = document.getElementById('dd'), btn = document.getElementById('ddBtn');
+  dd.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if(open){
+    const act = document.querySelector('.menu-btn.active');
+    if(act && act.scrollIntoView) act.scrollIntoView({ block:'nearest' });
+  }
+}
 function buildMenu(){
   const nav = document.getElementById('menu');
   nav.innerHTML = MENU.map(m => `
-    <button type="button" class="menu-btn t-${m.key}" data-key="${m.key}" aria-pressed="false">
-      <span class="ic">${icon(RECIPES[m.key].icon)}</span><span>${m.label}</span>
+    <button type="button" role="option" class="menu-btn t-${m.key}" data-key="${m.key}" aria-selected="false">
+      <span class="ic">${icon(RECIPES[m.key].icon)}</span><span>${m.label}</span>${TICK}
     </button>`).join('');
   nav.addEventListener('click', e => {
     const btn = e.target.closest('.menu-btn');
-    if(btn) selectRecipe(btn.dataset.key, true);
+    if(btn){ selectRecipe(btn.dataset.key, true); setMenuOpen(false); document.getElementById('ddBtn').focus(); }
+  });
+  document.getElementById('ddBtn').addEventListener('click', () => {
+    setMenuOpen(!document.getElementById('dd').classList.contains('open'));
+  });
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#dd')) setMenuOpen(false);
+  });
+  document.addEventListener('keydown', e => {
+    const dd = document.getElementById('dd');
+    if(e.key === 'Escape' && dd.classList.contains('open')){ setMenuOpen(false); document.getElementById('ddBtn').focus(); }
+    if(dd.classList.contains('open') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')){
+      e.preventDefault();
+      const items = [...nav.querySelectorAll('.menu-btn')];
+      const i = items.indexOf(document.activeElement);
+      const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
+      items[n].focus();
+    }
   });
 }
 
@@ -950,8 +1000,15 @@ function selectRecipe(key, fromUser){
   document.querySelectorAll('.menu-btn').forEach(b => {
     const on = b.dataset.key === key;
     b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
   });
+  const ddBtn = document.getElementById('ddBtn');
+  if(ddBtn){
+    const m = MENU.find(x => x.key === key);
+    ddBtn.className = 'dd-trigger t-' + key;
+    document.getElementById('ddIcon').innerHTML = icon(RECIPES[key].icon);
+    document.getElementById('ddLabel').textContent = m ? m.label : RECIPES[key].label;
+  }
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + key));
   try { localStorage.setItem('sdc-recipe', key); } catch(e){}
   if(fromUser){
