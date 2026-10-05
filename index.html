@@ -69,6 +69,9 @@
 
   /* Sauerteig-Schnellrechner */
   .qc{ padding:14px; }
+  .qc-title{ margin:0 0 10px; font-family:var(--head); font-size:1.02rem; font-weight:700; letter-spacing:-.01em; }
+  .fold > summary .qc-title{ margin:0; }
+  .qc.fold .fold-body{ margin-top:14px; }
   .qc-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:.86rem; color:var(--text-dim); }
   .qc-row input{ flex:1; min-width:0; text-align:right; padding:7px 10px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); color:var(--text); font-family:var(--head); font-size:16px; font-weight:700; }
   .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
@@ -82,6 +85,7 @@
   @media (min-width:520px){ .menu{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
   .menu-btn{ display:flex; align-items:center; gap:10px; min-height:54px; padding:9px 10px; border-radius:16px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
     color:var(--text); font-size:.86rem; font-weight:700; text-align:left; line-height:1.15; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, background .2s ease; }
+  .menu-btn:last-child{ grid-column:1 / -1; }
   .menu-btn:active{ transform:scale(.97); }
   .menu-btn .ic{ width:32px; height:32px; border-radius:10px; }
   .menu-btn .ic svg{ width:17px; height:17px; }
@@ -206,7 +210,32 @@
 <div class="app">
   <header class="top"><h1>Sourdough Calculator</h1></header>
 
-  <section class="card qc t-brand" aria-label="Sauerteig-Rechner">
+  <details class="card fold qc t-brand" aria-label="Anstellgut auffrischen">
+    <summary>
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V12"/><path d="M12 12c0-3 2-5 5-5.5C17 10 15 12 12 12Z"/><path d="M12 14.5c0-2-1.5-3.5-4-4 0 2.7 1.3 4 4 4Z"/></svg></div>
+      <div class="sum-text"><h2 class="qc-title">Ich möchte mein Anstellgut auffrischen</h2><p class="card-sub">Verhältnis 20 / 40 / 50</p></div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </summary>
+    <div class="fold-body">
+    <label class="qc-row"><span>Ich nehme</span>
+      <input type="number" id="agInput" inputmode="numeric" min="0" step="5" value="20" aria-label="Menge Anstellgut in Gramm">
+      <span>g Anstellgut</span></label>
+    <div class="tiles">
+      <div class="tile"><b id="agWasser">40</b><small>Wasser</small></div>
+      <div class="tile"><b id="agMehl">50</b><small>Mehl</small></div>
+      <div class="tile"><b id="agTotal">110</b><small>ergibt</small></div>
+    </div>
+    <p class="fine">Anstellgut auffrischen im Verhältnis 20 / 40 / 50, ohne Reserve</p>
+    </div>
+  </details>
+
+  <details class="card fold qc t-brand" aria-label="Sauerteig-Rechner">
+    <summary>
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6"/><path d="M9 4v2l-2 2.5V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8.5L15 6V4"/><path d="M7 13h10"/></svg></div>
+      <div class="sum-text"><h2 class="qc-title">Ich brauche Sauerteig zum Backen</h2><p class="card-sub">Verhältnis 2 / 10 / 8</p></div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </summary>
+    <div class="fold-body">
     <label class="qc-row"><span>Ich brauche</span>
       <input type="number" id="qcInput" inputmode="numeric" min="0" step="5" value="110" aria-label="Benötigte Sauerteigmenge in Gramm">
       <span>g Sauerteig</span></label>
@@ -216,13 +245,14 @@
       <div class="tile"><b id="qcWasser">53</b><small>Wasser</small></div>
     </div>
     <p class="fine">Verhältnis 2 / 10 / 8, inkl. 20 % Reserve</p>
-  </section>
+    </div>
+  </details>
 
   <h2 class="section-label">Recipes</h2>
   <nav class="menu" id="menu" aria-label="Rezepte"></nav>
   <main id="panels"></main>
 
-  <footer class="foot">Alle Mengen in Gramm · v8</footer>
+  <footer class="foot">Alle Mengen in Gramm · v13</footer>
 </div>
 <script>
 window.onerror = function(msg, url, line, col, err){
@@ -279,6 +309,7 @@ const THEMES = {
   buns:       {a:'#e8a94c', b:'#b5651d', ink:'#2b1200'},
   cuchaule:   {a:'#ffd23f', b:'#f2a900', ink:'#2b1200'},
   fladenbrot: {a:'#ff8f6b', b:'#c2452c', ink:'#2b0d05'},
+  toast:      {a:'#3ddcff', b:'#5b7cfa', ink:'#06122b'},
   custom:     {a:'#7b2ff7', b:'#00c8ff', ink:'#ffffff'}
 };
 (function injectThemes(){
@@ -677,11 +708,60 @@ const RECIPES = {
         '10 Min. backen, Wasserform entfernen, weitere 10-15 Min. backen, bis die Fladen goldbraun sind.'
       ]}
     ]
+  },
+  toast: {
+    label: 'Toastbrot', icon: 'toast', isCustom:false, hasStarterCards:false,
+    defaultTeigmenge: 630,
+    unitLabel: 'Form', unitWeight: 630, sizeInfo: 'Toastbrotform, 20 cm (eher hoch), ca. 620-640 g Teig',
+    portions: [ {n:1,label:'1 Form'}, {n:2,label:'2 Formen'} ], maxUnits: 4,
+    hydrationNote: 'Milch und Wasser zusammen, bezogen aufs Mehl',
+    hydration: { min:55, max:70, basic:63, presets:[
+      {v:58, label:'Fest'}, {v:63, label:'Basic'}, {v:68, label:'Weich'}
+    ]},
+    flours: [
+      { key:'weiss', name:'Weissmehl', pct:100 }
+    ],
+    ansatz: { starter:15, mehl:42, wasser:42 },
+    fixed: [
+      { key:'milch',     name:'Milch (lauwarm)',   pct:0, liquidShare:5/6 },
+      { key:'wasser',    name:'Wasser (lauwarm)',  pct:0, liquidShare:1/6 },
+      { key:'zucker',    name:'Zucker',            pct:8.4 },
+      { key:'salz',      name:'Salz',              pct:2.5 },
+      { key:'butter',    name:'Butter (weich)',    pct:10.5 },
+      { key:'sauerteig', name:'Sauerteig (aktiv)', pct:35.1 }
+    ],
+    stockgare: [ {temp:'Sauerteig am Vorabend',dauer:'bis aktiv und luftig'}, {temp:'Erste Gehzeit',dauer:'3-5 h'}, {temp:'Zweite Gehzeit',dauer:'2-4 h'} ],
+    phases: [
+      { title: 'Am Vorabend', steps: [
+        '{{ansatzAnstellgut}} Anstellgut, {{ansatzWasser}} Wasser und {{ansatzMehl}} Weissmehl mischen und bei Raumtemperatur reifen lassen, bis der Sauerteig aktiv und luftig ist. Das ergibt ca. {{sauerteig}} aktiven Sauerteig.'
+      ]},
+      { title: 'Teig machen', steps: [
+        '{{sauerteig}} Sauerteig, {{milch}} Milch, {{wasser}} Wasser, {{zucker}} Zucker und {{mehl}} Mehl kurz mischen, bis alles zusammenkommt. 20 Min. ruhen lassen.',
+        '{{salz}} Salz und {{butter}} weiche Butter dazugeben. 10-15 Min. kneten, bis der Teig weich, glatt und elastisch ist. Er soll weich sein, aber nicht verlaufen. Optional für eine besonders fluffige Krume: 1 kleine Prise Trockenhefe (ca. 0.5-1 g) mit dem Salz zugeben.'
+      ]},
+      { title: 'Formen & Gare', steps: [
+        'Abdecken und bei warmer Raumtemperatur 3-5 Std. gehen lassen. Nach ca. 1 Std. einmal dehnen und falten.',
+        'Teig leicht flach drücken, zu einem Rechteck ziehen und straff aufrollen. Mit der Naht nach unten in die gebutterte 20-cm-Form legen.',
+        'Zweite Gehzeit in der Form, meist 2-4 Std. Mit Deckel: warten, bis der Teig ca. 1 cm unter dem Rand ist, dann den Deckel schliessen. Ohne Deckel: warten, bis der Teig knapp über dem Rand steht.'
+      ]},
+      { title: 'Backen', steps: [
+        'Ofen auf 220°C Ober-/Unterhitze vorheizen.',
+        '10 Min. bei 220°C backen, danach 20-25 Min. bei 190°C. Mit Deckel sind es meist insgesamt 30-35 Min.',
+        'Sofort aus der Form nehmen. Für eine weiche Kruste leicht mit etwas Butter bestreichen.'
+      ]},
+      { title: 'Für weiches Toastbrot', steps: [
+        'Gut auskneten.',
+        'Straff einrollen.',
+        'Warm genug gehen lassen.',
+        'Erst schneiden, wenn das Brot komplett ausgekühlt ist.'
+      ]}
+    ]
   }
 };
 
 Object.assign(ICONS, {
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  toast: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20v-8.5C4.5 11 4 9.8 4 8.5 4 6 6 4.5 8.5 4.5h7C18 4.5 20 6 20 8.5c0 1.3-.5 2.5-2 3V20H6Z"/><path d="M9.5 14.5h5"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>'
 });
 
@@ -693,6 +773,7 @@ const MENU = [
   { key:'buns',       label:'Burger Buns' },
   { key:'cuchaule',   label:'Cuchaule' },
   { key:'fladenbrot', label:'Fladenbrot' },
+  { key:'toast',      label:'Toastbrot' },
   { key:'custom',     label:'Eigenes Rezept' }
 ];
 
@@ -734,7 +815,8 @@ function hasStarter(r){ return r.hasStarterCards !== false && !!starterDefOf(r);
 function calc(key){
   const r = RECIPES[key], s = state[key];
   const wasserDef = waterDefOf(r);
-  const effectivePct = f => (wasserDef && f.key === wasserDef.key) ? s.hydration : f.pct;
+  const effectivePct = f => f.liquidShare !== undefined ? s.hydration * f.liquidShare
+    : ((wasserDef && f.key === wasserDef.key) ? s.hydration : f.pct);
 
   const fixedPctSum = r.fixed.reduce((acc,f) => acc + effectivePct(f)/100, 0);
   const totalMehl = roundUp10(s.teigmenge / (1 + fixedPctSum));
@@ -769,8 +851,16 @@ function calc(key){
   const stAnsetzen = stDef ? fixedGrams[stDef.key] * 1.2 : 0;
   const st = roundToSum([stAnsetzen*2/20, stAnsetzen*10/20, stAnsetzen*8/20], stAnsetzen);
 
+  // Optionaler Vorabend-Ansatz mit rezepteigenem Verhältnis (z.B. Toastbrot 15 / 42 / 42)
+  let ansatz = null;
+  if(stDef && r.ansatz){
+    const sum = r.ansatz.starter + r.ansatz.mehl + r.ansatz.wasser;
+    const a = roundToSum([stNeed*r.ansatz.starter/sum, stNeed*r.ansatz.mehl/sum, stNeed*r.ansatz.wasser/sum], stNeed);
+    ansatz = { starter:a[0], mehl:a[1], wasser:a[2] };
+  }
+
   return {
-    totalMehl, flourGrams, fixedGrams, fixedGramsRounded, activeFlours, flourRounded, flourSumPct,
+    ansatz, totalMehl, flourGrams, fixedGrams, fixedGramsRounded, activeFlours, flourRounded, flourSumPct,
     bassinage, bassinageRounded: Math.round(bassinage), totalTeig, wasserDef,
     stNeed, stTotal: Math.round(stAnsetzen), stStarter: st[0], stMehl: st[1], stWasser: st[2]
   };
@@ -778,6 +868,21 @@ function calc(key){
 
 // Anstellgut auffrischen: immer gleich, unabhängig vom Rezept, ohne Reserve
 const REFRESH = { starter:20, mehl:50, wasser:40, total:110 };
+
+// Prozentanzeige einer Zutat (Flüssigkeiten folgen der Hydration)
+function pctDisplay(r, s, f, c){
+  if(f.liquidShare !== undefined) return Math.round(s.hydration * f.liquidShare * 10) / 10;
+  if(c.wasserDef && f.key === c.wasserDef.key) return Math.round(s.hydration);
+  return f.pct;
+}
+// Hinweis unter der Sauerteig-Zutat
+function starterNote(r, c, f){
+  const stDef = starterDefOf(r);
+  if(!stDef || f.key !== stDef.key) return null;
+  if(hasStarter(r)) return 'Angesetzt im Verhältnis 2 / 10 / 8';
+  if(c.ansatz) return `Am Vorabend: ${c.ansatz.starter} g Anstellgut, ${c.ansatz.wasser} g Wasser, ${c.ansatz.mehl} g Mehl`;
+  return null;
+}
 
 /* ---------- Mengen in Zubereitungstext einsetzen ---------- */
 function fillStepPlaceholders(text, key, c){
@@ -789,10 +894,16 @@ function fillStepPlaceholders(text, key, c){
   const liquidTeig = liquid
     ? fmt(liquid.hasBassinage ? c.fixedGramsRounded[liquid.key] - c.bassinageRounded : c.fixedGramsRounded[liquid.key]) + ' g'
     : '';
+  const wDef = r.fixed.find(f => /^wasser/i.test(f.name.trim()));
+  const mDef = r.fixed.find(f => /milch/i.test(f.name));
+  const liq = def => fmt(def.hasBassinage ? c.fixedGramsRounded[def.key] - c.bassinageRounded : c.fixedGramsRounded[def.key]) + ' g';
   const values = {
     mehl: fmt(c.totalMehl) + ' g',
-    wasser: liquidTeig,
-    milch: liquidTeig,
+    wasser: wDef ? liq(wDef) : liquidTeig,
+    milch: mDef ? liq(mDef) : liquidTeig,
+    ansatzAnstellgut: c.ansatz ? c.ansatz.starter + ' g' : '',
+    ansatzMehl: c.ansatz ? c.ansatz.mehl + ' g' : '',
+    ansatzWasser: c.ansatz ? c.ansatz.wasser + ' g' : '',
     bassinage: (liquid && liquid.hasBassinage) ? fmt(c.bassinageRounded) + ' g' : '',
     salz: g(find(/salz/i)),
     oel: g(find(/öl|oel/i)),
@@ -888,7 +999,7 @@ function buildPanel(key){
     <section class="card">
       <div class="card-head">
         <div class="ic">${icon('droplet')}</div>
-        <div><h3 class="card-title">Hydration</h3><p class="card-sub">${liquidName === 'Milch' ? 'Milchanteil, bezogen aufs Mehl' : 'Mehr Wasser gibt eine offenere, feuchtere Krume'}</p></div>
+        <div><h3 class="card-title">Hydration</h3><p class="card-sub">${r.hydrationNote || (liquidName === 'Milch' ? 'Milchanteil, bezogen aufs Mehl' : 'Mehr Wasser gibt eine offenere, feuchtere Krume')}</p></div>
         <div class="right big-val"><span data-out="hyd"></span><small>%</small></div>
       </div>
       <input type="range" min="${r.hydration.min}" max="${r.hydration.max}" step="1" value="${s.hydration}" data-role="hydration" aria-label="Hydration in Prozent">
@@ -1077,10 +1188,9 @@ function render(key){
   });
   const stDef = starterDefOf(r);
   r.fixed.forEach(f => {
-    const isLiquid = c.wasserDef && f.key === c.wasserDef.key;
-    const pct = isLiquid ? hyd : f.pct;
+    const pct = pctDisplay(r, s, f, c);
     const grams = c.fixedGramsRounded[f.key];
-    const note = (hasStarter(r) && stDef && f.key === stDef.key) ? 'Angesetzt im Verhältnis 2 / 10 / 8' : null;
+    const note = starterNote(r, c, f);
     html += row(f.name, grams.toLocaleString('de-CH') + ' g', '', pct, note);
     if(f.hasBassinage){
       html += row('davon im Teig', (grams - c.bassinageRounded).toLocaleString('de-CH') + ' g', 'sub');
@@ -1186,6 +1296,21 @@ function initQuickCalc(){
   update();
 }
 
+function initRefreshCalc(){
+  const input = document.getElementById('agInput');
+  if(!input) return;
+  const update = () => {
+    // Basis ist die Menge altes Anstellgut. Verhältnis 20 / 40 / 50: Wasser = 2x, Mehl = 2.5x, ohne Reserve
+    const ag = Math.max(0, parseFloat(input.value) || 0);
+    const wasser = Math.round(ag * 2), mehl = Math.round(ag * 2.5);
+    document.getElementById('agWasser').textContent = wasser.toLocaleString('de-CH');
+    document.getElementById('agMehl').textContent = mehl.toLocaleString('de-CH');
+    document.getElementById('agTotal').textContent = (Math.round(ag) + wasser + mehl).toLocaleString('de-CH');
+  };
+  input.addEventListener('input', update);
+  update();
+}
+
 /* =========================================================================
    PDF
    ========================================================================= */
@@ -1283,15 +1408,15 @@ async function generatePdf(key, btn){
     });
     const stDef = starterDefOf(r);
     r.fixed.forEach(f => {
-      const isLiquid = c.wasserDef && f.key === c.wasserDef.key;
-      const pct = isLiquid ? Math.round(s.hydration) : f.pct;
+      const pct = pctDisplay(r, s, f, c);
       const grams = c.fixedGramsRounded[f.key];
       row(`${f.name} (${pct} %)`, grams + ' g');
       if(f.hasBassinage){
         row('davon im Teig', (grams - c.bassinageRounded) + ' g', { indent:true });
         row('davon Bassinage (später zugeben)', c.bassinageRounded + ' g', { indent:true });
       }
-      if(hasStarter(r) && stDef && f.key === stDef.key) note('Angesetzt im Verhältnis 2 / 10 / 8', true);
+      const sn = starterNote(r, c, f);
+      if(sn) note(sn, true);
     });
     ensure(10);
     doc.setDrawColor(210, 200, 230); doc.setLineWidth(0.3);
@@ -1373,6 +1498,7 @@ let startKey = 'copain';
 try { const saved = localStorage.getItem('sdc-recipe'); if(saved && RECIPES[saved]) startKey = saved; } catch(e){}
 selectRecipe(startKey, false);
 initQuickCalc();
+initRefreshCalc();
 
 // Schriften erst am Schluss laden, damit ein Ladefehler die App nie blockiert
 try {
