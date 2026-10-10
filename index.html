@@ -80,33 +80,17 @@
   .tile small{ font-size:.7rem; color:var(--text-dim); }
   .fine{ margin:8px 2px 0; font-size:.72rem; color:var(--text-faint); }
 
-  /* Rezept-Dropdown */
-  .dd{ position:relative; }
-  .dd-trigger{ width:100%; display:flex; align-items:center; gap:12px; padding:10px 14px 10px 10px; border-radius:18px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
-    color:var(--text); text-align:left; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease; }
-  .dd-trigger:active{ transform:scale(.985); }
-  .dd-trigger .ic{ width:40px; height:40px; border-radius:13px; box-shadow:0 8px 20px -10px var(--a); }
-  .dd-trigger .ic svg{ width:21px; height:21px; }
-  .dd-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
-  .dd-txt small{ font-size:.7rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
-  .dd-txt b{ font-family:var(--head); font-size:1.08rem; font-weight:700; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .dd.open .dd-trigger{ border-color:var(--a); box-shadow:0 12px 30px -16px var(--a); }
-  .dd.open .dd-trigger .chev{ transform:rotate(180deg); color:var(--text); }
-  .menu{ position:absolute; z-index:30; left:0; right:0; top:calc(100% + 8px); display:flex; flex-direction:column; gap:2px; padding:6px; max-height:min(68vh,460px); overflow:auto;
-    background:var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow:0 24px 60px -20px rgba(0,0,0,.55), var(--shadow);
-    opacity:0; transform:translateY(-6px) scale(.98); transform-origin:top center; visibility:hidden; pointer-events:none; transition:opacity .16s ease, transform .16s ease, visibility 0s linear .16s; }
-  .dd.open .menu{ opacity:1; transform:none; visibility:visible; pointer-events:auto; transition:opacity .16s ease, transform .16s ease; }
-  .menu-btn{ display:flex; align-items:center; gap:12px; min-height:50px; padding:7px 10px; border-radius:14px; border:1px solid transparent; background:transparent;
-    color:var(--text); font-size:.95rem; font-weight:600; text-align:left; line-height:1.15; cursor:pointer; transition:background .15s ease; }
-  .menu-btn > span:nth-child(2){ flex:1; min-width:0; }
-  .menu-btn:hover{ background:var(--surface2); }
-  .menu-btn:active{ background:var(--surface2); }
-  .menu-btn .ic{ width:34px; height:34px; border-radius:11px; }
-  .menu-btn .ic svg{ width:18px; height:18px; }
-  .menu-btn .tick{ width:18px; height:18px; opacity:0; flex:0 0 auto; }
-  .menu-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); }
+  /* Rezept-Menü */
+  .menu{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  @media (min-width:520px){ .menu{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  .menu-btn{ display:flex; align-items:center; gap:10px; min-height:54px; padding:9px 10px; border-radius:16px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
+    color:var(--text); font-size:.86rem; font-weight:700; text-align:left; line-height:1.15; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, background .2s ease; }
+  .menu-btn:last-child{ grid-column:1 / -1; }
+  .menu-btn:active{ transform:scale(.97); }
+  .menu-btn .ic{ width:32px; height:32px; border-radius:10px; }
+  .menu-btn .ic svg{ width:17px; height:17px; }
+  .menu-btn.active{ background:linear-gradient(135deg,var(--a),var(--b)); color:var(--ink); border-color:transparent; box-shadow:0 12px 28px -14px var(--a); }
   .menu-btn.active .ic{ background:rgba(0,0,0,.14); color:var(--ink); }
-  .menu-btn.active .tick{ opacity:1; }
 
   .panel{ display:none; margin-top:16px; scroll-margin-top:12px; }
   .panel.active{ display:block; animation:fade .25s ease; }
@@ -192,6 +176,9 @@
   .ing.head .ing-name{ font-weight:700; } .ing.head .ing-amt{ color:var(--acc); font-size:1.2rem; }
   .ing.sub{ padding:7px 0 7px 14px; border-bottom-style:dashed; }
   .ing.sub .ing-name{ font-size:.88rem; color:var(--text-dim); } .ing.sub .ing-amt{ font-size:.92rem; color:var(--text-dim); }
+  .ing.group{ padding:16px 0 6px; border-bottom:0; }
+  .ing.group .ing-name{ font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--acc); }
+  .ing.group + .ing{ padding-top:6px; }
   .ing.total{ margin-top:4px; padding-top:14px; border-top:2px solid var(--line); border-bottom:0; }
   .ing.total .ing-name{ font-weight:700; } .ing.total .ing-amt{ font-size:1.5rem; color:var(--acc); }
   .sub-head{ display:flex; align-items:center; gap:6px; margin:18px 0 8px; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-dim); }
@@ -265,17 +252,10 @@
   </details>
 
   <h2 class="section-label">Recipes</h2>
-  <div class="dd" id="dd">
-    <button type="button" class="dd-trigger" id="ddBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="menu">
-      <span class="ic" id="ddIcon"></span>
-      <span class="dd-txt"><small>Rezept wählen</small><b id="ddLabel"></b></span>
-      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-    </button>
-    <nav class="menu" id="menu" role="listbox" aria-label="Rezepte"></nav>
-  </div>
+  <nav class="menu" id="menu" aria-label="Rezepte"></nav>
   <main id="panels"></main>
 
-  <footer class="foot">Alle Mengen in Gramm · v13</footer>
+  <footer class="foot">Alle Mengen in Gramm · v15</footer>
 </div>
 <script>
 window.onerror = function(msg, url, line, col, err){
@@ -634,56 +614,69 @@ const RECIPES = {
   },
   cuchaule: {
     label: 'Cuchaule', icon: 'cuchaule', isCustom:false, hasStarterCards:false,
-    defaultTeigmenge: 500,
-    unitLabel: 'Brot', unitWeight: 500,
-    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'}, {n:3,label:'3 Brote'}, {n:4,label:'4 Brote'} ], maxUnits: 8,
-    hydration: { min:50, max:70, basic:60, presets:[
-      {v:52, label:'Fest'}, {v:60, label:'Basic'}, {v:66, label:'Weich'}
+    defaultTeigmenge: 1000,
+    unitLabel: 'Brot', unitWeight: 500, maxUnits: 8,
+    sizeInfo: 'Cuchaule de Fribourg nach Marcel Paa, ca. 500 g Teig pro Brot',
+    sourceUrl: 'https://www.marcelpaa.com/rezepte/cuchaule/',
+    videoUrl: 'https://youtu.be/XSBU-CBoih0',
+    portions: [ {n:1,label:'1 Brot'}, {n:2,label:'2 Brote'} ],
+    hydrationNote: 'Milch gesamt inkl. Bassinage, bezogen aufs Mehl',
+    hydration: { min:54, max:66, basic:60, presets:[
+      {v:56, label:'Fest'}, {v:60, label:'Basic'}, {v:64, label:'Weich'}
     ]},
     flours: [
-      { key:'weiss', name:'Weissmehl (Type 550)', pct:100 }
+      { key:'weiss', name:'Weissmehl', pct:100 }
     ],
+    // Prozentwerte bezogen auf das gesamte Mehl (Original: 500 g Mehl für 2 Brote)
     fixed: [
-      { key:'milch',    name:'Vollmilch',      pct:60,  hasBassinage:true, bassinagePct:7 },
-      { key:'hefe',     name:'Frischhefe',     pct:3.2 },
-      { key:'zucker',   name:'Zucker',         pct:8 },
-      { key:'butter',   name:'Butter weich',   pct:10 },
-      { key:'ei',       name:'Ei',             pct:10 },
-      { key:'salz',     name:'Salz',           pct:1.8 },
-      { key:'safran',   name:'Safranfäden',    pct:0.1 },
-      { key:'sauerteig',name:'Sauerteig (optional)', pct:8 },
-      { key:'eibestreichen', name:'Ei zum Bestreichen', pct:10 }
+      { key:'milch',     name:'Vollmilch',            pct:60, hasBassinage:true, bassinagePct:100*20/300, bassinageNote:'Im Original 10-30 g pro 2 Brote, nach Gefühl zugeben' },
+      { key:'zucker',    name:'Zucker',               pct:8 },
+      { key:'butter',    name:'Butter (weich)',       pct:10 },
+      { key:'hefe',      name:'Frischhefe',           pct:3.2 },
+      { key:'salz',      name:'Salz',                 pct:1.8 },
+      { key:'ei',        name:'Ei',                   pct:10, eggs:true },
+      { key:'sauerteig', name:'Sauerteig (optional)', pct:8 }
+    ],
+    // Zutaten, die nicht ins Teiggewicht zählen
+    extras: [
+      { key:'safran',        name:'Safranfäden',        pct:0.05, stage:'kochstueck', tlGrams:0.25, sachet:0.125 },
+      { key:'eibestreichen', name:'Ei zum Bestreichen', pct:10, eggs:true }
+    ],
+    // Teigstufen: Teilmengen in % vom gesamten Mehl, der Rest kommt in den Hauptteig
+    stages: [
+      { key:'kochstueck', title:'Kochstück', items:[ {ref:'milch', pct:28}, {ref:'mehl', pct:5} ] },
+      { key:'vorteig', title:'Fermentierter Vorteig', items:[ {ref:'salz', pct:0.2}, {ref:'hefe', pct:0.2}, {ref:'milch', pct:8}, {ref:'mehl', pct:10} ] },
+      { key:'haupt', title:'Hauptteig', rest:true, carry:['Kochstück','Vorteig'], order:['milch','mehl','zucker','butter','hefe','salz','ei','sauerteig'] }
     ],
     stockgare: [ {temp:'Vorteig',dauer:'ca. 12 h'}, {temp:'Stockgare',dauer:'90-120 Min.'}, {temp:'Stückgare',dauer:'50-60 Min.'} ],
     phases: [
       { title: 'Kochstück', steps: [
-        'Safranfäden im Mörser fein verreiben und in der Milch bei 60°C auflösen.',
-        'Etwas {{mehl}} Mehl einrühren, unter ständigem Rühren gut abbinden lassen.',
-        'Kochstück in eine Schüssel geben, zudecken und im Kühlschrank auskühlen lassen.'
+        '{{safran}} Safranfäden im Mörser fein verreiben (Safranpulver direkt verwenden) und in {{kochstueck_milch}} Milch im Topf bei ca. 60°C auflösen.',
+        '{{kochstueck_mehl}} Mehl dazugeben und gut verrühren. Hitze erhöhen und unter ständigem Rühren abbinden lassen, bis eine dicke Masse entsteht.',
+        'In eine Schüssel geben, zudecken und im Kühlschrank vollständig auskühlen lassen. Am besten am Vortag zusammen mit dem Vorteig zubereiten.'
       ]},
-      { title: 'Fermentierter Vorteig', steps: [
-        'Etwas Salz, Frischhefe, Milch und Mehl klumpenfrei vermischen.',
+      { title: 'Fermentierter Vorteig (am Vortag)', steps: [
+        '{{vorteig_salz}} Salz, {{vorteig_hefe}} Frischhefe, {{vorteig_milch}} Milch und {{vorteig_mehl}} Mehl klumpenfrei vermischen.',
         'Zudecken und ca. 12 Std. bei Raumtemperatur gären lassen.'
       ]},
       { title: 'Hauptteig', steps: [
-        'Kochstück, Vorteig, {{milch}} Milch, {{mehl}} Mehl, {{zucker}} Zucker, {{butter}} Butter, {{hefe}} Hefe, {{salz}} Salz, {{ei}} Ei und ggf. {{sauerteig}} Sauerteig in der Küchenmaschine 2-3 Min. ankneten.',
-        'Knetgeschwindigkeit erhöhen, ca. 15-20 Min. bei mittlerer Geschwindigkeit kneten.',
-        'Die {{bassinage}} Bassinage-Milch nach und nach schluckweise einziehen lassen.',
-        'Teig in ein leicht gefettetes Becken geben, mit Gärfolie zudecken, 90-120 Min. bei Raumtemperatur gären lassen.',
-        'In der Zwischenzeit 1-2× von allen vier Seiten dehnen und falten.'
+        'Kochstück, Vorteig, {{haupt_milch}} Milch, {{haupt_mehl}} Mehl, {{zucker}} Zucker, {{butter}} weiche Butter, {{haupt_hefe}} Frischhefe, {{haupt_salz}} Salz, {{ei}} Ei und optional {{sauerteig}} Sauerteig in der Küchenmaschine 2-3 Min. ankneten.',
+        'Auf mittlere Geschwindigkeit erhöhen und 15-20 Min. kneten, bis der Teig glatt und elastisch ist.',
+        'Für die Bassinage {{bassinage}} Milch nach und nach schluckweise einkneten.',
+        'Teig in ein leicht gefettetes Becken geben, zudecken und 90-120 Min. bei Raumtemperatur gären lassen.',
+        'In dieser Zeit 1-2× von allen vier Seiten dehnen und falten: eine Seite leicht hochziehen und zum gegenüberliegenden Rand legen.'
       ]},
       { title: 'Formen', steps: [
-        'Teig auf die Arbeitsfläche geben, in gleich grosse Stücke portionieren.',
-        'Teiglinge 2-3× über die Arbeitsplatte schleifen für eine glatte Oberfläche.',
+        'Teig auf die Arbeitsfläche geben{{teilen}}.',
+        'Teiglinge 2-3× über die Arbeitsplatte schleifen, damit die Oberfläche glatt wird.',
         'Auf unbemehlter Fläche zu gleichmässigen Kugeln formen.',
-        'Mit dem Verschluss nach unten aufs Blech legen, leicht flach drücken, mit {{eibestreichen}} verquirltem Ei bestreichen.',
-        'Stückgare: 50-60 Min. bei Raumtemperatur.'
+        'Mit dem Verschluss nach unten auf ein mit Backpapier belegtes Blech legen, leicht flach drücken und mit verquirltem Ei bestreichen.',
+        'Stückgare: 50-60 Min. bei Raumtemperatur. Ofen in dieser Zeit auf 180°C Ober-/Unterhitze vorheizen.'
       ]},
       { title: 'Backen', steps: [
-        'Ofen auf 180°C Ober-/Unterhitze vorheizen.',
-        'Teiglinge nochmals mit verquirltem Ei bestreichen.',
-        'Mit einem scharfen Messer die Oberfläche rautenförmig einschneiden, Klinge senkrecht führen.',
-        'In die Mitte des vorgeheizten Ofens geben, 30-35 Min. backen.'
+        'Teiglinge nochmals mit Ei bestreichen.',
+        'Oberfläche mit einem scharfen Messer rautenförmig einschneiden, die Klinge dabei senkrecht führen.',
+        'In der Ofenmitte 30-35 Min. backen.'
       ]}
     ]
   },
@@ -882,8 +875,36 @@ function calc(key){
     ansatz = { starter:a[0], mehl:a[1], wasser:a[2] };
   }
 
+  // Zutaten ausserhalb des Teiggewichts (z.B. Safran, Ei zum Bestreichen)
+  const extras = {};
+  (r.extras || []).forEach(x => { extras[x.key] = totalMehl * x.pct / 100; });
+
+  // Teigstufen (z.B. Kochstück, Vorteig, Hauptteig): Teilmengen, Rest geht in die Stufe mit rest:true
+  let stages = null;
+  if(r.stages){
+    const r1 = v => v < 10 ? Math.round(v*10)/10 : Math.round(v);
+    const totalOf = ref => ref === 'mehl' ? totalMehl : fixedGramsRounded[ref];
+    const used = {};
+    stages = r.stages.map(st => {
+      if(st.rest) return null;
+      const parts = {};
+      st.items.forEach(it => { const v = r1(totalMehl * it.pct / 100); parts[it.ref] = v; used[it.ref] = (used[it.ref] || 0) + v; });
+      return { key:st.key, title:st.title, parts };
+    });
+    r.stages.forEach((st, i) => {
+      if(!st.rest) return;
+      const parts = {};
+      st.order.forEach(ref => {
+        let v = totalOf(ref) - (used[ref] || 0);
+        if(wasserDef && wasserDef.hasBassinage && ref === wasserDef.key) v -= Math.round(bassinage);
+        parts[ref] = Math.round(v * 10) / 10;
+      });
+      stages[i] = { key:st.key, title:st.title, parts };
+    });
+  }
+
   return {
-    ansatz, totalMehl, flourGrams, fixedGrams, fixedGramsRounded, activeFlours, flourRounded, flourSumPct,
+    extras, stages, ansatz, totalMehl, flourGrams, fixedGrams, fixedGramsRounded, activeFlours, flourRounded, flourSumPct,
     bassinage, bassinageRounded: Math.round(bassinage), totalTeig, wasserDef,
     stNeed, stTotal: Math.round(stAnsetzen), stStarter: st[0], stMehl: st[1], stWasser: st[2]
   };
@@ -905,6 +926,83 @@ function starterNote(r, c, f){
   if(hasStarter(r)) return 'Angesetzt im Verhältnis 2 / 10 / 8';
   if(c.ansatz) return `Am Vorabend: ${c.ansatz.starter} g Anstellgut, ${c.ansatz.wasser} g Wasser, ${c.ansatz.mehl} g Mehl`;
   return null;
+}
+
+function fmtG(n){
+  const v = Math.round(n * 10) / 10;
+  return Number.isInteger(v) ? v.toLocaleString('de-CH') : v.toLocaleString('de-CH', { minimumFractionDigits:1, maximumFractionDigits:1 });
+}
+// Teelöffel-Angabe in Viertel-TL, z.B. ¼, ½, 1¼
+function tlText(g, tlGrams){
+  const q = Math.max(1, Math.round(g / tlGrams * 4));
+  const whole = Math.floor(q / 4), frac = ['', '¼', '½', '¾'][q % 4];
+  return (whole ? whole : '') + frac + ' TL';
+}
+function extraAmount(x, g){ return x.tlGrams ? tlText(g, x.tlGrams) : fmtG(g) + ' g'; }
+function extraNote(x, g){
+  if(x.eggs) return eggNote(g);
+  if(x.sachet){ const n = Math.max(1, Math.round(g / x.sachet)); return `gestrichene Teelöffel, oder ${n} Briefchen Safranpulver (à 0.125 g)`; }
+  return x.note;
+}
+function eggNote(g){
+  const n = Math.max(0.5, Math.round(g / 50 * 2) / 2);
+  return 'ca. ' + (n === 0.5 ? '½' : fmtG(n)) + (n > 1 ? ' Eier' : ' Ei');
+}
+
+// Zutatenliste als Zeilen, gemeinsam für Anzeige und PDF
+// cls: head | sub | '' | total | group ; kind: stage | sum (für Prüfungen)
+function ingredientRows(key, c){
+  const r = RECIPES[key], s = state[key];
+  const rows = [];
+  const add = (name, amt, cls, pct, note, kind) => rows.push({ name, amt, cls: cls || '', pct, note, kind });
+  const sumOk = Math.abs(c.flourSumPct - 100) < 0.001;
+  const flourName = c.activeFlours.length === 1 ? c.activeFlours[0].name : 'Mehl';
+  const fixedDef = k => r.fixed.find(f => f.key === k);
+  const extrasFor = stage => (r.extras || []).filter(x => (x.stage || null) === stage);
+  const extraRow = x => add(x.name, extraAmount(x, c.extras[x.key]), 'sub', null, extraNote(x, c.extras[x.key]), 'extra');
+
+  if(c.stages){
+    c.stages.forEach(st => {
+      add(st.title, '', 'group');
+      const def0 = r.stages.find(x => x.key === st.key);
+      (def0.carry || []).forEach(n => add(n, 'alles', 'sub', null, null, 'carry'));
+      extrasFor(st.key).forEach(extraRow);
+      Object.keys(st.parts).forEach(ref => {
+        const def = ref === 'mehl' ? null : fixedDef(ref);
+        add(def ? def.name : flourName, fmtG(st.parts[ref]) + ' g', '', null, def ? (def.eggs ? eggNote(st.parts[ref]) : def.note) : null, 'stage');
+      });
+    });
+    if(c.wasserDef && c.wasserDef.hasBassinage){
+      add('Bassinage (später zugeben)', '', 'group');
+      add(c.wasserDef.name, fmtG(c.bassinageRounded) + ' g', '', null, c.wasserDef.bassinageNote, 'stage');
+    }
+    add('Teig gesamt', fmt(c.totalTeig) + ' g', 'total');
+    const loose = extrasFor(null);
+    if(loose.length){ add('Zum Bestreichen', '', 'group'); loose.forEach(extraRow); }
+    add('Total pro Zutat', '', 'group');
+    add(flourName, fmt(c.totalMehl) + ' g', '', null, getFlourTypeHint(flourName), 'sum');
+    r.fixed.forEach(f => {
+      const note = f.hasBassinage ? `inkl. ${fmtG(c.bassinageRounded)} g Bassinage` : null;
+      add(f.name, c.fixedGramsRounded[f.key].toLocaleString('de-CH') + ' g', '', pctDisplay(r, s, f, c), note, 'sum');
+    });
+    return rows;
+  }
+
+  add('Mehl gesamt', fmt(c.totalMehl) + ' g', 'head');
+  if(!sumOk) add(`Mehlmischung ergibt ${fmt(c.flourSumPct)} % statt 100 %`, '', 'sub');
+  c.activeFlours.forEach((f, i) => add(f.name, c.flourRounded[i].toLocaleString('de-CH') + ' g', 'sub', null, getFlourTypeHint(f.name)));
+  r.fixed.forEach(f => {
+    const grams = c.fixedGramsRounded[f.key];
+    add(f.name, grams.toLocaleString('de-CH') + ' g', '', pctDisplay(r, s, f, c), starterNote(r, c, f) || f.note);
+    if(f.hasBassinage){
+      add('davon im Teig', (grams - c.bassinageRounded).toLocaleString('de-CH') + ' g', 'sub');
+      add('davon Bassinage (später zugeben)', c.bassinageRounded.toLocaleString('de-CH') + ' g', 'sub');
+    }
+  });
+  add('Teig gesamt', fmt(c.totalTeig) + ' g', 'total');
+  const ex = r.extras || [];
+  if(ex.length){ add('Ausserdem', '', 'group'); ex.forEach(extraRow); }
+  return rows;
 }
 
 /* ---------- Mengen in Zubereitungstext einsetzen ---------- */
@@ -941,6 +1039,10 @@ function fillStepPlaceholders(text, key, c){
     ei: g(r.fixed.find(f => /^ei$/i.test(f.name.trim()))),
     eibestreichen: g(find(/bestreichen/i))
   };
+  (r.extras || []).forEach(x => { values[x.key] = extraAmount(x, c.extras[x.key]); });
+  (c.stages || []).forEach(st => Object.keys(st.parts).forEach(ref => { values[st.key + '_' + ref] = fmtG(st.parts[ref]) + ' g'; }));
+  const n = unitsOf(key);
+  values.teilen = n > 1 ? ` und in ${n} gleich grosse Stücke à ca. ${fmt(c.totalTeig / n)} g teilen` : '';
   return text.replace(/\{\{(\w+)\}\}/g, (m, name) => values[name] !== undefined ? values[name] : m);
 }
 
@@ -955,42 +1057,15 @@ function setFill(inp){
   inp.style.setProperty('--fill', ((v - min) / (max - min || 1) * 100) + '%');
 }
 
-const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-function setMenuOpen(open){
-  const dd = document.getElementById('dd'), btn = document.getElementById('ddBtn');
-  dd.classList.toggle('open', open);
-  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if(open){
-    const act = document.querySelector('.menu-btn.active');
-    if(act && act.scrollIntoView) act.scrollIntoView({ block:'nearest' });
-  }
-}
 function buildMenu(){
   const nav = document.getElementById('menu');
   nav.innerHTML = MENU.map(m => `
-    <button type="button" role="option" class="menu-btn t-${m.key}" data-key="${m.key}" aria-selected="false">
-      <span class="ic">${icon(RECIPES[m.key].icon)}</span><span>${m.label}</span>${TICK}
+    <button type="button" class="menu-btn t-${m.key}" data-key="${m.key}" aria-pressed="false">
+      <span class="ic">${icon(RECIPES[m.key].icon)}</span><span>${m.label}</span>
     </button>`).join('');
   nav.addEventListener('click', e => {
     const btn = e.target.closest('.menu-btn');
-    if(btn){ selectRecipe(btn.dataset.key, true); setMenuOpen(false); document.getElementById('ddBtn').focus(); }
-  });
-  document.getElementById('ddBtn').addEventListener('click', () => {
-    setMenuOpen(!document.getElementById('dd').classList.contains('open'));
-  });
-  document.addEventListener('click', e => {
-    if(!e.target.closest('#dd')) setMenuOpen(false);
-  });
-  document.addEventListener('keydown', e => {
-    const dd = document.getElementById('dd');
-    if(e.key === 'Escape' && dd.classList.contains('open')){ setMenuOpen(false); document.getElementById('ddBtn').focus(); }
-    if(dd.classList.contains('open') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')){
-      e.preventDefault();
-      const items = [...nav.querySelectorAll('.menu-btn')];
-      const i = items.indexOf(document.activeElement);
-      const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
-      items[n].focus();
-    }
+    if(btn) selectRecipe(btn.dataset.key, true);
   });
 }
 
@@ -1000,15 +1075,8 @@ function selectRecipe(key, fromUser){
   document.querySelectorAll('.menu-btn').forEach(b => {
     const on = b.dataset.key === key;
     b.classList.toggle('active', on);
-    b.setAttribute('aria-selected', on ? 'true' : 'false');
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  const ddBtn = document.getElementById('ddBtn');
-  if(ddBtn){
-    const m = MENU.find(x => x.key === key);
-    ddBtn.className = 'dd-trigger t-' + key;
-    document.getElementById('ddIcon').innerHTML = icon(RECIPES[key].icon);
-    document.getElementById('ddLabel').textContent = m ? m.label : RECIPES[key].label;
-  }
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + key));
   try { localStorage.setItem('sdc-recipe', key); } catch(e){}
   if(fromUser){
@@ -1029,9 +1097,10 @@ function buildPanel(key){
       <button type="button" class="size-chip" data-role="size" data-size="${z.key}"><b>${z.label}</b><small>${z.desc} · ${z.weight} g</small></button>`).join('')}
     </div>` : '';
 
-  const meta = (r.sizeInfo || r.sourceUrl) ? `<div class="hero-meta">
+  const meta = (r.sizeInfo || r.sourceUrl || r.videoUrl) ? `<div class="hero-meta">
       ${r.sizeInfo ? `<span>${esc(r.sizeInfo)}</span>` : ''}
       ${r.sourceUrl ? `<a href="${r.sourceUrl}" target="_blank" rel="noopener">Original-Rezept ↗</a>` : ''}
+      ${r.videoUrl ? `<a href="${r.videoUrl}" target="_blank" rel="noopener">Video ansehen ↗</a>` : ''}
     </div>` : '';
 
   const hero = `
@@ -1233,28 +1302,11 @@ function render(key){
   el.querySelectorAll('[data-role="flour"]').forEach(inp => { inp.value = s.flours[inp.dataset.fkey] || 0; setFill(inp); });
 
   // Zutaten
-  const row = (name, amt, cls, pct, note) => `
-    <div class="ing${cls ? ' ' + cls : ''}">
-      <span class="ing-name">${esc(name)}${pct !== undefined && pct !== null ? `<span class="ing-pct">${pct} %</span>` : ''}${note ? `<span class="ing-note">${esc(note)}</span>` : ''}</span>
-      <span class="ing-amt">${amt}</span>
-    </div>`;
-  let html = row('Mehl gesamt', fmt(c.totalMehl) + ' g', 'head');
-  if(!sumOk) html += row(`Mehlmischung ergibt ${fmt(c.flourSumPct)} % statt 100 %`, '', 'sub');
-  c.activeFlours.forEach((f, i) => {
-    html += row(f.name, c.flourRounded[i].toLocaleString('de-CH') + ' g', 'sub', null, getFlourTypeHint(f.name));
-  });
-  const stDef = starterDefOf(r);
-  r.fixed.forEach(f => {
-    const pct = pctDisplay(r, s, f, c);
-    const grams = c.fixedGramsRounded[f.key];
-    const note = starterNote(r, c, f);
-    html += row(f.name, grams.toLocaleString('de-CH') + ' g', '', pct, note);
-    if(f.hasBassinage){
-      html += row('davon im Teig', (grams - c.bassinageRounded).toLocaleString('de-CH') + ' g', 'sub');
-      html += row('davon Bassinage (später zugeben)', c.bassinageRounded.toLocaleString('de-CH') + ' g', 'sub');
-    }
-  });
-  html += row('Teig gesamt', fmt(c.totalTeig) + ' g', 'total');
+  const html = ingredientRows(key, c).map(rw => `
+    <div class="ing${rw.cls ? ' ' + rw.cls : ''}"${rw.kind ? ` data-kind="${rw.kind}"` : ''}>
+      <span class="ing-name">${esc(rw.name)}${rw.pct !== undefined && rw.pct !== null ? `<span class="ing-pct">${rw.pct} %</span>` : ''}${rw.note ? `<span class="ing-note">${esc(rw.note)}</span>` : ''}</span>
+      <span class="ing-amt">${rw.amt}</span>
+    </div>`).join('');
   const ings = q('[data-out="ings"]');
   if(ings) ings.innerHTML = html;
   setTxt('[data-out="ingsub"]', `Für ${units} × ${r.unitLabel}`);
@@ -1457,30 +1509,29 @@ async function generatePdf(key, btn){
 
     // Zutaten
     section('Zutaten');
-    row('Mehl gesamt', fmt(c.totalMehl) + ' g', { bold:true });
-    c.activeFlours.forEach((f, i) => {
-      row(f.name, c.flourRounded[i] + ' g', { indent:true });
-      const hint = getFlourTypeHint(f.name);
-      if(hint) note(hint, true);
-    });
-    const stDef = starterDefOf(r);
-    r.fixed.forEach(f => {
-      const pct = pctDisplay(r, s, f, c);
-      const grams = c.fixedGramsRounded[f.key];
-      row(`${f.name} (${pct} %)`, grams + ' g');
-      if(f.hasBassinage){
-        row('davon im Teig', (grams - c.bassinageRounded) + ' g', { indent:true });
-        row('davon Bassinage (später zugeben)', c.bassinageRounded + ' g', { indent:true });
+    ingredientRows(key, c).forEach(rw => {
+      if(rw.cls === 'group'){
+        y += 1.5; ensure(12);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(ACC[0], ACC[1], ACC[2]);
+        doc.text(pdfText(rw.name.toUpperCase()), L, y);
+        y += 5.5;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.setTextColor(TEXT[0], TEXT[1], TEXT[2]);
+        return;
       }
-      const sn = starterNote(r, c, f);
-      if(sn) note(sn, true);
+      if(rw.cls === 'total'){
+        ensure(10);
+        doc.setDrawColor(210, 200, 230); doc.setLineWidth(0.3);
+        doc.line(L, y - 3, R, y - 3);
+        y += 1.5;
+        row(rw.name, rw.amt, { bold:true, big:true });
+        y += 2;
+        return;
+      }
+      const label = (rw.pct !== undefined && rw.pct !== null) ? `${rw.name} (${rw.pct} %)` : rw.name;
+      row(label, rw.amt, { bold: rw.cls === 'head', indent: rw.cls === 'sub' });
+      if(rw.note) note(rw.note, true);
     });
-    ensure(10);
-    doc.setDrawColor(210, 200, 230); doc.setLineWidth(0.3);
-    doc.line(L, y - 3, R, y - 3);
-    y += 1.5;
-    row('Teig gesamt', fmt(c.totalTeig) + ' g', { bold:true, big:true });
-    y += 4;
+    y += 2;
 
     // Gehzeit
     section('Gehzeit (Richtwerte)');
@@ -1523,6 +1574,13 @@ async function generatePdf(key, btn){
       });
       y += 3;
     });
+
+    // Links
+    if(r.sourceUrl || r.videoUrl){
+      section('Links');
+      if(r.sourceUrl) row('Original-Rezept: ' + r.sourceUrl, '');
+      if(r.videoUrl) row('Video: ' + r.videoUrl, '');
+    }
 
     // Seitenfuss
     const pages = doc.getNumberOfPages();
