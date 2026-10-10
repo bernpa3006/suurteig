@@ -85,7 +85,9 @@
   @media (min-width:520px){ .menu{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
   .menu-btn{ display:flex; align-items:center; gap:10px; min-height:54px; padding:9px 10px; border-radius:16px; border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
     color:var(--text); font-size:.86rem; font-weight:700; text-align:left; line-height:1.15; cursor:pointer; transition:transform .12s ease, box-shadow .2s ease, background .2s ease; }
-  .menu-btn:last-child{ grid-column:1 / -1; }
+  .picker > summary .card-title{ font-size:1.1rem; }
+  .picker .menu-btn{ background:var(--surface2); box-shadow:none; }
+  .picker .fold-body{ margin-top:14px; }
   .menu-btn:active{ transform:scale(.97); }
   .menu-btn .ic{ width:32px; height:32px; border-radius:10px; }
   .menu-btn .ic svg{ width:17px; height:17px; }
@@ -252,10 +254,17 @@
   </details>
 
   <h2 class="section-label">Recipes</h2>
-  <nav class="menu" id="menu" aria-label="Rezepte"></nav>
+  <details class="card fold picker t-copain" id="picker">
+    <summary>
+      <div class="ic" id="pickerIc"></div>
+      <div class="sum-text"><h3 class="card-title" id="pickerName">Copain</h3><p class="card-sub">Tippen, um ein anderes Rezept zu wählen</p></div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </summary>
+    <div class="fold-body"><nav class="menu" id="menu" aria-label="Rezepte"></nav></div>
+  </details>
   <main id="panels"></main>
 
-  <footer class="foot">Alle Mengen in Gramm · v16</footer>
+  <footer class="foot">Alle Mengen in Gramm · v17</footer>
 </div>
 <script>
 window.onerror = function(msg, url, line, col, err){
@@ -313,6 +322,7 @@ const THEMES = {
   cuchaule:   {a:'#ffd23f', b:'#f2a900', ink:'#2b1200'},
   fladenbrot: {a:'#ff8f6b', b:'#c2452c', ink:'#2b0d05'},
   toast:      {a:'#3ddcff', b:'#5b7cfa', ink:'#06122b'},
+  rolls:      {a:'#c3f08a', b:'#4caf7a', ink:'#0c2412'},
   custom:     {a:'#7b2ff7', b:'#00c8ff', ink:'#ffffff'}
 };
 (function injectThemes(){
@@ -481,6 +491,7 @@ const RECIPES = {
   },
   pizza: {
     label: 'Pizza', icon: 'pizza', isCustom:false, hasStarterCards:false,
+    sourceUrl: 'https://www.burnhard.com/de/rezepte/pizza/sauerteig-pizza',
     defaultTeigmenge: 1100,
     unitLabel: 'Pizza', unitWeight: 275,
     sizes: [
@@ -528,6 +539,60 @@ const RECIPES = {
       ]}
     ]
   },
+  rolls: {
+    label: 'Dinner Rolls', icon: 'rolls', isCustom:false,
+    sourceUrl: 'https://www.tasteoftravel.at/american-dinner-rolls/',
+    defaultTeigmenge: 555,
+    unitLabel: 'Brötchen', unitWeight: 35, minUnits: 4, maxUnits: 48,
+    sizeInfo: 'Sauerteig-Variante. 16 Stück à ca. 35 g passen in eine Form von 20 × 20 cm',
+    portions: [ {n:16,label:'16 Stück'} ],
+    hydration: { min:65, max:80, basic:74, presets:[
+      {v:68, label:'Fest'}, {v:74, label:'Basic'}, {v:78, label:'Weich'}
+    ]},
+    flours: [
+      { key:'weiss', name:'Weissmehl', pct:100 }
+    ],
+    fixed: [
+      { key:'milch',     name:'Milch (lauwarm)',       pct:74 },
+      { key:'zucker',    name:'Zucker',                pct:8 },
+      { key:'butter',    name:'Butter (wird gebräunt)', pct:18 },
+      { key:'salz',      name:'Salz',                  pct:2 },
+      { key:'sauerteig', name:'Sauerteig (aktiv)',     pct:24 }
+    ],
+    extras: [
+      { key:'salbei',  name:'Salbeiblätter (optional)', piecesPer100:8, pieceLabel:'Blätter', note:'Oder Thymian, nicht anrösten' },
+      { key:'eigelb',  name:'Eigelb zum Bestreichen',   piecesPer100:0.4, pieceLabel:'Eigelb', note:'Mit 2 TL Milch pro Eigelb verrühren' },
+      { key:'sesam',   name:'Sesam zum Bestreuen',      text:'nach Belieben' }
+    ],
+    stockgare: [ {temp:'Sauerteig',dauer:'8-12 h'}, {temp:'Stockgare',dauer:'3-5 h'}, {temp:'Stückgare',dauer:'2-3 h'} ],
+    phases: [
+      { title: 'Braune Butter', steps: [
+        '{{butter}} Butter bei mittlerer Hitze schmelzen. Den fein gehackten Salbei (optional) ca. 30 Sek. mitbraten, bis die Butter goldbraun ist und nussig riecht.',
+        'Auf lauwarm abkühlen lassen, sonst leidet der Sauerteig.'
+      ]},
+      { title: 'Teig machen', steps: [
+        '{{milch}} lauwarme Milch, {{zucker}} Zucker und {{sauerteig}} Sauerteig glatt verrühren. Die abgekühlte Butter mit dem Salbei unterrühren.',
+        '{{salz}} Salz und die Hälfte vom Mehl ({{mehl}} insgesamt) einrühren, dann das restliche Mehl unterarbeiten.',
+        '8-10 Min. von Hand kneten (Maschine 6-8 Min.), bis der Teig weich und geschmeidig ist. Er bleibt leicht klebrig, kein Mehl nachgeben.'
+      ]},
+      { title: 'Gare & Formen', steps: [
+        'Zugedeckt an einem warmen Ort 3-5 Std. gehen lassen, nach 1 Std. einmal dehnen und falten. Der Teig soll um etwa drei Viertel bis aufs Doppelte aufgehen.',
+        'Teig auf eine kaum bemehlte Fläche geben{{teilen}}. Am besten abwiegen und straff rund schleifen.',
+        'Dicht nebeneinander in eine gefettete oder mit Backpapier ausgelegte Form setzen (20 × 20 cm für 16 Stück).',
+        'Zugedeckt 2-3 Std. gehen lassen, bis die Kugeln deutlich aufgegangen sind und sich berühren. Alternativ über Nacht in den Kühlschrank (8-12 Std.) und am Morgen 1 Std. bei Raumtemperatur stehen lassen.'
+      ]},
+      { title: 'Backen', steps: [
+        'Ofen auf 180°C Ober-/Unterhitze vorheizen.',
+        'Brötchen zweimal mit der Eigelb-Milch bestreichen und mit Sesam bestreuen.',
+        '20-25 Min. goldbraun backen und kurz in der Form auskühlen lassen.'
+      ]},
+      { title: 'Tipps', steps: [
+        'Der Sauerteig muss aktiv sein: mindestens verdoppelt und nicht wieder eingefallen. Ein junger Sauerteig hält die Säure tief.',
+        'Für eine besonders fluffige Krume 1 g Trockenhefe mit dem Mehl zugeben. Dann reichen ca. 2 Std. Stockgare und 1-1,5 Std. Stückgare.',
+        'Noch weicher mit Kochstück: {{mehl%6}} vom Mehl mit {{milch%40}} von der Milch unter Rühren aufkochen, bis es eindickt. Auskühlen lassen und mit der restlichen Milch in den Teig geben.'
+      ]}
+    ]
+  },
   custom: {
     label: 'Eigenes Rezept', icon: 'custom', isCustom:true,
     defaultTeigmenge: 700,
@@ -563,6 +628,7 @@ const RECIPES = {
   },
   buns: {
     label: 'Burger Buns', icon: 'buns', isCustom:false, hasStarterCards:false,
+    sourceUrl: 'https://littlespoonfarm.com/sourdough-hamburger-buns-recipe/',
     defaultTeigmenge: 690,
     unitLabel: 'Bun', unitWeight: 115, sizeInfo: 'Ergibt klassische Hamburger-Buns mit Sesam',
     portions: [ {n:6,label:'6 Buns'}, {n:8,label:'8 Buns'}, {n:12,label:'12 Buns'}, {n:16,label:'16 Buns'} ], maxUnits: 24,
@@ -682,6 +748,7 @@ const RECIPES = {
   },
   fladenbrot: {
     label: 'Türkisches Fladenbrot', icon: 'fladenbrot', isCustom:false,
+    sourceUrl: 'https://kitchen.maxwex.me/luftiges-tuerkisches-fladenbrot-mit-sauerteig/',
     defaultTeigmenge: 900,
     unitLabel: 'Fladenbrot', unitWeight: 450,
     portions: [ {n:2,label:'2 Fladenbrote'}, {n:4,label:'4 Fladenbrote'} ], maxUnits: 8,
@@ -778,6 +845,7 @@ const RECIPES = {
 Object.assign(ICONS, {
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
   toast: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20v-8.5C4.5 11 4 9.8 4 8.5 4 6 6 4.5 8.5 4.5h7C18 4.5 20 6 20 8.5c0 1.3-.5 2.5-2 3V20H6Z"/><path d="M9.5 14.5h5"/></svg>',
+  rolls: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><circle cx="9" cy="9" r="2.6"/><circle cx="15" cy="9" r="2.6"/><circle cx="9" cy="15" r="2.6"/><circle cx="15" cy="15" r="2.6"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>'
 });
 
@@ -790,6 +858,7 @@ const MENU = [
   { key:'cuchaule',   label:'Cuchaule' },
   { key:'fladenbrot', label:'Fladenbrot' },
   { key:'toast',      label:'Toastbrot' },
+  { key:'rolls',      label:'Dinner Rolls' },
   { key:'custom',     label:'Eigenes Rezept' }
 ];
 
@@ -938,7 +1007,11 @@ function tlText(g, tlGrams){
   const whole = Math.floor(q / 4), frac = ['', '¼', '½', '¾'][q % 4];
   return (whole ? whole : '') + frac + ' TL';
 }
-function extraAmount(x, g){ return x.tlGrams ? tlText(g, x.tlGrams) : fmtG(g) + ' g'; }
+function extraAmount(x, g, c){
+  if(x.text) return x.text;
+  if(x.piecesPer100){ const n = Math.max(1, Math.round(c.totalMehl / 100 * x.piecesPer100)); return n + ' ' + x.pieceLabel; }
+  return x.tlGrams ? tlText(g, x.tlGrams) : fmtG(g) + ' g';
+}
 function extraNote(x, g){
   if(x.eggs) return eggNote(g);
   if(x.sachet){ const n = Math.max(1, Math.round(g / x.sachet)); return `gestrichene Teelöffel, oder ${n} Briefchen Safranpulver (à 0.125 g)`; }
@@ -959,7 +1032,7 @@ function ingredientRows(key, c){
   const flourName = c.activeFlours.length === 1 ? c.activeFlours[0].name : 'Mehl';
   const fixedDef = k => r.fixed.find(f => f.key === k);
   const extrasFor = stage => (r.extras || []).filter(x => (x.stage || null) === stage);
-  const extraRow = x => add(x.name, extraAmount(x, c.extras[x.key]), 'sub', null, extraNote(x, c.extras[x.key]), 'extra');
+  const extraRow = x => add(x.name, extraAmount(x, c.extras[x.key], c), 'sub', null, extraNote(x, c.extras[x.key]), 'extra');
 
   if(c.stages){
     c.stages.forEach(st => {
@@ -1039,11 +1112,18 @@ function fillStepPlaceholders(text, key, c){
     ei: g(r.fixed.find(f => /^ei$/i.test(f.name.trim()))),
     eibestreichen: g(find(/bestreichen/i))
   };
-  (r.extras || []).forEach(x => { values[x.key] = extraAmount(x, c.extras[x.key]); });
+  (r.extras || []).forEach(x => { values[x.key] = extraAmount(x, c.extras[x.key], c); });
   (c.stages || []).forEach(st => Object.keys(st.parts).forEach(ref => { values[st.key + '_' + ref] = fmtG(st.parts[ref]) + ' g'; }));
   const n = unitsOf(key);
   values.teilen = n > 1 ? ` und in ${n} gleich grosse Stücke à ca. ${fmt(c.totalTeig / n)} g teilen` : '';
-  return text.replace(/\{\{(\w+)\}\}/g, (m, name) => values[name] !== undefined ? values[name] : m);
+  // {{mehl%6}} = 6 % der Mehlmenge, {{milch%40}} = 40 % der Milchmenge
+  const base = { mehl: c.totalMehl };
+  if(mDef) base.milch = c.fixedGramsRounded[mDef.key];
+  if(wDef) base.wasser = c.fixedGramsRounded[wDef.key];
+  return text.replace(/\{\{(\w+)(?:%([\d.]+))?\}\}/g, (m, name, pct) => {
+    if(pct !== undefined) return base[name] !== undefined ? fmtG(base[name] * parseFloat(pct) / 100) + ' g' : m;
+    return values[name] !== undefined ? values[name] : m;
+  });
 }
 
 /* =========================================================================
@@ -1068,6 +1148,14 @@ function buildMenu(){
     if(btn) selectRecipe(btn.dataset.key, true);
   });
 }
+function updatePicker(key){
+  const pk = document.getElementById('picker');
+  if(!pk) return;
+  pk.className = 'card fold picker t-' + key;
+  const m = MENU.find(x => x.key === key);
+  document.getElementById('pickerIc').innerHTML = icon(RECIPES[key].icon);
+  document.getElementById('pickerName').textContent = m ? m.label : RECIPES[key].label;
+}
 
 function selectRecipe(key, fromUser){
   if(!RECIPES[key]) key = 'copain';
@@ -1078,6 +1166,9 @@ function selectRecipe(key, fromUser){
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + key));
+  updatePicker(key);
+  const pk = document.getElementById('picker');
+  if(pk && fromUser) pk.open = false;
   try { localStorage.setItem('sdc-recipe', key); } catch(e){}
   if(fromUser){
     const p = panelEl(key);
@@ -1112,8 +1203,8 @@ function buildPanel(key){
       <div class="eyebrow">Wie viel willst du machen?</div>
       ${sizeRow}
       <div class="count"><span class="count-num" data-out="units">1</span><span class="count-unit">× ${esc(r.unitLabel)}</span></div>
-      <input type="range" min="1" max="${max}" step="1" value="1" data-role="units" aria-label="Anzahl ${esc(r.unitLabel)}">
-      <div class="scale"><span>1</span><span>${max}</span></div>
+      <input type="range" min="${r.minUnits || 1}" max="${max}" step="1" value="1" data-role="units" aria-label="Anzahl ${esc(r.unitLabel)}">
+      <div class="scale"><span>${r.minUnits || 1}</span><span>${max}</span></div>
       <div class="hero-foot">
         <label class="gram-field"><input type="number" inputmode="numeric" min="50" step="10" value="${s.teigmenge}" data-role="teigmenge" aria-label="Teigmenge in Gramm"><span>g Teig</span></label>
         <div class="per-piece" data-out="perpiece"></div>
