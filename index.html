@@ -216,7 +216,7 @@
   <details class="card fold qc t-brand" aria-label="Anstellgut auffrischen">
     <summary>
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V12"/><path d="M12 12c0-3 2-5 5-5.5C17 10 15 12 12 12Z"/><path d="M12 14.5c0-2-1.5-3.5-4-4 0 2.7 1.3 4 4 4Z"/></svg></div>
-      <div class="sum-text"><h2 class="qc-title">Ich möchte mein Anstellgut auffrischen</h2><p class="card-sub">Verhältnis 20 / 40 / 50</p></div>
+      <div class="sum-text"><h2 class="qc-title">Ich möchte mein Anstellgut auffrischen</h2><p class="card-sub">Anstellgut : Wasser : Mehl = 1 : 2 : 2.5</p></div>
       <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
     </summary>
     <div class="fold-body">
@@ -228,14 +228,14 @@
       <div class="tile"><b id="agMehl">50</b><small>Mehl</small></div>
       <div class="tile"><b id="agTotal">110</b><small>ergibt</small></div>
     </div>
-    <p class="fine">Anstellgut auffrischen im Verhältnis 20 / 40 / 50, ohne Reserve</p>
+    <p class="fine">Verhältnis 1 : 2 : 2.5 (Anstellgut : Wasser : Mehl), ohne Reserve</p>
     </div>
   </details>
 
   <details class="card fold qc t-brand" aria-label="Sauerteig-Rechner">
     <summary>
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6"/><path d="M9 4v2l-2 2.5V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8.5L15 6V4"/><path d="M7 13h10"/></svg></div>
-      <div class="sum-text"><h2 class="qc-title">Ich brauche Sauerteig zum Backen</h2><p class="card-sub">Verhältnis 2 / 10 / 8</p></div>
+      <div class="sum-text"><h2 class="qc-title">Ich brauche Sauerteig zum Backen</h2><p class="card-sub">Anstellgut : Mehl : Wasser = 1 : 5 : 4</p></div>
       <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
     </summary>
     <div class="fold-body">
@@ -247,7 +247,7 @@
       <div class="tile"><b id="qcMehl">66</b><small>Mehl</small></div>
       <div class="tile"><b id="qcWasser">53</b><small>Wasser</small></div>
     </div>
-    <p class="fine">Verhältnis 2 / 10 / 8, inkl. 20 % Reserve</p>
+    <p class="fine">Verhältnis 1 : 5 : 4 (Anstellgut : Mehl : Wasser), inkl. 20 % Reserve</p>
     </div>
   </details>
 
@@ -255,7 +255,7 @@
   <nav class="menu" id="menu" aria-label="Rezepte"></nav>
   <main id="panels"></main>
 
-  <footer class="foot">Alle Mengen in Gramm · v15</footer>
+  <footer class="foot">Alle Mengen in Gramm · v16</footer>
 </div>
 <script>
 window.onerror = function(msg, url, line, col, err){
@@ -861,7 +861,7 @@ function calc(key){
   const flourTarget = activeFlours.reduce((acc,f) => acc + flourGrams[f.key], 0);
   const flourRounded = roundToSum(activeFlours.map(f => flourGrams[f.key]), flourTarget);
 
-  // Sauerteig ansetzen: benötigte Menge + 20 % Reserve, Verhältnis 2/10/8
+  // Sauerteig ansetzen: benötigte Menge + 20 % Reserve, Verhältnis 1 : 5 : 4 (Anstellgut : Mehl : Wasser)
   const stDef = starterDefOf(r);
   const stNeed = stDef ? fixedGramsRounded[stDef.key] : 0;
   const stAnsetzen = stDef ? fixedGrams[stDef.key] * 1.2 : 0;
@@ -923,7 +923,7 @@ function pctDisplay(r, s, f, c){
 function starterNote(r, c, f){
   const stDef = starterDefOf(r);
   if(!stDef || f.key !== stDef.key) return null;
-  if(hasStarter(r)) return 'Angesetzt im Verhältnis 2 / 10 / 8';
+  if(hasStarter(r)) return 'Angesetzt im Verhältnis 1 : 5 : 4 (Anstellgut : Mehl : Wasser)';
   if(c.ansatz) return `Am Vorabend: ${c.ansatz.starter} g Anstellgut, ${c.ansatz.wasser} g Wasser, ${c.ansatz.mehl} g Mehl`;
   return null;
 }
@@ -1190,7 +1190,7 @@ function buildPanel(key){
           <div class="tile"><b>${REFRESH.mehl} g</b><small>Mehl</small></div>
           <div class="tile"><b>${REFRESH.wasser} g</b><small>Wasser</small></div>
         </div>
-        <p class="step-note">Immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.</p>
+        <p class="step-note">Verhältnis 1 : 2 : 2.5 (Anstellgut : Wasser : Mehl), immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.</p>
       </div>
       <div class="step-block">
         <div class="step-top"><span class="step-no">2</span><span class="step-name">Sauerteig ansetzen</span><span class="step-total" data-out="st-total"></span></div>
@@ -1409,7 +1409,7 @@ function initRefreshCalc(){
   const input = document.getElementById('agInput');
   if(!input) return;
   const update = () => {
-    // Basis ist die Menge altes Anstellgut. Verhältnis 20 / 40 / 50: Wasser = 2x, Mehl = 2.5x, ohne Reserve
+    // Basis ist die Menge altes Anstellgut. Verhältnis 1 : 2 : 2.5 (Anstellgut : Wasser : Mehl), ohne Reserve
     const ag = Math.max(0, parseFloat(input.value) || 0);
     const wasser = Math.round(ag * 2), mehl = Math.round(ag * 2.5);
     document.getElementById('agWasser').textContent = wasser.toLocaleString('de-CH');
@@ -1546,13 +1546,13 @@ async function generatePdf(key, btn){
       row('Anstellgut', REFRESH.starter + ' g', { indent:true });
       row('Mehl', REFRESH.mehl + ' g', { indent:true });
       row('Wasser', REFRESH.wasser + ' g', { indent:true });
-      note('Immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.');
+      note('Verhältnis 1 : 2 : 2.5 (Anstellgut : Wasser : Mehl), immer gleich, unabhängig vom Rezept. Warm stehen lassen, bis sich die Menge gut verzweieinhalbfacht hat, meist 6-10 Std.');
       y += 2;
       row('2. Sauerteig ansetzen', fmt(c.stTotal) + ' g', { bold:true });
       row('Anstellgut', c.stStarter + ' g', { indent:true });
       row('Mehl', c.stMehl + ' g', { indent:true });
       row('Wasser', c.stWasser + ' g', { indent:true });
-      note(`Für ${fmt(c.stNeed)} g im Teig plus 20 % Reserve, Verhältnis 2 / 10 / 8. Warm stehen lassen, bis er sich mindestens verdoppelt hat, meist 6-12 Std.`);
+      note(`Für ${fmt(c.stNeed)} g im Teig plus 20 % Reserve, Verhältnis 1 : 5 : 4 (Anstellgut : Mehl : Wasser). Warm stehen lassen, bis er sich mindestens verdoppelt hat, meist 6-12 Std.`);
       y += 4;
     }
 
